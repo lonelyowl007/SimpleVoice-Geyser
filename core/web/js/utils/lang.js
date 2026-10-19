@@ -32,6 +32,10 @@ export class SvgLang {
             "joinBtnText": "Join",
             "joinWait": "Waiting to join...",
             "joinWaitMinecraft": "Waiting for you to join Minecraft...",
+            "pendingJoinTitle": "Join Minecraft to continue",
+            "pendingJoinHint": "Open Minecraft and join the server. Voice chat connects automatically when you are online.",
+            "pendingJoinSecondsPrefix": "Time left:",
+            "pendingJoinSecondsSuffix": "s",
             "msgText": "Message",
             "sendBtnText": "Send",
             "transmitModeLabel": "Transmit Mode",
@@ -69,6 +73,10 @@ export class SvgLang {
             "joinBtnText": "Dołącz",
             "joinWait": "Oczekiwanie na połączenie...",
             "joinWaitMinecraft": "Czekam, aż dołączysz do Minecraft...",
+            "pendingJoinTitle": "Dołącz do Minecraft, aby kontynuować",
+            "pendingJoinHint": "Otwórz Minecraft i dołącz do serwera. Voice chat połączy się automatycznie.",
+            "pendingJoinSecondsPrefix": "Pozostało:",
+            "pendingJoinSecondsSuffix": "s",
             "msgText": "Wiadomość",
             "sendBtnText": "Wyślij",
             "transmitModeLabel": "Tryb nadawania",
@@ -106,6 +114,10 @@ export class SvgLang {
             "joinBtnText": "Connettiti",
             "joinWait": "In attesa di connessione...",
             "joinWaitMinecraft": "In attesa che entri in Minecraft...",
+            "pendingJoinTitle": "Entra in Minecraft per continuare",
+            "pendingJoinHint": "Apri Minecraft ed entra nel server. La chat vocale si connette automaticamente.",
+            "pendingJoinSecondsPrefix": "Tempo rimasto:",
+            "pendingJoinSecondsSuffix": "s",
             "msgText": "Messaggio",
             "sendBtnText": "Invia",
             "transmitModeLabel": "Modalità di trasmissione",
@@ -143,6 +155,10 @@ export class SvgLang {
             "joinBtnText": "Unirse",
             "joinWait": "Esperando a unirse...",
             "joinWaitMinecraft": "Esperando a que entres a Minecraft...",
+            "pendingJoinTitle": "Entra a Minecraft para continuar",
+            "pendingJoinHint": "Abre Minecraft y entra al servidor. Voice chat se conectará automáticamente.",
+            "pendingJoinSecondsPrefix": "Tiempo restante:",
+            "pendingJoinSecondsSuffix": "s",
             "msgText": "Mensaje",
             "sendBtnText": "Enviar",
             "transmitModeLabel": "Modo de transmisión",
@@ -180,6 +196,10 @@ export class SvgLang {
             "joinBtnText": "Deelnemen",
             "joinWait": "Wachten om deel te nemen...",
             "joinWaitMinecraft": "Wachten tot je Minecraft joint...",
+            "pendingJoinTitle": "Join Minecraft om door te gaan",
+            "pendingJoinHint": "Open Minecraft en join de server. Voice chat verbindt automatisch zodra je online bent.",
+            "pendingJoinSecondsPrefix": "Nog:",
+            "pendingJoinSecondsSuffix": "s",
             "msgText": "Bericht",
             "sendBtnText": "Versturen",
             "transmitModeLabel": "Zendmodus",
@@ -232,7 +252,8 @@ export class SvgLang {
             "alertServerShutdownPrefix": "Server shutdown:",
             "alertJoinWaitExpired": "You did not join Minecraft in time. Join the game, then try again.",
             "alertNotReconnecting": "Not reconnecting.",
-            "alertUnparseable": "Unparseable, check console for more information."
+            "alertUnparseable": "Unparseable, check console for more information.",
+            "joinBtnCancelWaitLabel": "Cancel wait"
         },
         "nl": {
             "audioFallbackDefaultReason": "Audio-apparaat-API's zijn niet beschikbaar.",
@@ -258,7 +279,8 @@ export class SvgLang {
             "alertServerShutdownPrefix": "Server uitgeschakeld:",
             "alertJoinWaitExpired": "Je bent niet op tijd Minecraft gejoined. Join de game en probeer opnieuw.",
             "alertNotReconnecting": "Er wordt niet opnieuw verbonden.",
-            "alertUnparseable": "Niet te lezen, bekijk de console voor meer info."
+            "alertUnparseable": "Niet te lezen, bekijk de console voor meer info.",
+            "joinBtnCancelWaitLabel": "Wachten annuleren"
         },
         "pl": {
             "audioFallbackDefaultReason": "API urządzeń audio są niedostępne.",
@@ -284,7 +306,8 @@ export class SvgLang {
             "alertServerShutdownPrefix": "Serwer wyłączony:",
             "alertJoinWaitExpired": "Nie dołączyłeś do Minecraft na czas. Wejdź do gry i spróbuj ponownie.",
             "alertNotReconnecting": "Brak ponownego łączenia.",
-            "alertUnparseable": "Nieczytelne, sprawdź konsolę."
+            "alertUnparseable": "Nieczytelne, sprawdź konsolę.",
+            "joinBtnCancelWaitLabel": "Anuluj oczekiwanie"
         },
         "it": {
             "audioFallbackDefaultReason": "Le API dei dispositivi audio non sono disponibili.",
@@ -310,7 +333,8 @@ export class SvgLang {
             "alertServerShutdownPrefix": "Server spento:",
             "alertJoinWaitExpired": "Non sei entrato in Minecraft in tempo. Entra nel gioco e riprova.",
             "alertNotReconnecting": "Riconnessione interrotta.",
-            "alertUnparseable": "Non leggibile, controlla la console."
+            "alertUnparseable": "Non leggibile, controlla la console.",
+            "joinBtnCancelWaitLabel": "Annulla attesa"
         },
         "es": {
             "audioFallbackDefaultReason": "Las APIs de dispositivos de audio no están disponibles.",
@@ -336,7 +360,8 @@ export class SvgLang {
             "alertServerShutdownPrefix": "Servidor apagado:",
             "alertJoinWaitExpired": "No entraste a Minecraft a tiempo. Entra al juego e inténtalo de nuevo.",
             "alertNotReconnecting": "No se volverá a conectar.",
-            "alertUnparseable": "No se puede leer; revisa la consola."
+            "alertUnparseable": "No se puede leer; revisa la consola.",
+            "joinBtnCancelWaitLabel": "Cancelar espera"
         }
     };
     static availableLanguages = Object.keys(SvgLang.#htmlTranslation);
@@ -350,7 +375,8 @@ export class SvgLang {
     static serverDefaultLanguage = null;
     static webBranding = {
         serverName: "Simple Voice Chat",
-        tagline: ""
+        tagline: "",
+        joinTimeoutSeconds: 60
     };
 
     static #jsElementMap = new Map();
@@ -374,6 +400,12 @@ export class SvgLang {
             }
             if (typeof data.tagline === "string") {
                 SvgLang.webBranding.tagline = data.tagline.trim();
+            }
+            if (Number.isFinite(data.joinTimeoutSeconds)) {
+                SvgLang.webBranding.joinTimeoutSeconds = Math.max(
+                    1,
+                    Math.floor(Number(data.joinTimeoutSeconds))
+                );
             }
         } catch (error) {
             Logger.debug("Web config fetch failed; using defaults.");

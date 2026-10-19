@@ -35,10 +35,13 @@ public final class WebConfigServlet extends HttpServlet {
             tagline = "";
         }
 
+        int joinTimeoutSeconds = Math.max(1, SvgCore.getConfig().VC_TIMEOUT.get());
+
         JSONObject json = new JSONObject();
         json.put("defaultLanguage", defaultLanguage);
         json.put("serverName", serverName.trim());
         json.put("tagline", tagline.trim());
+        json.put("joinTimeoutSeconds", joinTimeoutSeconds);
 
         byte[] body = json.toString().getBytes(StandardCharsets.UTF_8);
         resp.setStatus(HttpServletResponse.SC_OK);

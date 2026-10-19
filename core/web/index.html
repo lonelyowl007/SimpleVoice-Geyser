@@ -35,6 +35,16 @@
                     <p class="serverTaglineDisplay dev-hidden" id="serverTaglineDisplay"></p>
                     <h2 class="joinLabel"><span svg-lang="joinLabel">Join Simple Voice Chat</span></h2>
                 </div>
+<!--                Pending Minecraft join wait -->
+                <div class="pendingJoinPanel fullWidth" id="pendingJoinPanel" aria-live="polite">
+                    <div class="pendingJoinSpinner" aria-hidden="true"></div>
+                    <h2 class="pendingJoinTitle" svg-lang="pendingJoinTitle">Join Minecraft to continue</h2>
+                    <p class="pendingJoinHint mcTextStyle1" svg-lang="pendingJoinHint">Open Minecraft and join the server. Voice chat connects automatically when you are online.</p>
+                    <p class="pendingJoinCountdown">
+                        <span svg-lang="pendingJoinSecondsPrefix">Time left:</span>
+                        <strong id="pendingJoinSeconds">60</strong><span svg-lang="pendingJoinSecondsSuffix">s</span>
+                    </p>
+                </div>
 <!--                Join Form-->
                 <form class="joinForm flexContainer" data-svg="form">
                     <div class="joinField fullWidth hiddenWhenConnected">
