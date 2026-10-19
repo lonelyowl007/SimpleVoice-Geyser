@@ -18,6 +18,7 @@ public class SvgListener implements Listener {
         Player player = event.getPlayer();
 
         BukkitPlayer bukkitPlayer = new BukkitPlayer(player);
+        bukkitPlayer.startSpatialCache();
         SvgCore.getJoinMessageHandler().sendJoinMessage(bukkitPlayer);
 
         SvgCore.getPlayerManager().addPlayer(bukkitPlayer);
@@ -28,6 +29,9 @@ public class SvgListener implements Listener {
         UUID playerUuid = event.getPlayer().getUniqueId();
         SvgPlayer player = SvgCore.getPlayerManager().getPlayer(playerUuid);
 
+        if (player instanceof BukkitPlayer bukkitPlayer) {
+            bukkitPlayer.cancelSpatialCache();
+        }
         if (player != null) {
             SvgCore.getPlayerManager().removePlayer(player);
         }

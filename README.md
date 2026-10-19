@@ -29,11 +29,28 @@
 | `docs/install/compatibility.md` | Bukkit requirements clarified: Minecraft `1.20.1` through `26.3` |
 | `spigot/build.gradle` | `runServer` target + download plugins aligned to Paper `26.3` (SVC `2.6.24`, ViaVersion for 26.3) |
 
+### 3) Real Folia support (1.21.x – 26.3)
+
+**Goal:** Run correctly on Folia — not only `folia-supported: true`, but region-safe threading for Jetty auth/chat and spatial audio.
+
+| File | Change |
+|------|--------|
+| `spigot/.../BukkitPlayer.java` | Replaced `Bukkit.getScheduler()` with **EntityScheduler**; `hasPermission` / `isOnline` / messages hop onto the player region |
+| `spigot/.../SvgListener.java` | Starts/stops per-player spatial yaw cache on join/quit |
+| `core/.../SvgAudioListener.java` | Uses cached look yaw; **no** `Player#getLocation` from the audio thread |
+| `spigot/plugin.yml` | `folia-supported: true` |
+| `spigot/build.gradle` | Compiles against **Paper API** (Folia schedulers) |
+| `docs/install/compatibility.md` | Folia row + requirements |
+
+**Requires:** Simple Voice Chat **2.6.24+** (Folia-related fixes), matching Folia build for your MC version. Geyser is typically reverse-proxied / soft-depend.
+
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 
 **Base:** Latest upstream `dev` (includes later work such as Opus/WebCodecs mic encoding, spatial audio, UI updates, etc.).
 
-**Upstream PR:** https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/104
+**Upstream PRs:**
+- Voice + 26.3 docs: https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/104
+- Folia: (opened with this branch)
 
 ---
 
@@ -52,6 +69,9 @@
 - <a href="https://purpurmc.org/">
     <img src="https://purpurmc.org/docs/images/purpur-small.png" height="22"/>
     <img src="https://img.shields.io/badge/Purpur-1.20.1–26.3-7c3aed"/>
+  </a>
+- <a href="https://papermc.io/software/folia">
+    <img src="https://img.shields.io/badge/Folia-1.21.x–26.3-00a86b"/>
   </a>
 - <a href="https://fabricmc.net/">
     <img src="https://fabricmc.net/assets/logo.png" height="22"/>

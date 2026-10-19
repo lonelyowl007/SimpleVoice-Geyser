@@ -46,6 +46,28 @@ Simple Voice Geyser uses a web-based client that relies on WebRTC. Browser suppo
 
 ---
 
+## Folia
+
+Folia support is **real region-threading support**, not only the `folia-supported` flag:
+
+* Player chat / messages / permission checks from Jetty run on the player's **EntityScheduler**
+* Spatial audio look-yaw is **cached on the entity thread** (never `Player#getLocation` from the audio executor)
+* Plugin declares `folia-supported: true` in `plugin.yml`
+* Built against Paper API schedulers (compatible with Paper and Folia)
+
+| Version   | MC Version   | Voice Chat | Geyser           | Floodgate       | Status |
+|-----------|--------------|------------|------------------|-----------------|--------|
+| 0.1.4+ fork | **1.21.x–26.3** | 2.6.24+ | 2.10.1-SNAPSHOT+ (optional) | 2.2.5-SNAPSHOT+ (optional) | ✅ |
+
+### Requirements
+
+* Folia build matching your Minecraft version (**1.21.x through 26.3**)
+* Simple Voice Chat **2.6.24+** (includes Folia-related fixes)
+* Java **25+** for Minecraft 26.x Folia builds
+* Geyser is a soft-depend; many Folia setups run Geyser on a proxy/standalone process
+
+---
+
 ## Fabric
 
 | Version   | MC Version | Voice Chat | Geyser           | Floodgate       | LuckPerms             | Status |
