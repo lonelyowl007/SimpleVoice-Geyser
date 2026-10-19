@@ -50,7 +50,7 @@
 
 **Upstream PRs:**
 - Voice + 26.3 docs: https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/104
-- Folia: (opened with this branch)
+- Folia support: https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/105
 
 ---
 
