@@ -1,3 +1,30 @@
+# Simple Voice Geyser (fork)
+
+> **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
+> Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)
+
+## What this fork changes
+
+**Goal:** Fix robotic / distorted voice audio for Bedrock players using the web client over the internet (WAN).
+
+**Source:** Port of the core idea from upstream [PR #52](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/52) (`paper-the-best`). That PR could not be merged cleanly (conflicts, ~181 commits behind `dev`, author unresponsive). We applied only the voice-quality fix on top of the latest upstream `dev` branch.
+
+**What we changed (and nothing else for this fix):**
+
+| File | Change |
+|------|--------|
+| `core/web/js/audio/audio.js` | In `getUserMedia` mic constraints, set `noiseSuppression`, `echoCancellation`, and `autoGainControl` to `false` |
+
+**Why:** The browser’s built-in noise suppression, echo cancellation, and auto-gain often warp the mic signal when voice is sent over WAN, which sounds “robotic”. Disabling those constraints keeps a cleaner raw capture for remote listeners.
+
+**Not included from PR #52:** The experimental Discord-style VAD / input-sensitivity meter (UI bugs + outdated after the newer web/audio rewrite).
+
+**Base:** Latest upstream `dev` (includes later work such as Opus/WebCodecs mic encoding, spatial audio, UI updates, etc.).
+
+**Upstream PR:** We also open a clean PR back to TheodoreMeyer’s `dev` so others can pick this up without using the fork.
+
+---
+
 # Simple Voice Geyser
 [![GitHub release](https://img.shields.io/github/v/release/TheodoreMeyer/SimpleVoice-Geyser?include_prereleases)](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/releases)
 [![License](https://img.shields.io/github/license/TheodoreMeyer/SimpleVoice-Geyser)](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/blob/master/LICENSE)
