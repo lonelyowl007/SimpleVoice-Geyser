@@ -79,6 +79,20 @@ Adds **Input Sensitivity** and **Mic Volume** sliders in the connected web UI (V
 
 ---
 
+### Upgrade to 0.1.9-fork (web UI polish / NL / branding)
+
+- Polished Blocky join layout (no clipped mic/speaker labels)
+- **Dutch** language option (+ fuller JS strings for pl/it)
+- Config branding: `client.web.default-language`, `client.web.server-name`, `client.web.tagline` (served at `/svg-web-config.json`)
+- Error banners auto-dismiss after 60 seconds
+
+1. Replace the plugin JAR with `0.1.9-fork`
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` if you use overrides
+3. Start server (new config keys merge) and hard-refresh (`Ctrl+F5`)
+4. Set `client.web.*` as desired (e.g. `default-language: nl`)
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

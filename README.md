@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.8-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + web UI + mic UI + join grace + Svg-App allowlist)  
+> **Fork version:** `0.1.9-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -93,11 +93,26 @@ Password / rate-limit / bedrock checks still run first. Voice is not registered 
 
 ### 7) Android Svg-App version allowlist
 
-**Problem:** Upstream Svg-App APKs send `clientType.serverVersion` like `0.1.3` / `0.1.4`. This fork’s plugin version (`0.1.8-fork`) is an exact string match, so the APK was rejected with `app_protocol_unsupported`.
+**Problem:** Upstream Svg-App APKs send `clientType.serverVersion` like `0.1.3` / `0.1.4`. This fork’s plugin version string is an exact match gate, so APKs were rejected with `app_protocol_unsupported`.
 
 **Fix:** Config `client.accepted-app-server-versions` (default `0.1.3`, `0.1.4`) plus the current plugin version. Web clients still require a matching `serverBuild`.
 
 **Note:** There is **no Android/Flutter source in this repo** — the APK cannot be rebuilt here. Prefer the **mobile browser** for this fork; older Svg-App builds may work via the allowlist when legacy audio fallback is enabled.
+
+### 8) Web UI polish, Dutch, branding config, alert auto-dismiss
+
+**Goal:** Make the Blocky join page clearer (labels were clipped), add **Dutch**, let owners brand the page from `config.yml`, and auto-hide error banners.
+
+**Why not merge upstream UI PRs?** PR [#52](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/52) only inspired the mic sensitivity meter (already in §2). Open PR [#87](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/87) is a huge modernization (~78k LOC) that conflicts with this fork’s Folia/mic/join-grace work — we polished Blocky instead.
+
+| Feature | Details |
+|---------|---------|
+| Layout polish | Stacked join fields, padding, focus rings; server name + tagline hero |
+| Languages | `en`, `nl`, `pl`, `it`, `es` (NL flag + full JS strings) |
+| Config | `client.web.default-language`, `client.web.server-name`, `client.web.tagline` via `GET /svg-web-config.json` |
+| Alerts | Error/fatal banner auto-hides after **60 seconds** (X still works) |
+
+First visit uses `default-language` when `localStorage.preferredLanguage` is unset; the language picker still saves a preference.
 
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 

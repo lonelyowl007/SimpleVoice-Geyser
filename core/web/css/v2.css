@@ -249,7 +249,9 @@ main {
     flex: 1 1 auto;
 }
 .mainContainer {
-    width: min(700px, calc(95vw - 10px));
+    width: min(720px, calc(95vw - 16px));
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 .micActivityIndicator.active {
@@ -338,7 +340,39 @@ main {
 
 .joinSec {
     text-align: center;
-    padding: 10px;
+    padding: 18px 20px 14px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+}
+.joinHero {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+.serverNameDisplay {
+    margin: 0;
+    font-size: 1.35em;
+    line-height: 1.3;
+    color: var(--color2);
+    word-break: break-word;
+    max-width: 100%;
+}
+.serverTaglineDisplay {
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.35;
+    color: var(--color3);
+    opacity: 0.95;
+    word-break: break-word;
+    max-width: 100%;
+}
+.joinLabel {
+    margin: 4px 0 0 0;
+    font-size: 1em;
 }
 .joinForm {
     color: var(--color2);
@@ -346,22 +380,40 @@ main {
     width: 100%;
     height: 100%;
     flex: 1 1 auto;
-    margin: 10px;
-    gap: 10px;
+    margin: 8px 0 0 0;
+    gap: 14px;
+    box-sizing: border-box;
+}
+.joinField {
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+    gap: 6px;
+    box-sizing: border-box;
 }
 .joinFormLabel {
     text-align: left;
-
-    padding: 5px;
-
-    display: flex;
-    align-items: center;
+    padding: 0 2px;
+    display: block;
+    width: 100%;
+    white-space: normal;
+    overflow: visible;
+    line-height: 1.35;
+    box-sizing: border-box;
 }
 .usernameInput, .passwordInput {
-    width: 230px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 40px;
 }
 .micSelect, .speakerSelect {
-    width: 270px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.mcTextboxStyle:focus,
+.mcButtonStyle:focus-within {
+    outline: 2px solid var(--select-color2);
+    outline-offset: 1px;
 }
 
 .connectedSec {
@@ -426,11 +478,14 @@ body.connected .joinSec {
         flex-flow: column;
     }
 
+    .joinSec {
+        padding: 14px 12px;
+    }
     .usernameInput, .passwordInput {
-        width: calc(100% - 22px);
+        width: 100%;
     }
     .micSelect, .speakerSelect, .pttClearBtnContainer {
-        width: calc(100% - 4px);
+        width: 100%;
     }
 
     .micContainer {

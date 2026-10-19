@@ -2,21 +2,41 @@ import { SvgBuilder } from "./utils/builder.js";
 import { SvgLang } from "./utils/lang.js";
 import { SvgWebSocket } from "./websocket.js";
 
+await SvgLang.loadWebConfig();
 SvgLang.detectLanguage();
+SvgLang.applyBranding();
 
 const client = SvgBuilder.fromDocument().build();
 
 await client.start();
 
-// TODO Make a better alert overlay; this was just implemented haphazardly
+const ALERT_AUTO_DISMISS_MS = 60_000;
 const alertOverlay = document.getElementById("alertOverlay");
 const alertMessage = document.getElementById("alertMessage");
-document.getElementById("closeAlertOverlayBtn").addEventListener("click", (_) => {
+let alertDismissTimer = null;
+
+function hideAlertOverlay() {
+    if (alertDismissTimer !== null) {
+        clearTimeout(alertDismissTimer);
+        alertDismissTimer = null;
+    }
     alertOverlay.classList.add("dev-hidden");
+}
+
+document.getElementById("closeAlertOverlayBtn").addEventListener("click", (_) => {
+    hideAlertOverlay();
 });
+
 function showAlertOverlay(message) {
     alertMessage.innerText = message;
     alertOverlay.classList.remove("dev-hidden");
+    if (alertDismissTimer !== null) {
+        clearTimeout(alertDismissTimer);
+    }
+    alertDismissTimer = setTimeout(() => {
+        alertOverlay.classList.add("dev-hidden");
+        alertDismissTimer = null;
+    }, ALERT_AUTO_DISMISS_MS);
 }
 
 // Auto send when enter is pressed
@@ -29,42 +49,43 @@ document.getElementById("chatInput").addEventListener("keydown", (event) => {
 });
 
 // Detect connection state to show appropriate section
-// TODO Have properly phrased and nice-to-the-tongue alert messages
 client.webSocketController.addEventListener("statusChange", (status) => {
     if (status.connected) {
         document.body.classList.add("connected");
     } else {
         document.body.classList.remove("connected");
         if (status.code === SvgWebSocket.DisconnectPolicy.OUTDATED || status.reason === "update_required") {
-            showAlertOverlay("Outdated client. Reloading...");
+            showAlertOverlay(SvgLang.string("alertOutdatedClient"));
             return;
         }
 
         if (SvgWebSocket.DisconnectPolicy.FATAL.has(status.code) || status.reason === "fatal") {
-            showAlertOverlay("Fatal disconnect. Reconnect disabled.");
+            showAlertOverlay(SvgLang.string("alertFatalDisconnect"));
             return;
         }
 
         if (status.code === SvgWebSocket.DisconnectPolicy.SERVER_SHUTDOWN) {
-            showAlertOverlay("Server shutdown: " + status.reason);
+            showAlertOverlay(`${SvgLang.string("alertServerShutdownPrefix")} ${status.reason}`);
             return;
         }
 
         if (status.code === SvgWebSocket.DisconnectPolicy.TIMEOUT
             || status.reason === "join_wait_expired") {
-            showAlertOverlay("You did not join Minecraft in time. Join the game, then try again.");
+            showAlertOverlay(SvgLang.string("alertJoinWaitExpired"));
             return;
         }
 
         if (SvgWebSocket.DisconnectPolicy.NO_RECONNECT.has(status.code)) {
-            showAlertOverlay("Not reconnecting.")
+            showAlertOverlay(SvgLang.string("alertNotReconnecting"));
         }
     }
 }, true);
 
 client.webSocketController.addEventListener("message", (data) => {
     if (data.type === "json" && (data.packetType === "error" || data.fatalAuthError === true)) {
-        showAlertOverlay(`${data.packetType || "Info"}: ${data.msg || "Unparseable, check console for more information."}`);
+        const prefix = data.packetType || "Info";
+        const detail = data.msg || SvgLang.string("alertUnparseable");
+        showAlertOverlay(`${prefix}: ${detail}`);
     }
 }, true);
 
@@ -92,7 +113,7 @@ langBtn.addEventListener("click", (_) => {
             langOptionsContainer.insertAdjacentHTML("beforeend", html);
 
             document.getElementById(`${lang}LangBtn`).addEventListener("click", (_) => {
-                SvgLang.changeLanguage(lang);
+                SvgLang.changeLanguage(lang, true);
 
                 langBtnImg.src = `images/flags-1x1/${lang}.svg`;
                 langOptionsContainer.innerHTML = "";

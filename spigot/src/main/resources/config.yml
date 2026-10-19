@@ -25,6 +25,19 @@ client:
     - "0.1.3"
     - "0.1.4"
 
+  web:
+    # default: en
+    # Default UI language when the visitor has no saved preference (en, nl, pl, it, es).
+    default-language: en
+
+    # default: Simple Voice Chat
+    # Display name on the join page / browser title.
+    server-name: "Simple Voice Chat"
+
+    # default: empty
+    # Optional short subtitle under the server name.
+    tagline: ""
+
   # default: true
   # Allows players using web-chat to chat in-game
   web-chat-enabled: true

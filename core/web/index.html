@@ -30,45 +30,35 @@
         <div class="mainContainer mcContainerStyle">
 <!--            Join Section-->
             <section class="joinSec flexContainer">
-<!--                Join Label-->
-                <h2 class="joinLabel hiddenWhenConnected"><span svg-lang="joinLabel">Join Simple Voice Chat</span></h2>
-                <div class="flexSpacer hiddenWhenConnected"></div>
+                <div class="joinHero hiddenWhenConnected">
+                    <h1 class="serverNameDisplay" id="serverNameDisplay">Simple Voice Chat</h1>
+                    <p class="serverTaglineDisplay dev-hidden" id="serverTaglineDisplay"></p>
+                    <h2 class="joinLabel"><span svg-lang="joinLabel">Join Simple Voice Chat</span></h2>
+                </div>
 <!--                Join Form-->
                 <form class="joinForm flexContainer" data-svg="form">
-                    <div class="usernameContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
-<!--                        Username Label-->
-                        <label class="joinFormLabel usernameLabel mcTextStyle1" for="username" svg-lang="usernameInput">Username</label>
-                        <div class="flexSpacer"></div>
-<!--                        Username Input-->
+                    <div class="joinField fullWidth hiddenWhenConnected">
+                        <label class="joinFormLabel mcTextStyle1" for="username" svg-lang="usernameInput">Username</label>
                         <input class="usernameInput mcTextboxStyle" data-svg="form.username" type="text" id="username" name="username" required autocomplete="username">
                     </div>
 
-                    <div class="passwordContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
-<!--                        Password Label-->
-                        <label class="joinFormLabel passwordLabel mcTextStyle1" for="password" svg-lang="passwordInput">Password</label>
-                        <div class="flexSpacer"></div>
-<!--                        Password Input-->
+                    <div class="joinField fullWidth hiddenWhenConnected">
+                        <label class="joinFormLabel mcTextStyle1" for="password" svg-lang="passwordInput">Password</label>
                         <input class="passwordInput mcTextboxStyle" data-svg="form.password" type="password" id="password" name="password" required autocomplete="svg-password">
                     </div>
 
-                    <div class="micContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
-<!--                        Microphone Label-->
-                        <label class="joinFormLabel micLabel mcTextStyle1" for="mic" svg-lang="micSelect">Select Microphone</label>
-                        <div class="flexSpacer"></div>
-<!--                        Microphone Select-->
-                        <div class="micSelect mcButtonStyle">
+                    <div class="joinField fullWidth hiddenWhenConnected">
+                        <label class="joinFormLabel mcTextStyle1" for="mic" svg-lang="micSelect">Select Microphone</label>
+                        <div class="micSelect mcButtonStyle fullWidth">
                             <select class="mcButtonStyleInner mcTextStyle2" id="mic" name="mic" data-svg="audio.mic">
                                 <option disabled selected svg-lang="micLoad">Loading Microphones...</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="speakerContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
-<!--                        Speaker Label-->
-                        <label class="joinFormLabel speakerLabel mcTextStyle1" for="speaker" svg-lang="speakSelect">Select Speaker</label>
-                        <div class="flexSpacer"></div>
-<!--                        Speaker Select-->
-                        <div class="speakerSelect mcButtonStyle">
+                    <div class="joinField fullWidth hiddenWhenConnected">
+                        <label class="joinFormLabel mcTextStyle1" for="speaker" svg-lang="speakSelect">Select Speaker</label>
+                        <div class="speakerSelect mcButtonStyle fullWidth">
                             <select class="mcButtonStyleInner mcTextStyle2" id="speaker" name="speaker" data-svg="audio.speaker">
                                 <option disabled selected svg-lang="speakLoad">Loading Speakers...</option>
                             </select>
@@ -76,12 +66,10 @@
                     </div>
 
                     <div class="joinContainer flexRowContainer fullWidth">
-<!--                        Join Button-->
                         <div class="joinBtnContainer mcButtonStyle flexRowContainer fullWidth">
                             <button class="mcButtonStyleInner mcTextStyle2" type="submit" data-svg="form.join" svg-lang="joinBtnText">Join</button>
                         </div>
                         <div class="flexSpacer"></div>
-<!--                        Status Label-->
                         <div class="statusLabel" data-svg="form.status" svg-lang="joinWait">Waiting to join...</div>
                     </div>
                 </form>

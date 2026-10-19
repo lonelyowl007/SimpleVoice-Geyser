@@ -49,6 +49,18 @@ public final class SvgConfig {
     public final ConfigKey<List<String>> ACCEPTED_APP_SERVER_VERSIONS =
             new ConfigKey<>(this, "client.accepted-app-server-versions", List.of("0.1.3", "0.1.4"));
 
+    /** ISO 639-1 code used when the browser has no saved preferredLanguage (en, nl, pl, it, es). */
+    public final ConfigKey<String> WEB_DEFAULT_LANGUAGE =
+            new ConfigKey<>(this, "client.web.default-language", "en");
+
+    /** Display name shown on the join page hero / document title. */
+    public final ConfigKey<String> WEB_SERVER_NAME =
+            new ConfigKey<>(this, "client.web.server-name", "Simple Voice Chat");
+
+    /** Optional short subtitle under the server name (empty = hidden). */
+    public final ConfigKey<String> WEB_TAGLINE =
+            new ConfigKey<>(this, "client.web.tagline", "");
+
     public final ConfigKey<Boolean> WEB_CHAT_ENABLED =
             new ConfigKey<>(this, "client.web-chat-enabled", true);
 
@@ -118,6 +130,9 @@ public final class SvgConfig {
             CLIENT_ALLOWED_TYPES_BLACKLIST,
             CLIENT_ALLOWED_TYPES_LIST,
             ACCEPTED_APP_SERVER_VERSIONS,
+            WEB_DEFAULT_LANGUAGE,
+            WEB_SERVER_NAME,
+            WEB_TAGLINE,
             JOIN_MESSAGE_ENABLED,
             JOIN_MESSAGE_TEXT,
             DEFAULT_GROUP_ENABLED,
