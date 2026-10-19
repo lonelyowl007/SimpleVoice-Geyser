@@ -76,9 +76,10 @@ server:
     # Settings for the default group for SVG web players.
     default:
 
-      # default: true
-      # Decides whether the SVG group is created for players who use the website.
-      enabled: true
+      # default: false
+      # When true, all web/SVG clients join one shared OPEN group named "Svg" (party line).
+      # Leave false for normal Simple Voice Chat proximity (recommended).
+      enabled: false
 
       # default: 1a2b
       # Controls the default group's password.

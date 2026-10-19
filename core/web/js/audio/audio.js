@@ -322,7 +322,10 @@ export class SvgAudio {
         }
 
         if (buffer instanceof Float32Array) {
-            this.audioWorkletNode.port.postMessage({ type: "pcm", buffer: { samples: buffer, channels: 1 } });
+            this.audioWorkletNode.port.postMessage({
+                type: "pcm",
+                buffer: { samples: buffer, channels: 1, senderId: "legacy" }
+            });
             return;
         }
 
@@ -352,8 +355,11 @@ export class SvgAudio {
 
         const channels = Number.isFinite(input.channels) ? input.channels : 1;
         const safeChannels = channels === 2 ? 2 : 1;
+        const senderId = typeof input.senderId === "string" && input.senderId
+            ? input.senderId
+            : "legacy";
 
-        return { samples, channels: safeChannels };
+        return { samples, channels: safeChannels, senderId };
     }
 
     async getAudioDevices() {

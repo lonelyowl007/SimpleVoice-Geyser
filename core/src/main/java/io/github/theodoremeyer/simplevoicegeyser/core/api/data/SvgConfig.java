@@ -112,7 +112,7 @@ public final class SvgConfig {
 
     /** Whether the default voice group exists and can be joined. */
     public final ConfigKey<Boolean> DEFAULT_GROUP_ENABLED =
-            new ConfigKey <>(this, "server.group.default.enabled", true);
+            new ConfigKey <>(this, "server.group.default.enabled", false);
 
     /** Password required to join the default voice group. */
     public final ConfigKey<String> DEFAULT_GROUP_PASSWORD =
