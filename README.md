@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.9-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding)  
+> **Fork version:** `0.1.10-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes

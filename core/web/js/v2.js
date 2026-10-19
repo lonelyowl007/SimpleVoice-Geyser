@@ -15,6 +15,35 @@ const alertOverlay = document.getElementById("alertOverlay");
 const alertMessage = document.getElementById("alertMessage");
 let alertDismissTimer = null;
 
+const pendingJoinSecondsEl = document.getElementById("pendingJoinSeconds");
+let pendingJoinCountdownTimer = null;
+
+function stopPendingJoinCountdown() {
+    if (pendingJoinCountdownTimer !== null) {
+        clearInterval(pendingJoinCountdownTimer);
+        pendingJoinCountdownTimer = null;
+    }
+    document.body.classList.remove("pending-minecraft-join");
+}
+
+function startPendingJoinCountdown() {
+    stopPendingJoinCountdown();
+    document.body.classList.add("pending-minecraft-join");
+    let remaining = SvgLang.webBranding.joinTimeoutSeconds || 60;
+    if (pendingJoinSecondsEl) {
+        pendingJoinSecondsEl.textContent = String(remaining);
+    }
+    pendingJoinCountdownTimer = setInterval(() => {
+        remaining -= 1;
+        if (pendingJoinSecondsEl) {
+            pendingJoinSecondsEl.textContent = String(Math.max(0, remaining));
+        }
+        if (remaining <= 0) {
+            stopPendingJoinCountdown();
+        }
+    }, 1000);
+}
+
 function hideAlertOverlay() {
     if (alertDismissTimer !== null) {
         clearTimeout(alertDismissTimer);
@@ -50,34 +79,43 @@ document.getElementById("chatInput").addEventListener("keydown", (event) => {
 
 // Detect connection state to show appropriate section
 client.webSocketController.addEventListener("statusChange", (status) => {
+    if (status.waitingForMinecraft) {
+        startPendingJoinCountdown();
+        return;
+    }
+
     if (status.connected) {
+        stopPendingJoinCountdown();
         document.body.classList.add("connected");
-    } else {
-        document.body.classList.remove("connected");
-        if (status.code === SvgWebSocket.DisconnectPolicy.OUTDATED || status.reason === "update_required") {
-            showAlertOverlay(SvgLang.string("alertOutdatedClient"));
-            return;
-        }
+        return;
+    }
 
-        if (SvgWebSocket.DisconnectPolicy.FATAL.has(status.code) || status.reason === "fatal") {
-            showAlertOverlay(SvgLang.string("alertFatalDisconnect"));
-            return;
-        }
+    document.body.classList.remove("connected");
+    stopPendingJoinCountdown();
 
-        if (status.code === SvgWebSocket.DisconnectPolicy.SERVER_SHUTDOWN) {
-            showAlertOverlay(`${SvgLang.string("alertServerShutdownPrefix")} ${status.reason}`);
-            return;
-        }
+    if (status.code === SvgWebSocket.DisconnectPolicy.OUTDATED || status.reason === "update_required") {
+        showAlertOverlay(SvgLang.string("alertOutdatedClient"));
+        return;
+    }
 
-        if (status.code === SvgWebSocket.DisconnectPolicy.TIMEOUT
-            || status.reason === "join_wait_expired") {
-            showAlertOverlay(SvgLang.string("alertJoinWaitExpired"));
-            return;
-        }
+    if (SvgWebSocket.DisconnectPolicy.FATAL.has(status.code) || status.reason === "fatal") {
+        showAlertOverlay(SvgLang.string("alertFatalDisconnect"));
+        return;
+    }
 
-        if (SvgWebSocket.DisconnectPolicy.NO_RECONNECT.has(status.code)) {
-            showAlertOverlay(SvgLang.string("alertNotReconnecting"));
-        }
+    if (status.code === SvgWebSocket.DisconnectPolicy.SERVER_SHUTDOWN) {
+        showAlertOverlay(`${SvgLang.string("alertServerShutdownPrefix")} ${status.reason}`);
+        return;
+    }
+
+    if (status.code === SvgWebSocket.DisconnectPolicy.TIMEOUT
+        || status.reason === "join_wait_expired") {
+        showAlertOverlay(SvgLang.string("alertJoinWaitExpired"));
+        return;
+    }
+
+    if (SvgWebSocket.DisconnectPolicy.NO_RECONNECT.has(status.code)) {
+        showAlertOverlay(SvgLang.string("alertNotReconnecting"));
     }
 }, true);
 

@@ -110,7 +110,7 @@ public final class JoinPacket implements Packet {
         socket.setPendingJoinUuid(uuid);
         socket.sendRaw(
                 ConnectionStates.MessageType.STATUS,
-                "Waiting for you to join Minecraft...",
+                "Waiting for you to join Minecraft... (" + timeoutSeconds + "s)",
                 false
         );
 

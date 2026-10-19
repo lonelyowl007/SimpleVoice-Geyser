@@ -276,10 +276,12 @@ export class SvgUI {
         formEl.addEventListener("submit", async e => {
                 e.preventDefault();
 
+                // During pending wait OR after full join: Join button cancels / leaves.
                 if (this.webSocketController.isConnected()) {
                     this.webSocketController.disconnect();
                     this.audioController.stopMic();
                     this.pttController.reset();
+                    document.body.classList.remove("pending-minecraft-join");
                     SvgLang.setElement(joinButton, "joinBtnUnconnectedLabel");
                     return;
                 }
@@ -289,13 +291,17 @@ export class SvgUI {
 
                     async (status) => {
                         if (status.waitingForMinecraft) {
+                            document.body.classList.add("pending-minecraft-join");
+                            document.body.classList.remove("connected");
                             SvgLang.setElement(statusEl, "joinWaitMinecraft");
                             statusEl.classList.remove("connected");
                             statusEl.classList.add("disconnected");
+                            SvgLang.setElement(joinButton, "joinBtnCancelWaitLabel");
                             return;
                         }
 
                         if (status.connected) {
+                            document.body.classList.remove("pending-minecraft-join");
 
                             SvgLang.setElement(statusEl,
                                 () => `${SvgLang.string("statusConnectedAsPrefix")} ${status.username}`
@@ -325,6 +331,7 @@ export class SvgUI {
                                 );
                             }
                         } else {
+                            document.body.classList.remove("pending-minecraft-join");
                             SvgLang.setElement(statusEl, "statusDisconnectedLabel");
                             statusEl.classList.remove("connected");
                             statusEl.classList.add("disconnected");
