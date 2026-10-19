@@ -1,7 +1,8 @@
 # Simple Voice Geyser (fork)
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
-> Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)
+> Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
+> **Fork version:** `0.1.5-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia)
 
 ## What this fork changes
 
