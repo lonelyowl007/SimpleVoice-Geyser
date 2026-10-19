@@ -67,6 +67,18 @@ Adds **Input Sensitivity** and **Mic Volume** sliders in the connected web UI (V
 
 ---
 
+### Upgrade to 0.1.8-fork (join grace + Svg-App allowlist)
+
+- **Join grace:** after a valid web password, SVG waits up to `client.vctimeout` (default 60s) for you to join Minecraft — useful when Bedrock kicks you for app-switching.
+- **Svg-App:** older Android APKs targeting `0.1.3` / `0.1.4` are accepted via `client.accepted-app-server-versions` (no APK rebuild in this repo).
+
+1. Replace the plugin JAR with `0.1.8-fork`
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` if you use overrides; let new defaults merge into `config.yml`
+3. Hard-refresh the browser (`Ctrl+F5`)
+4. Optional: tune `client.vctimeout` and `client.accepted-app-server-versions`
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

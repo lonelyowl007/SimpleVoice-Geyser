@@ -102,6 +102,22 @@ class ClientCompatibilityValidatorTest {
     }
 
     @Test
+    void acceptsSvgAppWhenServerVersionIsOnAllowlist() {
+        ClientCompatibilityResult result = ClientCompatibilityValidator.validate(
+                joinWithClientType(new JSONObject()
+                        .put("type", "Svg-App")
+                        .put("serverVersion", "0.1.3")),
+                SERVER_VERSION,
+                BUILD_ID,
+                ALLOW_ALL,
+                List.of("0.1.3", "0.1.4")
+        );
+
+        assertTrue(result.accepted());
+        assertEquals(ClientIdentity.svgApp("0.1.3", ""), result.identity());
+    }
+
+    @Test
     void rejectsNonObjectClientTypeAsInvalidClientInfo() {
         assertInvalidClientInfo(validate(new JSONObject()
                 .put("type", "join")

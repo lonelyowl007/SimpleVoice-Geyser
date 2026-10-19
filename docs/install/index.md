@@ -66,10 +66,10 @@ The plugin is configured via:
 ```yaml
 client:
 
-   # default: 30
-   # Timeout in seconds
-   # WARNING: Developer Has disabled this for right now.
-   vctimeout: 30
+   # default: 60
+   # Seconds to wait after a valid web password for the player to join Minecraft
+   # (and Simple Voice Chat) before rejecting the pending join.
+   vctimeout: 60
 
    # default: 2
    # idle websocket timeout in minutes
@@ -178,7 +178,7 @@ config-version: 0.1.3
 
 ### Important Notes
 
-* `vctimeout` is currently not enforced and may be removed or re-enabled later
+* `vctimeout` controls how long a pending web join waits for the player to appear in Minecraft (default 60 seconds)
 * `useEmoteForSVG` may conflict with Geyser’s off-hand emote setting
 * `bind-address` controls network exposure:
 

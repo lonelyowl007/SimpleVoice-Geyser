@@ -288,6 +288,13 @@ export class SvgUI {
                     passwordInput.value,
 
                     async (status) => {
+                        if (status.waitingForMinecraft) {
+                            SvgLang.setElement(statusEl, "joinWaitMinecraft");
+                            statusEl.classList.remove("connected");
+                            statusEl.classList.add("disconnected");
+                            return;
+                        }
+
                         if (status.connected) {
 
                             SvgLang.setElement(statusEl,

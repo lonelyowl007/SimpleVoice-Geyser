@@ -25,7 +25,7 @@ public final class SvgConfig {
                     "For more information, see the wiki: https://theodoremeyer.github.io/projects/simplevoicegeyser/");
 
     public final ConfigKey<Integer> VC_TIMEOUT =
-            new ConfigKey <>(this, "client.vctimeout", 30);
+            new ConfigKey <>(this, "client.vctimeout", 60);
 
     public final ConfigKey<Integer> IDLE_TIMEOUT =
             new ConfigKey <>(this, "client.idletimeout", 2);
@@ -41,6 +41,13 @@ public final class SvgConfig {
 
     public final ConfigKey<List<String>> CLIENT_ALLOWED_TYPES_LIST =
             new ConfigKey<>(this, "client.allowedTypes.list", List.of());
+
+    /**
+     * Extra Svg-App {@code clientType.serverVersion} values accepted besides {@link SvgCore#VERSION}.
+     * Lets older upstream APKs join this fork without rebuilding the Flutter app.
+     */
+    public final ConfigKey<List<String>> ACCEPTED_APP_SERVER_VERSIONS =
+            new ConfigKey<>(this, "client.accepted-app-server-versions", List.of("0.1.3", "0.1.4"));
 
     public final ConfigKey<Boolean> WEB_CHAT_ENABLED =
             new ConfigKey<>(this, "client.web-chat-enabled", true);
@@ -110,6 +117,7 @@ public final class SvgConfig {
             WEB_CHAT_ENABLED,
             CLIENT_ALLOWED_TYPES_BLACKLIST,
             CLIENT_ALLOWED_TYPES_LIST,
+            ACCEPTED_APP_SERVER_VERSIONS,
             JOIN_MESSAGE_ENABLED,
             JOIN_MESSAGE_TEXT,
             DEFAULT_GROUP_ENABLED,

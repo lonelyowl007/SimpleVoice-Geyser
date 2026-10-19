@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.7-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + web UI asset fix + mic sensitivity/volume)  
+> **Fork version:** `0.1.8-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + web UI + mic UI + join grace + Svg-App allowlist)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -78,6 +78,26 @@ Settings persist in `localStorage`. Defaults match the previous hardcoded thresh
 | `core/web/index.html` | English fallback text inside `svg-lang` elements |
 
 **After upgrading:** stop the server, delete `plugins/<SimpleVoice-Geyser>/web/`, start again, then hard-refresh the browser (Ctrl+F5). Enable Websockets on the NPM proxy host.
+
+### 6) Join grace — web login before Minecraft join
+
+**Goal:** Bedrock players often get kicked when switching apps. They could not open the SVG web UI first, because auth required an online Minecraft session immediately.
+
+**Fix:** After a valid password, the server holds the WebSocket and waits up to `client.vctimeout` seconds (default **60**) for the player to appear online + Simple Voice Chat ready. UI shows *Waiting for you to join Minecraft…*.
+
+| Config | Meaning |
+|--------|---------|
+| `client.vctimeout` | Max seconds to wait (default `60`) |
+
+Password / rate-limit / bedrock checks still run first. Voice is not registered until the wait succeeds.
+
+### 7) Android Svg-App version allowlist
+
+**Problem:** Upstream Svg-App APKs send `clientType.serverVersion` like `0.1.3` / `0.1.4`. This fork’s plugin version (`0.1.8-fork`) is an exact string match, so the APK was rejected with `app_protocol_unsupported`.
+
+**Fix:** Config `client.accepted-app-server-versions` (default `0.1.3`, `0.1.4`) plus the current plugin version. Web clients still require a matching `serverBuild`.
+
+**Note:** There is **no Android/Flutter source in this repo** — the APK cannot be rebuilt here. Prefer the **mobile browser** for this fork; older Svg-App builds may work via the allowlist when legacy audio fallback is enabled.
 
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 

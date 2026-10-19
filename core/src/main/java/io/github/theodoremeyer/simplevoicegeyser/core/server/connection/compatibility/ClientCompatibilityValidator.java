@@ -3,6 +3,11 @@ package io.github.theodoremeyer.simplevoicegeyser.core.server.connection.compati
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.ConnectionStates;
 import org.json.JSONObject;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Class in charge of validating the compatibility of a client based on its join packet and expected server version/build.
  * It checks for the presence and validity of clientType, type, serverVersion, and build fields, and ensures that the client is compatible with the server's expected version and build.
@@ -39,6 +44,26 @@ public final class ClientCompatibilityValidator {
             String expectedServerVersion,
             String expectedBrowserBuild,
             ClientTypePolicy policy
+    ) {
+        return validate(join, expectedServerVersion, expectedBrowserBuild, policy, Collections.emptyList());
+    }
+
+    /**
+     * Validate client compatibility, allowing extra Svg-App serverVersion values.
+     *
+     * @param join join packet
+     * @param expectedServerVersion expected plugin version (always accepted for Svg-App)
+     * @param expectedBrowserBuild expected web build id
+     * @param policy type policy
+     * @param acceptedAppServerVersions additional Svg-App serverVersion strings to accept
+     * @return result
+     */
+    public static ClientCompatibilityResult validate(
+            JSONObject join,
+            String expectedServerVersion,
+            String expectedBrowserBuild,
+            ClientTypePolicy policy,
+            Collection<String> acceptedAppServerVersions
     ) {
         if (!join.has("clientType")) {
             if (join.has("client")) {
@@ -77,7 +102,7 @@ public final class ClientCompatibilityValidator {
 
         return switch (type) {
             case WEB_TYPE -> validateBrowser(join, expectedServerVersion, expectedBrowserBuild, policy, clientType);
-            case SVG_APP_TYPE -> validateSvgApp(clientType, expectedServerVersion);
+            case SVG_APP_TYPE -> validateSvgApp(clientType, expectedServerVersion, acceptedAppServerVersions);
             default -> throw new IllegalStateException("Unexpected client type: " + type);
         };
     }
@@ -129,13 +154,30 @@ public final class ClientCompatibilityValidator {
         return ClientCompatibilityResult.accepted(ClientIdentity.web(serverVersion, clientBuild));
     }
 
-    private static ClientCompatibilityResult validateSvgApp(JSONObject clientType, String expectedServerVersion) {
+    private static ClientCompatibilityResult validateSvgApp(
+            JSONObject clientType,
+            String expectedServerVersion,
+            Collection<String> acceptedAppServerVersions
+    ) {
         Object rawServerVersion = clientType.opt("serverVersion");
         if (!(rawServerVersion instanceof String serverVersion) || serverVersion.trim().isEmpty()) {
             return INVALID_CLIENT_INFO;
         }
 
-        if (!expectedServerVersion.equals(serverVersion.trim())) {
+        String trimmed = serverVersion.trim();
+        Set<String> accepted = new HashSet<>();
+        if (expectedServerVersion != null && !expectedServerVersion.isBlank()) {
+            accepted.add(expectedServerVersion.trim());
+        }
+        if (acceptedAppServerVersions != null) {
+            for (String version : acceptedAppServerVersions) {
+                if (version != null && !version.isBlank()) {
+                    accepted.add(version.trim());
+                }
+            }
+        }
+
+        if (!accepted.contains(trimmed)) {
             return ClientCompatibilityResult.rejected(
                     "This app version is not compatible with this server. Update the app.",
                     ConnectionStates.DisconnectCodes.OUTDATED_CLIENT.getCode(),
@@ -144,7 +186,7 @@ public final class ClientCompatibilityValidator {
         }
 
         return ClientCompatibilityResult.accepted(
-                ClientIdentity.svgApp(serverVersion.trim(), clientType.optString("serverBuild", ""))
+                ClientIdentity.svgApp(trimmed, clientType.optString("serverBuild", ""))
         );
     }
 }

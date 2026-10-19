@@ -69,6 +69,7 @@ public final class PlayerManager {
     public void addPlayer(SvgPlayer player) {
         players.put(player.getUniqueId(), player);
         playersByName.put(player.getName(), player);
+        SvgCore.getPendingJoinWaiter().notifyPlayerJoined(player.getUniqueId());
     }
 
     /**

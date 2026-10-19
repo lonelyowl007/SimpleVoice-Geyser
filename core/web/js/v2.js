@@ -50,8 +50,9 @@ client.webSocketController.addEventListener("statusChange", (status) => {
             return;
         }
 
-        if (status.code === SvgWebSocket.DisconnectPolicy.TIMEOUT) {
-            showAlertOverlay("Timeout disconnect.");
+        if (status.code === SvgWebSocket.DisconnectPolicy.TIMEOUT
+            || status.reason === "join_wait_expired") {
+            showAlertOverlay("You did not join Minecraft in time. Join the game, then try again.");
             return;
         }
 
