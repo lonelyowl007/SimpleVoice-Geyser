@@ -55,6 +55,19 @@ Players need to reach two things. Allow both in your firewall and port forwardin
    # (and Simple Voice Chat) before rejecting the pending join.
    vctimeout: 60
 
+   web:
+     # default: en
+     # Default UI language when the visitor has no saved preference (en, nl, pl, it, es).
+     default-language: en
+
+     # default: Simple Voice Chat
+     # Display name on the join page / browser title.
+     server-name: "Simple Voice Chat"
+
+     # default: empty
+     # Optional short subtitle under the server name.
+     tagline: ""
+
    # default: 2
    # idle websocket timeout in minutes
    idletimeout: 2
