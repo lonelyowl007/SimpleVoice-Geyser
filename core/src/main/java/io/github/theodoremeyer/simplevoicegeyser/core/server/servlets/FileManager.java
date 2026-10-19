@@ -19,6 +19,7 @@ import java.util.Enumeration;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
@@ -29,6 +30,15 @@ class FileManager {
      * Root directory inside the JAR where static files are stored.
      */
     protected static final String RESOURCE_ROOT = "/web";
+
+    /**
+     * Entry HTML embeds {@code BUILD_ID}; always overwrite from the JAR so joins
+     * do not fail with {@code update_required} against a stale disk copy.
+     */
+    private static final Set<String> ALWAYS_OVERWRITE = Set.of(
+            "index.html",
+            "legacy.html"
+    );
 
     /**
      * Local directory where web files are stored.
@@ -288,6 +298,17 @@ class FileManager {
             byte[] bundledData = input.readAllBytes();
 
             String bundledHash = Versioning.hash(bundledData);
+
+            /*
+             * Entry HTML carries the jar BUILD_ID used for websocket auth.
+             * Always refresh from the JAR so upgrades cannot leave a stale
+             * build id (which causes an endless "Update required" reload loop).
+             */
+            if (ALWAYS_OVERWRITE.contains(outputPath)) {
+                writeFile(targetFile, bundledData);
+                versioning.setHash(outputPath, bundledHash);
+                return;
+            }
 
             /*
              * The local file does not exist.
