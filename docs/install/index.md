@@ -50,12 +50,124 @@ The exact versions are in [Compatibility]({% project_link install/compatibility 
 
 Players need to reach two things. Allow both in your firewall and port forwarding.
 
-| What                         | Protocol | Default port                      |
-|------------------------------|----------|-----------------------------------|
-| The voice page (this plugin) | TCP      | `8080` (`server.port`)            |
-| Simple Voice Chat            | UDP      | `24454` (Simple Voice Chat's own) |
+   # default: 60
+   # Seconds to wait after a valid web password for the player to join Minecraft
+   # (and Simple Voice Chat) before rejecting the pending join.
+   vctimeout: 60
 
-The voice page port is not the Minecraft port. Simple Voice Chat sends the voice over UDP, so with only TCP open the page loads but nobody hears anything. If the Simple Voice Chat mod shows a crossed-out speaker, the UDP port is closed.
+   # default: 2
+   # idle websocket timeout in minutes
+   idletimeout: 2
+
+   # default: false
+   # Only allow bedrock players to join the chat
+   requireBedrock: false
+
+   join-message:
+
+     #default: true
+     # Enables join messages for web clients.
+     enabled: true
+
+     # Default: provided below
+     # The text svg sends when a player joins
+     text:
+       - "This Server Uses SimpleVoice-Geyser."
+       - "To set it up, run /svg pswd [password],"
+       - "Then join Via the server's SVG website."
+
+   # default: true
+   # Allows for the bedrock client to open a menu just by opening the emotes menu
+   # WARNING: Make sure you have off-hand-emote turned off in geyser or there may
+   #          be conflict
+   useEmoteForSVG: true
+
+  # default: true
+  # Allows players using web-chat to chat in-game
+   web-chat-enabled: true
+   
+updatechecker:
+  enable: true
+
+server:
+
+   group:
+
+      # Settings for the default group for Svg players.
+      default:
+
+         # default: true
+         # This decides whether the Svg group is created for players who use the website
+         enabled: true
+
+         # default: 1a2b
+         # This control's the default groups's password.
+         password: 1a2b
+
+   # default: 8080
+   # port server will run on.
+   port: 8080
+
+   # default: 0.0.0.0
+   # Address server binds to, use 127.0.0.1 to only connect from host device.
+   # This is suggested to be changed only if you are running a proxy on the same network/device as the server to allow https/wss.
+   bind-address: 0.0.0.0
+   
+   # default: /
+   # This is the context-path, or where the root of the server will be generated.
+   # Example: /svg will generate the server at https://yourdomain.com/svg/
+   context-path: /
+   
+   security:
+     
+     # default: 5
+     # This is the number of failed login attempts before the server will block the user for auth-lock-duration.
+     max-auth-failures: 5
+     
+     # default: 3
+     # How long each failure is saved for in minutes. 
+     # Example: if set to 3, and max-auth-failures is 5, auth can fail 4 times in 3 minutes before being locked out.
+     auth-fail-duration: 3
+
+     # default: 8
+     # This is the lockout in minutes when max-auth-failures has been reached.
+     auth-lock-duration: 8
+   
+   # See more at https://theodoremeyer.github.io/projects/simplevoicegeyser/install/audio-transport/
+   audio:
+     
+     # default: svg-v2
+     # options: legacy, svg-v2
+     # This is the audio transport mode, deciding how to send audio to client.
+     # legacy: uses the legacy audio transport mode, which is compatible with all clients.
+     # svg-v2: uses the new svg-v2 audio transport mode, which is only compatible with clients that support it.
+     # WARNING: This has been deprecated, and will be changed or removed in future releases.
+     transport-mode: auto
+     
+     # default: true
+     # Whether legacy mode is supported on your server.
+     # If transport-mode is set to svg-v2, can legacy still be used.
+     allow-legacy-fallback: true
+     
+
+# default: false
+# Debug logs
+# Do NOT use this in production. This will very quickly fill up your server logs.
+debug: false
+# default: 0.1.3
+# Version of server associated with config
+# DO NOT CHANGE, or config may be reset/messed up
+config-version: 0.1.3
+```
+
+### Important Notes
+
+* `vctimeout` controls how long a pending web join waits for the player to appear in Minecraft (default 60 seconds)
+* `useEmoteForSVG` may conflict with Geyser’s off-hand emote setting
+* `bind-address` controls network exposure:
+
+   * `0.0.0.0` → accessible externally
+   * `127.0.0.1` → local only
 
 ---
 

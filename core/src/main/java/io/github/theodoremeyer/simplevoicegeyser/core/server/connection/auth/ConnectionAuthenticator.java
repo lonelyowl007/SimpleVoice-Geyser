@@ -21,6 +21,8 @@ import java.util.UUID;
  * - auth rate limiting
  * <p>
  * This class DOES NOT create websocket connections.
+ * When credentials are valid but the player is not online / SVC is not ready yet,
+ * {@link AuthResponse#pending(UUID)} is returned so the join handler can wait.
  */
 public final class ConnectionAuthenticator {
 
@@ -50,7 +52,7 @@ public final class ConnectionAuthenticator {
      *
      * @param username username
      * @param password password
-     * @return auth response
+     * @return auth response ({@link AuthResponse#success}, {@link AuthResponse#pending}, or failure)
      */
     public AuthResponse authenticate(
             String username,
@@ -141,10 +143,8 @@ public final class ConnectionAuthenticator {
                             .getPlayer(uuid);
 
             if (player == null) {
-
-                return AuthResponse.failure(
-                        "Timeout: You didn’t join the server in time."
-                );
+                // Credentials OK — JoinPacket will wait up to client.vctimeout.
+                return AuthResponse.pending(uuid);
             }
 
             AuthResponse permissionResult =
@@ -158,6 +158,10 @@ public final class ConnectionAuthenticator {
                     validateVoiceChat(uuid);
 
             if (!voiceChatResult.success()) {
+                // SVC not attached yet: wait instead of hard-failing immediately.
+                if ("pending".equals(voiceChatResult.message())) {
+                    return AuthResponse.pending(uuid);
+                }
                 return voiceChatResult;
             }
 
@@ -228,6 +232,18 @@ public final class ConnectionAuthenticator {
     }
 
     /**
+     * Marks a successful completed join (after pending wait) for rate-limit reset.
+     *
+     * @param username username
+     */
+    public void markJoinSuccess(String username) {
+        if (username == null) {
+            return;
+        }
+        authRateLimiter.reset(username.toLowerCase(Locale.ROOT));
+    }
+
+    /**
      * Validates geyser/bedrock restrictions.
      *
      * @param uuid player uuid
@@ -294,6 +310,7 @@ public final class ConnectionAuthenticator {
 
     /**
      * Validates Simple Voice Chat compatibility.
+     * Returns failure with message {@code "pending"} when the SVC connection is not ready yet.
      *
      * @param uuid player uuid
      * @return auth response
@@ -316,9 +333,7 @@ public final class ConnectionAuthenticator {
                 SvgCore.getBridge().getVcServerApi().getConnectionOf(uuid);
 
         if (connection == null) {
-            return AuthResponse.failure(
-                    "Access Denied: " + "Voice chat connection unavailable."
-            );
+            return AuthResponse.failure("pending");
         }
 
         if (connection.isInstalled()) {
@@ -339,7 +354,6 @@ public final class ConnectionAuthenticator {
         if (username == null) {
             return;
         }
-
         authRateLimiter.reset(username.toLowerCase(Locale.ROOT));
     }
 

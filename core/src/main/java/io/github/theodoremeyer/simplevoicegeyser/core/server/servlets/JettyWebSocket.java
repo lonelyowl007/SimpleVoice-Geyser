@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Represents a WebSocket connection to a client, handling both control messages and binary audio frames.
@@ -36,6 +37,7 @@ public final class JettyWebSocket {
 
     private Session session;
     private SvgConnection connection;
+    private UUID pendingJoinUuid;
     private long binaryFrameCount = 0;
     private long binaryByteCount = 0;
     private long controlMessageCount = 0;
@@ -174,6 +176,11 @@ public final class JettyWebSocket {
                         + " binaryFrames=" + binaryFrameCount
                         + " transport=" + (audioNegotiation == null ? "n/a" : audioNegotiation.summary())
         );
+
+        if (pendingJoinUuid != null) {
+            SvgCore.getPendingJoinWaiter().cancelForSocket(pendingJoinUuid, this);
+            pendingJoinUuid = null;
+        }
 
         if (connection != null) {
             SvgCore.getLogger().info(
@@ -325,9 +332,25 @@ public final class JettyWebSocket {
     }
 
     /**
-     * Increment the join attempt count and return the new value.
-     * @return the updated join attempt count
+     * Marks this session as waiting for the player to join Minecraft.
+     *
+     * @param uuid player uuid
      */
+    public void setPendingJoinUuid(UUID uuid) {
+        this.pendingJoinUuid = uuid;
+    }
+
+    /**
+     * Clears the pending-join marker when it still matches {@code uuid}.
+     *
+     * @param uuid player uuid
+     */
+    public void clearPendingJoinUuid(UUID uuid) {
+        if (uuid != null && uuid.equals(this.pendingJoinUuid)) {
+            this.pendingJoinUuid = null;
+        }
+    }
+
     public long addJoinAttempt() {
         ++joinAttemptCount;
         return joinAttemptCount;

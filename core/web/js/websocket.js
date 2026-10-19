@@ -140,13 +140,9 @@ export class SvgWebSocket {
                     serverBuild: window.BUILD_ID || "unknown"
                 }
             }));
-            Logger.log("Connected.");
+            Logger.log("WebSocket open; joining...");
             this.reconnectAttempts = 0;
-
-            this.#runEventListeners("statusChange", {
-                connected: true,
-                username: this.lastCredentials.username
-            });
+            // UI "connected" waits for STATUS "Connected as ..." (pending Minecraft join possible).
         };
 
         this.ws.onmessage = async (event) => {
@@ -162,20 +158,21 @@ export class SvgWebSocket {
                         this.stopReconnection();
                     }
 
+                    if (packetType === "status" && msg.includes("waiting for you to join minecraft")) {
+                        // Keep the socket open; server is holding a pending join until MC presence.
+                        Logger.log("Waiting for Minecraft join...");
+                        this.#runEventListeners("statusChange", {
+                            connected: false,
+                            waitingForMinecraft: true
+                        });
+                    }
+
                     if (packetType === "status" && msg.includes("connected as")) {
                         this.changingServer = false;
                         this.hasJoined = true;
                         await this.#sendCapabilitiesOnce();
-                        if (this.ws !== socket || socket.readyState !== WebSocket.OPEN) return;
                         this.#runEventListeners("statusChange", {
                             connected: true,
-                            username: this.lastCredentials?.username
-                        });
-                    } else if (packetType === "status" && msg.includes("changing server")) {
-                        this.changingServer = true;
-                        this.#runEventListeners("statusChange", {
-                            connected: false,
-                            changingServer: true,
                             username: this.lastCredentials?.username
                         });
                     }
@@ -197,7 +194,7 @@ export class SvgWebSocket {
                         const isFatalError = msg.includes("bedrock player to join") ||
                             msg.includes("use /svg pswd") ||
                             msg.includes("access denied:") ||
-                            msg.includes("timeout") ||
+                            msg.includes("did not join the minecraft server in time") ||
                             msg.includes("left the game.");
 
                         if (isFatalError) {
@@ -276,8 +273,12 @@ export class SvgWebSocket {
                 return;
             }
 
-            if (code === SvgWebSocket.DisconnectPolicy.TIMEOUT) {
-                Logger.log("Timeout disconnect.");
+            if (code === SvgWebSocket.DisconnectPolicy.TIMEOUT
+                || reason === "join_wait_expired") {
+                this.fatalAuthError = true;
+                this.stopReconnection();
+                Logger.log("Join wait expired / timeout disconnect.");
+                return;
             }
 
             if (SvgWebSocket.DisconnectPolicy.NO_RECONNECT.has(code)) {

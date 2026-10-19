@@ -1,9 +1,9 @@
 client:
 
-  # default: 30
-  # Timeout in seconds
-  # WARNING: Developer has disabled timeout enforcement for current dev builds.
-  vctimeout: 30
+  # default: 60
+  # Seconds a web/Svg-App client may wait after a valid password before the
+  # player must appear online in Minecraft (and Simple Voice Chat) to finish join.
+  vctimeout: 60
 
   # default: 2
   # Idle websocket timeout in minutes
@@ -17,6 +17,13 @@ client:
   # Allows bedrock clients to open the SVG menu via emotes.
   # WARNING: Make sure off-hand-emote is disabled in Geyser to avoid conflicts.
   useEmoteForSVG: true
+
+  # default: [0.1.3, 0.1.4]
+  # Extra Svg-App clientType.serverVersion values accepted besides this plugin's version.
+  # Lets older upstream Android APKs join without rebuilding the Flutter app.
+  accepted-app-server-versions:
+    - "0.1.3"
+    - "0.1.4"
 
   # default: true
   # Allows players using web-chat to chat in-game

@@ -15,6 +15,7 @@ import io.github.theodoremeyer.simplevoicegeyser.core.managers.JoinMessageHandle
 import io.github.theodoremeyer.simplevoicegeyser.core.managers.PlayerManager;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.JettyServer;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.ConnectionManager;
+import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.auth.PendingJoinWaiter;
 import io.github.theodoremeyer.simplevoicegeyser.core.svc.VoiceChatBridge;
 import io.github.theodoremeyer.simplevoicegeyser.core.update.UpdateChecker;
 
@@ -50,6 +51,7 @@ public final class SvgCore {
     private final ConnectionManager connectionManager;
     private JettyServer jettyServer;
     private final PlayerManager playerManager;
+    private final PendingJoinWaiter pendingJoinWaiter;
     private GroupManager groupManager;
     private PlayerVcPswd playerVcPswd;
     private final JoinMessageHandler joinMessageHandler;
@@ -73,6 +75,7 @@ public final class SvgCore {
 
         new AudioThread();
         this.playerManager = new PlayerManager();
+        this.pendingJoinWaiter = new PendingJoinWaiter();
         this.joinMessageHandler = new JoinMessageHandler();
         this.connectionManager = new ConnectionManager();
         this.audioByteCompiler = new AudioByteCompiler();
@@ -100,7 +103,11 @@ public final class SvgCore {
                 getLogger().setDebug(true);
             }
 
-            getLogger().info("client.vctimeout is currently documented but inactive in this dev build.");
+            getLogger().info(
+                    "client.vctimeout is active: pending web joins wait up to "
+                            + getConfig().VC_TIMEOUT.get()
+                            + "s for Minecraft presence."
+            );
 
             this.playerVcPswd = new PlayerVcPswd(this);
 
@@ -168,6 +175,7 @@ public final class SvgCore {
 
         state = State.SHUTDOWN;
         connectionManager.disconnectAll();
+        pendingJoinWaiter.shutdown();
 
         try {
             if (jettyServer != null) {
@@ -237,6 +245,15 @@ public final class SvgCore {
      */
     public static PlayerManager getPlayerManager() {
         return getInstance().playerManager;
+    }
+
+    /**
+     * Get pending join waiter (web login before Minecraft join).
+     *
+     * @return pending join waiter
+     */
+    public static PendingJoinWaiter getPendingJoinWaiter() {
+        return getInstance().pendingJoinWaiter;
     }
 
     /**
