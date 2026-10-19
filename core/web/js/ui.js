@@ -453,7 +453,7 @@ export class SvgUI {
         const savedGainPercent = Number(localStorage.getItem(GAIN_SLIDER_KEY));
         gainSlider.value = String(
             Number.isFinite(savedGainPercent)
-                ? Math.max(50, Math.min(200, savedGainPercent))
+                ? Math.max(50, Math.min(600, savedGainPercent))
                 : 100
         );
 

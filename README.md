@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.11-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding + per-player volumes)  
+> **Fork version:** `0.1.12-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding + per-player volumes + louder mic gain)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -30,14 +30,16 @@
 | Control | What it does |
 |---------|----------------|
 | **Input Sensitivity** | Adjusts VAD start/stop thresholds; energy bar + threshold marker show when speech triggers |
-| **Mic Volume** | Software input gain (~50%–200%, default 100%) applied in the mic worklet before VAD/encode |
+| **Mic Volume** | Software input gain (**50%–600%**, default 100%) so others can hear quiet mics after AGC is disabled |
 
 Settings persist in `localStorage`. Defaults match the previous hardcoded thresholds and gain `1.0` (no behavior change until you move a slider).
 
+**0.1.12-fork loudness fix:** Earlier builds applied gain only inside the AudioWorklet via `postMessage`. That path was easy to miss / too weak (max 2×) with AGC off, so the other side often heard **no real volume change**. Mic volume now uses a real Web Audio **`GainNode`** before the worklet (reliable TX loudness), soft-limits with `tanh`, and the slider goes up to **600%** (6×). Raise **Mic Volume** until the green energy bar moves clearly when you speak — that same signal is what others hear.
+
 | File | Change |
 |------|--------|
-| `core/web/js/audio/microphone.js` | `setThreshold` / `setGain`, soft-clip gain, `energy` in mic messages |
-| `core/web/js/audio/audio.js` | `setVadThreshold` / `setInputGain` / throttled energy callback (~5×/s) |
+| `core/web/js/audio/microphone.js` | VAD thresholds, soft `tanh` limiter, framing / `energy` |
+| `core/web/js/audio/audio.js` | `GainNode` mic boost + `setVadThreshold` / `setInputGain` / energy callback |
 | `core/web/index.html` + `v2.css` + `ui.js` + `lang.js` | Connected-section sliders + meter UI |
 
 ### 3) Paper / Purpur support through Minecraft 26.3
@@ -128,6 +130,12 @@ First visit uses `default-language` when `localStorage.preferredLanguage` is uns
 | Prefs | `localStorage` key `svgReceiveVolumes_v1` (client-only) |
 
 **After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh. New jar + new web client are required for per-player control; legacy PCM remains master-only.
+
+### 10) Louder mic gain fix (0.1.12-fork)
+
+**Problem:** With browser AGC off, **Mic Volume at 200%** often changed nothing for listeners — gain lived only in the worklet message path and capped at 2×.
+
+**Fix:** Web Audio `GainNode` before the mic worklet, soft `tanh` limiter, slider **50%–600%**. Documented under §2 above.
 
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 

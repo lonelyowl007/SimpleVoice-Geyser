@@ -116,6 +116,17 @@ Legacy PCM sessions remain master-volume only. Old clients against a new jar ign
 
 ---
 
+### Upgrade to 0.1.12-fork (louder mic volume)
+
+Fixes **Mic Volume** having little/no effect for listeners when browser AGC is off. Gain now uses a Web Audio `GainNode` (up to **600%**).
+
+1. Replace the plugin JAR with `0.1.12-fork`
+2. Delete `plugins/<SimpleVoice-Geyser>/web/`
+3. Hard-refresh (`Ctrl+F5`)
+4. After join, raise **Mic Volume** until the energy bar reacts when you speak — others hear that louder signal
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

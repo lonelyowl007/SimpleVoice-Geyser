@@ -11,6 +11,8 @@ class Microphone extends AudioWorkletProcessor {
         // Defaults match previous hardcoded VAD thresholds
         this._startThreshold = 0.00008;
         this._stopThreshold = 0.00004;
+        // Amplitude boost is applied by an AudioContext GainNode before this worklet.
+        // Keep a residual multiplier (default 1) for compatibility / soft-limit only.
         this._inputGain = 1.0;
 
         this.port.onmessage = (e) => {
@@ -21,7 +23,7 @@ class Microphone extends AudioWorkletProcessor {
                 if (Number.isFinite(data.stop)) this._stopThreshold = data.stop;
             } else if (data.type === "setGain") {
                 if (Number.isFinite(data.gain)) {
-                    this._inputGain = Math.max(0.1, Math.min(4, data.gain));
+                    this._inputGain = Math.max(0.1, Math.min(8, data.gain));
                 }
             }
         };
@@ -35,8 +37,8 @@ class Microphone extends AudioWorkletProcessor {
         const scratch = new Float32Array(input.length);
         for (let i = 0; i < input.length; i++) {
             const s = input[i] * gain;
-            // Soft clip to [-1, 1]
-            scratch[i] = s > 1 ? 1 : (s < -1 ? -1 : s);
+            // Soft limiter (tanh): quieter speech can be boosted hard without harsh hard-clip.
+            scratch[i] = Math.tanh(s);
         }
 
         // ---- 1) Compute energy (RMS²) on gained samples ----

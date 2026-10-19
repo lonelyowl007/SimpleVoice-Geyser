@@ -6,6 +6,8 @@ export class SvgAudio {
     static DEFAULT_VAD_START = 0.00008;
     static DEFAULT_VAD_STOP = 0.00004;
     static DEFAULT_INPUT_GAIN = 1.0;
+    /** Max software mic boost (browser AGC is off; quiet mics need headroom). */
+    static MAX_INPUT_GAIN = 6.0;
     /** Throttle energy UI updates (~5/s assuming ~375 mic messages/sec). */
     static ENERGY_UPDATE_EVERY = 75;
 
@@ -18,6 +20,7 @@ export class SvgAudio {
         this.microphoneStream = null;
         this.micNode = null;
         this.micSource = null;
+        this.micGainNode = null;
         this.micStartPromise = null;
         this.micGeneration = 0;
         this.muted = false;
@@ -142,7 +145,15 @@ export class SvgAudio {
 
     setInputGain(gain) {
         if (!Number.isFinite(gain)) return;
-        this.inputGain = Math.max(0.1, Math.min(4, gain));
+        this.inputGain = Math.max(0.1, Math.min(SvgAudio.MAX_INPUT_GAIN, gain));
+        if (this.micGainNode && this.audioContext) {
+            // AudioParam is the reliable loudness path (does not depend on worklet messages).
+            this.micGainNode.gain.setTargetAtTime(
+                this.inputGain,
+                this.audioContext.currentTime,
+                0.015
+            );
+        }
         this.#pushMicSettings();
     }
 
@@ -157,9 +168,10 @@ export class SvgAudio {
             start: this.vadStartThreshold,
             stop: this.vadStopThreshold
         });
+        // Keep worklet gain at 1 — amplitude is applied by micGainNode in the graph.
         this.micNode.port.postMessage({
             type: "setGain",
-            gain: this.inputGain
+            gain: 1
         });
     }
 
@@ -180,7 +192,7 @@ export class SvgAudio {
     }
 
     async #startMicCapture(deviceId, generation) {
-        let stream, source, node;
+        let stream, source, gainNode, node;
         try {
             await this.audioContext.resume();
             if (generation !== this.micGeneration) return;
@@ -205,18 +217,24 @@ export class SvgAudio {
             }
 
             source = this.audioContext.createMediaStreamSource(stream);
+            gainNode = this.audioContext.createGain();
+            gainNode.gain.value = this.inputGain;
             node = new AudioWorkletNode(this.audioContext, "mic-capture");
-            source.connect(node);
+            // source → GainNode (mic volume) → worklet (VAD / framing / soft-limit)
+            source.connect(gainNode);
+            gainNode.connect(node);
             node.port.onmessage = (event) => {
                 if (generation === this.micGeneration) this.#handleMicMessage(event);
             };
 
             this.microphoneStream = stream;
             this.micSource = source;
+            this.micGainNode = gainNode;
             this.micNode = node;
             this.#pushMicSettings();
         } catch (error) {
             node?.disconnect();
+            gainNode?.disconnect();
             source?.disconnect();
             stream?.getTracks().forEach(track => track.stop());
             throw error;
@@ -266,6 +284,11 @@ export class SvgAudio {
             this.micNode.port.onmessage = null;
             this.micNode.disconnect();
             this.micNode = null;
+        }
+
+        if (this.micGainNode) {
+            this.micGainNode.disconnect();
+            this.micGainNode = null;
         }
 
         if (this.micSource) {
