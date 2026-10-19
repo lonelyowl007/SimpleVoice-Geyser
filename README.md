@@ -5,11 +5,11 @@
 
 ## What this fork changes
 
+### 1) Robotic / distorted WAN voice fix
+
 **Goal:** Fix robotic / distorted voice audio for Bedrock players using the web client over the internet (WAN).
 
 **Source:** Port of the core idea from upstream [PR #52](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/52) (`paper-the-best`). That PR could not be merged cleanly (conflicts, ~181 commits behind `dev`, author unresponsive). We applied only the voice-quality fix on top of the latest upstream `dev` branch.
-
-**What we changed (and nothing else for this fix):**
 
 | File | Change |
 |------|--------|
@@ -19,9 +19,21 @@
 
 **Not included from PR #52:** The experimental Discord-style VAD / input-sensitivity meter (UI bugs + outdated after the newer web/audio rewrite).
 
+### 2) Paper / Purpur support through Minecraft 26.3
+
+**Goal:** Fully declare Paper, Purpur, and Spigot support for the entire Minecraft **26.x** line up to **26.3** (previously badges stopped at 26.1.2).
+
+| File | Change |
+|------|--------|
+| `README.md` | Support badges: Paper / Purpur / Spigot → `1.20.1–26.3` |
+| `docs/install/compatibility.md` | Bukkit requirements clarified: Minecraft `1.20.1` through `26.3` |
+| `spigot/build.gradle` | `runServer` target + download plugins aligned to Paper `26.3` (SVC `2.6.24`, ViaVersion for 26.3) |
+
+**Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
+
 **Base:** Latest upstream `dev` (includes later work such as Opus/WebCodecs mic encoding, spatial audio, UI updates, etc.).
 
-**Upstream PR:** We also open a clean PR back to TheodoreMeyer’s `dev` so others can pick this up without using the fork.
+**Upstream PR:** https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/104
 
 ---
 
@@ -31,15 +43,15 @@
 [Contributors](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/blob/master/Contributors.md)
 
 **Supports:**
-- [![Spigot](https://img.shields.io/badge/Spigot-1.20.1–26.1.2-orange?logo=spigotmc&logoColor=white)](https://www.spigotmc.org/resources/132386)
+- [![Spigot](https://img.shields.io/badge/Spigot-1.20.1–26.3-orange?logo=spigotmc&logoColor=white)](https://www.spigotmc.org/resources/132386)
 
 - <a href="https://papermc.io/">
     <img src="https://assets.papermc.io/brand/papermc_logo.min.svg" height="22"/>
-    <img src="https://img.shields.io/badge/Paper-1.20.1–26.1.2-3b82f6"/>
+    <img src="https://img.shields.io/badge/Paper-1.20.1–26.3-3b82f6"/>
   </a>
 - <a href="https://purpurmc.org/">
     <img src="https://purpurmc.org/docs/images/purpur-small.png" height="22"/>
-    <img src="https://img.shields.io/badge/Purpur-1.20.1–26.1.2-7c3aed"/>
+    <img src="https://img.shields.io/badge/Purpur-1.20.1–26.3-7c3aed"/>
   </a>
 - <a href="https://fabricmc.net/">
     <img src="https://fabricmc.net/assets/logo.png" height="22"/>
