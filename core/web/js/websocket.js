@@ -4,6 +4,7 @@ import {
     getAudioDecompileStats,
     warmupAudioDecompiler
 } from "./audio/AudioByteDecompiler.js";
+import {applyMasterGainOnly, applyUserGain, noteHeard, setRoster} from "./audio/receive-volumes.js";
 import {Logger} from "./utils/logger.js";
 import {
     isBackendTransferStatus,
@@ -188,6 +189,11 @@ export class SvgWebSocket {
                         Logger.log(`[AudioRX] Server selected transport mode: ${data.selectedMode || "legacy"}`);
                         await this.#applyMicFormatAck(data.selectedMicFormat, socket);
                         if (this.ws !== socket || socket.readyState !== WebSocket.OPEN) return;
+                    }
+
+                    if (packetType === "voice_players") {
+                        setRoster(data.players);
+                        this.#runEventListeners("voicePlayers", data.players);
                     }
 
                     if (packetType === "error") {
@@ -599,6 +605,13 @@ export class SvgWebSocket {
 
             this.rxSvgV2Frames++;
             const packet = v2Result.packet;
+            const senderUuid = v2Result.meta?.senderUuid || null;
+            if (senderUuid) {
+                noteHeard(senderUuid);
+            }
+            if (packet?.samples) {
+                applyUserGain(packet.samples, senderUuid);
+            }
             if (packet.channels === 2) {
                 this.rxStereoFrames++;
             } else {
@@ -611,6 +624,10 @@ export class SvgWebSocket {
 
          this.rxLegacyFrames++;
         const packet = this.#decodeLegacyPcm16(arrayBuffer);
+        // Legacy PCM has no sender UUID — master volume only.
+        if (packet?.samples) {
+            applyMasterGainOnly(packet.samples);
+        }
         if (packet.channels === 2) {
             this.rxStereoFrames++;
         } else {

@@ -131,7 +131,8 @@ public final class SvgAudioListener {
                             pan,
                             distanceGain,
                             flags,
-                            opusData
+                            opusData,
+                            soundPacket.getSender()
                     );
                     packetSentSvgV2Count++;
                 } else {

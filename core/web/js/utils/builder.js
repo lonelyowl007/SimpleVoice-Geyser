@@ -24,7 +24,10 @@ const ELEMENTS = {
             vadMarker: "audio.vad-marker",
             vadSlider: "audio.vad-slider",
             gainSlider: "audio.gain-slider",
-            gainValueLabel: "audio.gain-value"
+            gainValueLabel: "audio.gain-value",
+            volumesRoot: "audio.volumes",
+            volumesSearch: "audio.volumes-search",
+            volumesList: "audio.volumes-list"
         },
 
         ptt: {
