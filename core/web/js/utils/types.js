@@ -20,6 +20,13 @@
  * @property {HTMLSelectElement} micSelect
  * @property {HTMLButtonElement} muteBtn
  * @property {HTMLElement} micIndicator
+ * @property {HTMLElement} micSettings
+ * @property {HTMLElement} vadMeter
+ * @property {HTMLElement} vadEnergyBar
+ * @property {HTMLElement} vadMarker
+ * @property {HTMLInputElement} vadSlider
+ * @property {HTMLInputElement} gainSlider
+ * @property {HTMLElement} gainValueLabel
  */
 
 /**

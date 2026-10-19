@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.6-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + web UI asset fix)  
+> **Fork version:** `0.1.7-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + web UI asset fix + mic sensitivity/volume)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -19,9 +19,28 @@
 
 **Why:** The browser’s built-in noise suppression, echo cancellation, and auto-gain often warp the mic signal when voice is sent over WAN, which sounds “robotic”. Disabling those constraints keeps a cleaner raw capture for remote listeners.
 
-**Not included from PR #52:** The experimental Discord-style VAD / input-sensitivity meter (UI bugs + outdated after the newer web/audio rewrite).
+**Browser AGC stays off** (to avoid the robot-voice regression). Soft speech / quieter mics are handled with the software sliders below instead.
 
-### 2) Paper / Purpur support through Minecraft 26.3
+### 2) Mic sensitivity + input volume (web UI)
+
+**Goal:** Let players tune Voice Activation and how loud others hear them, without turning browser AGC back on.
+
+**Source:** Ideas from PR #52 (Discord-style sensitivity meter + worklet thresholds), reimplemented on the current v2 AudioWorklet / 960-sample framing.
+
+| Control | What it does |
+|---------|----------------|
+| **Input Sensitivity** | Adjusts VAD start/stop thresholds; energy bar + threshold marker show when speech triggers |
+| **Mic Volume** | Software input gain (~50%–200%, default 100%) applied in the mic worklet before VAD/encode |
+
+Settings persist in `localStorage`. Defaults match the previous hardcoded thresholds and gain `1.0` (no behavior change until you move a slider).
+
+| File | Change |
+|------|--------|
+| `core/web/js/audio/microphone.js` | `setThreshold` / `setGain`, soft-clip gain, `energy` in mic messages |
+| `core/web/js/audio/audio.js` | `setVadThreshold` / `setInputGain` / throttled energy callback (~5×/s) |
+| `core/web/index.html` + `v2.css` + `ui.js` + `lang.js` | Connected-section sliders + meter UI |
+
+### 3) Paper / Purpur support through Minecraft 26.3
 
 **Goal:** Fully declare Paper, Purpur, and Spigot support for the entire Minecraft **26.x** line up to **26.3** (previously badges stopped at 26.1.2).
 
@@ -31,7 +50,7 @@
 | `docs/install/compatibility.md` | Bukkit requirements clarified: Minecraft `1.20.1` through `26.3` |
 | `spigot/build.gradle` | `runServer` target + download plugins aligned to Paper `26.3` (SVC `2.6.24`, ViaVersion for 26.3) |
 
-### 3) Real Folia support (1.21.x – 26.3)
+### 4) Real Folia support (1.21.x – 26.3)
 
 **Goal:** Run correctly on Folia — not only `folia-supported: true`, but region-safe threading for Jetty auth/chat and spatial audio.
 
@@ -46,7 +65,7 @@
 
 **Requires:** Simple Voice Chat **2.6.24+** (Folia-related fixes), matching Folia build for your MC version. Geyser is typically reverse-proxied / soft-depend.
 
-### 4) Blank web UI text behind reverse proxy (NPM)
+### 5) Blank web UI text behind reverse proxy (NPM)
 
 **Goal:** Fix empty Username/Password/Join labels when the UI is served through Nginx Proxy Manager (or similar).
 

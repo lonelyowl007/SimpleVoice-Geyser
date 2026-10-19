@@ -1,11 +1,17 @@
 import {Logger} from "./utils/logger.js";
 import {SvgLang} from "./utils/lang.js";
 import {PttController} from "./ptt.js";
+import {SvgAudio} from "./audio/audio.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
  * @import {PttElements} from "./utils/types.js"
  */
+
+const VAD_SLIDER_KEY = "svgVadSensitivity";
+const GAIN_SLIDER_KEY = "svgMicGainPercent";
+/** Energy display reference (RMS²-ish scale via sqrt). */
+const ENERGY_DISPLAY_REF = 0.0005;
 
 export class SvgUI {
 
@@ -31,6 +37,22 @@ export class SvgUI {
         this.ptt = options.ptt;
 
         this.pttController = null;
+        this._lastVadStart = SvgAudio.DEFAULT_VAD_START;
+    }
+
+    /**
+     * Map sensitivity slider (1=most sensitive … 100=least) to VAD thresholds.
+     * Midpoint 50 keeps the historical defaults.
+     * @param {number} slider
+     * @returns {{start: number, stop: number}}
+     */
+    static sensitivityToThresholds(slider) {
+        const clamped = Math.max(1, Math.min(100, Number(slider) || 50));
+        const t = (clamped - 1) / 99;
+        const mult = 0.25 * Math.pow(16, t); // 0.25 … 4
+        const start = SvgAudio.DEFAULT_VAD_START * mult;
+        const stop = start * 0.5;
+        return { start, stop };
     }
 
     setSelectUnavailable(select, label) {
@@ -152,7 +174,12 @@ export class SvgUI {
             speakerSelect,
             micSelect,
             muteBtn,
-            micIndicator
+            micIndicator,
+            vadEnergyBar,
+            vadMarker,
+            vadSlider,
+            gainSlider,
+            gainValueLabel
         } = this.audio;
 
         const {
@@ -173,6 +200,13 @@ export class SvgUI {
         } = this.ptt;
 
         this.audioController.setMicIndicator(micIndicator);
+        this.#initMicSettingsControls({
+            vadEnergyBar,
+            vadMarker,
+            vadSlider,
+            gainSlider,
+            gainValueLabel
+        });
 
         try {
             await this.populateAudioDevices();
@@ -363,5 +397,90 @@ export class SvgUI {
                 `[Audio] ${runtime.degradedReason}`
             );
         }
+    }
+
+    /**
+     * Wire sensitivity / mic-volume sliders, energy meter, and localStorage.
+     * @param {{
+     *   vadEnergyBar: HTMLElement,
+     *   vadMarker: HTMLElement,
+     *   vadSlider: HTMLInputElement,
+     *   gainSlider: HTMLInputElement,
+     *   gainValueLabel: HTMLElement
+     * }} els
+     */
+    #initMicSettingsControls(els) {
+        const {
+            vadEnergyBar,
+            vadMarker,
+            vadSlider,
+            gainSlider,
+            gainValueLabel
+        } = els;
+
+        const savedSensitivity = Number(localStorage.getItem(VAD_SLIDER_KEY));
+        vadSlider.value = String(
+            Number.isFinite(savedSensitivity)
+                ? Math.max(1, Math.min(100, savedSensitivity))
+                : 50
+        );
+
+        const savedGainPercent = Number(localStorage.getItem(GAIN_SLIDER_KEY));
+        gainSlider.value = String(
+            Number.isFinite(savedGainPercent)
+                ? Math.max(50, Math.min(200, savedGainPercent))
+                : 100
+        );
+
+        const applySensitivity = () => {
+            const { start, stop } = SvgUI.sensitivityToThresholds(Number(vadSlider.value));
+            this._lastVadStart = start;
+            this.audioController.setVadThreshold(start, stop);
+            localStorage.setItem(VAD_SLIDER_KEY, vadSlider.value);
+            this.#updateVadMarker(vadMarker, start);
+        };
+
+        const applyGain = () => {
+            const percent = Number(gainSlider.value) || 100;
+            gainValueLabel.textContent = `${Math.round(percent)}%`;
+            this.audioController.setInputGain(percent / 100);
+            localStorage.setItem(GAIN_SLIDER_KEY, String(Math.round(percent)));
+        };
+
+        vadSlider.addEventListener("input", applySensitivity);
+        gainSlider.addEventListener("input", applyGain);
+
+        applySensitivity();
+        applyGain();
+
+        this.audioController.setEnergyCallback((energy) => {
+            this.#updateVadEnergyBar(vadEnergyBar, energy);
+        });
+    }
+
+    /**
+     * @param {HTMLElement} marker
+     * @param {number} startThreshold
+     */
+    #updateVadMarker(marker, startThreshold) {
+        const pct = Math.min(
+            100,
+            (Math.sqrt(Math.max(0, startThreshold)) / Math.sqrt(ENERGY_DISPLAY_REF)) * 100
+        );
+        marker.style.left = `${pct}%`;
+    }
+
+    /**
+     * @param {HTMLElement} bar
+     * @param {number} energy
+     */
+    #updateVadEnergyBar(bar, energy) {
+        const pct = Math.min(
+            100,
+            (Math.sqrt(Math.max(0, energy)) / Math.sqrt(ENERGY_DISPLAY_REF)) * 100
+        );
+        bar.style.width = `${pct}%`;
+        const over = energy >= this._lastVadStart;
+        bar.style.background = over ? "#55c233" : "#8a8a8a";
     }
 }

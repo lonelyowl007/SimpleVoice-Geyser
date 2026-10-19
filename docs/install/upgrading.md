@@ -56,6 +56,17 @@ If the join page shows empty labels/buttons (Username, Password, Join) behind Ng
 
 ---
 
+### Upgrade to 0.1.7-fork (mic sensitivity / volume)
+
+Adds **Input Sensitivity** and **Mic Volume** sliders in the connected web UI (Voice Activation + software gain; browser AGC stays off).
+
+1. Replace the plugin JAR with `0.1.7-fork`
+2. If you use a web override folder, delete `plugins/<SimpleVoice-Geyser>/web/` so the new JS/CSS/HTML is extracted
+3. Hard-refresh the browser (`Ctrl+F5`)
+4. After join, use the sliders under Mute; preferences are stored in the browser (`localStorage`)
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

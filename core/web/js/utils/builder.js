@@ -17,7 +17,14 @@ const ELEMENTS = {
             speakerSelect: "audio.speaker",
             micSelect: "audio.mic",
             muteBtn: "audio.mute",
-            micIndicator: "audio.indicator"
+            micIndicator: "audio.indicator",
+            micSettings: "audio.mic-settings",
+            vadMeter: "audio.vad-meter",
+            vadEnergyBar: "audio.vad-energy",
+            vadMarker: "audio.vad-marker",
+            vadSlider: "audio.vad-slider",
+            gainSlider: "audio.gain-slider",
+            gainValueLabel: "audio.gain-value"
         },
 
         ptt: {
