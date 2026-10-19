@@ -43,6 +43,19 @@ This page documents version upgrade behavior and breaking changes.
 
 ---
 
+### Upgrade to 0.1.6-fork (web UI / reverse proxy)
+
+If the join page shows empty labels/buttons (Username, Password, Join) behind Nginx Proxy Manager or another reverse proxy:
+
+1. Stop the server
+2. Delete the plugin web override folder: `plugins/<SimpleVoice-Geyser>/web/`
+3. Replace the plugin JAR with `0.1.6-fork` (or newer)
+4. Start the server (full `/web/` tree is re-extracted, including `js/utils/lang.js`)
+5. Hard-refresh the browser (`Ctrl+F5`)
+6. Confirm NPM/proxy has **Websockets** enabled and is not caching `/js/` aggressively
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.5-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia)  
+> **Fork version:** `0.1.6-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + web UI asset fix)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -45,6 +45,20 @@
 | `docs/install/compatibility.md` | Folia row + requirements |
 
 **Requires:** Simple Voice Chat **2.6.24+** (Folia-related fixes), matching Folia build for your MC version. Geyser is typically reverse-proxied / soft-depend.
+
+### 4) Blank web UI text behind reverse proxy (NPM)
+
+**Goal:** Fix empty Username/Password/Join labels when the UI is served through Nginx Proxy Manager (or similar).
+
+**Cause:** Only a partial whitelist of web files was extracted on startup (`v2.js` but not `js/utils/lang.js`, etc.), so ES-module imports 404’d and translations never applied.
+
+| File | Change |
+|------|--------|
+| `core/.../FileManager.java` | Extract the **full** `/web/` tree from the JAR |
+| `core/.../ResourceServlet.java` | `no-cache` for `.js` / `.mjs` / `.html` (avoid stale proxy 404s) |
+| `core/web/index.html` | English fallback text inside `svg-lang` elements |
+
+**After upgrading:** stop the server, delete `plugins/<SimpleVoice-Geyser>/web/`, start again, then hard-refresh the browser (Ctrl+F5). Enable Websockets on the NPM proxy host.
 
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 

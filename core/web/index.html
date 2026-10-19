@@ -31,13 +31,13 @@
 <!--            Join Section-->
             <section class="joinSec flexContainer">
 <!--                Join Label-->
-                <h2 class="joinLabel hiddenWhenConnected"><span svg-lang="joinLabel"></span></h2>
+                <h2 class="joinLabel hiddenWhenConnected"><span svg-lang="joinLabel">Join Simple Voice Chat</span></h2>
                 <div class="flexSpacer hiddenWhenConnected"></div>
 <!--                Join Form-->
                 <form class="joinForm flexContainer" data-svg="form">
                     <div class="usernameContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
 <!--                        Username Label-->
-                        <label class="joinFormLabel usernameLabel mcTextStyle1" for="username" svg-lang="usernameInput"></label>
+                        <label class="joinFormLabel usernameLabel mcTextStyle1" for="username" svg-lang="usernameInput">Username</label>
                         <div class="flexSpacer"></div>
 <!--                        Username Input-->
                         <input class="usernameInput mcTextboxStyle" data-svg="form.username" type="text" id="username" name="username" required autocomplete="username">
@@ -45,7 +45,7 @@
 
                     <div class="passwordContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
 <!--                        Password Label-->
-                        <label class="joinFormLabel passwordLabel mcTextStyle1" for="password" svg-lang="passwordInput"></label>
+                        <label class="joinFormLabel passwordLabel mcTextStyle1" for="password" svg-lang="passwordInput">Password</label>
                         <div class="flexSpacer"></div>
 <!--                        Password Input-->
                         <input class="passwordInput mcTextboxStyle" data-svg="form.password" type="password" id="password" name="password" required autocomplete="svg-password">
@@ -53,24 +53,24 @@
 
                     <div class="micContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
 <!--                        Microphone Label-->
-                        <label class="joinFormLabel micLabel mcTextStyle1" for="mic" svg-lang="micSelect"></label>
+                        <label class="joinFormLabel micLabel mcTextStyle1" for="mic" svg-lang="micSelect">Select Microphone</label>
                         <div class="flexSpacer"></div>
 <!--                        Microphone Select-->
                         <div class="micSelect mcButtonStyle">
                             <select class="mcButtonStyleInner mcTextStyle2" id="mic" name="mic" data-svg="audio.mic">
-                                <option disabled selected svg-lang="micLoad"></option>
+                                <option disabled selected svg-lang="micLoad">Loading Microphones...</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="speakerContainer flexRowContainer fullWidth flexColumnWhenMobile hiddenWhenConnected">
 <!--                        Speaker Label-->
-                        <label class="joinFormLabel speakerLabel mcTextStyle1" for="speaker" svg-lang="speakSelect"></label>
+                        <label class="joinFormLabel speakerLabel mcTextStyle1" for="speaker" svg-lang="speakSelect">Select Speaker</label>
                         <div class="flexSpacer"></div>
 <!--                        Speaker Select-->
                         <div class="speakerSelect mcButtonStyle">
                             <select class="mcButtonStyleInner mcTextStyle2" id="speaker" name="speaker" data-svg="audio.speaker">
-                                <option disabled selected svg-lang="speakLoad"></option>
+                                <option disabled selected svg-lang="speakLoad">Loading Speakers...</option>
                             </select>
                         </div>
                     </div>
@@ -78,11 +78,11 @@
                     <div class="joinContainer flexRowContainer fullWidth">
 <!--                        Join Button-->
                         <div class="joinBtnContainer mcButtonStyle flexRowContainer fullWidth">
-                            <button class="mcButtonStyleInner mcTextStyle2" type="submit" data-svg="form.join" svg-lang="joinBtnText"></button>
+                            <button class="mcButtonStyleInner mcTextStyle2" type="submit" data-svg="form.join" svg-lang="joinBtnText">Join</button>
                         </div>
                         <div class="flexSpacer"></div>
 <!--                        Status Label-->
-                        <div class="statusLabel" data-svg="form.status" svg-lang="joinWait"></div>
+                        <div class="statusLabel" data-svg="form.status" svg-lang="joinWait">Waiting to join...</div>
                     </div>
                 </form>
             </section>
@@ -92,14 +92,14 @@
                 <div class="fullWidth">
                     <div class="flexRowContainer">
 <!--                        Transmit Mode Label-->
-                        <span class="mcTextStyle1" svg-lang="transmitModeLabel"></span>
+                        <span class="mcTextStyle1" svg-lang="transmitModeLabel">Transmit Mode</span>
                         <div class="flexDivider"></div>
                         <div class="flexSpacer"></div>
 <!--                        Transmit Mode Select-->
                         <div class="mcButtonStyle">
                             <select class="mcButtonStyleInner mcTextStyle2" aria-label="Transmit mode" data-svg="ptt.mode">
-                                <option value="voice" svg-lang="voiceActivityText"></option>
-                                <option value="ptt" svg-lang="pushToTalkText"></option>
+                                <option value="voice" svg-lang="voiceActivityText">Voice Activation</option>
+                                <option value="ptt" svg-lang="pushToTalkText">Push-To-Talk</option>
                             </select>
                         </div>
                     </div>
