@@ -4,6 +4,8 @@ const MAGIC_0 = 0x53; // 'S'
 const MAGIC_1 = 0x56; // 'V'
 const VERSION_2 = 2;
 const HEADER_SIZE = 20;
+const SENDER_UUID_SIZE = 16;
+const FLAG_HAS_SENDER = 0x08;
 const CODEC_OPUS = 1;
 const CODEC_PCM16_LE = 2;
 
@@ -145,12 +147,23 @@ function parseFrame(arrayBuffer) {
         return null;
     }
 
+    const flags = view.getUint8(3);
+    const hasSender = (flags & FLAG_HAS_SENDER) !== 0;
+    const payloadOffset = hasSender ? HEADER_SIZE + SENDER_UUID_SIZE : HEADER_SIZE;
     const payloadLength = view.getUint32(16, true);
-    if (payloadLength > view.byteLength - HEADER_SIZE) {
+    if (payloadLength > view.byteLength - payloadOffset) {
         return { malformed: true, reason: "payload length exceeds frame size" };
     }
 
-    const payload = new Uint8Array(arrayBuffer, HEADER_SIZE, payloadLength);
+    let senderUuid = null;
+    if (hasSender) {
+        if (view.byteLength < HEADER_SIZE + SENDER_UUID_SIZE) {
+            return { malformed: true, reason: "missing sender uuid" };
+        }
+        senderUuid = uuidFromBytes(view, HEADER_SIZE);
+    }
+
+    const payload = new Uint8Array(arrayBuffer, payloadOffset, payloadLength);
     const panRaw = view.getInt16(8, true);
     const gainRaw = view.getInt16(10, true);
     const sampleRate = view.getUint16(12, true);
@@ -158,15 +171,31 @@ function parseFrame(arrayBuffer) {
 
     return {
         malformed: false,
-        flags: view.getUint8(3),
+        flags,
         sequence: view.getUint32(4, true),
         pan: Math.max(-1, Math.min(1, panRaw / 32767)),
         gain: Math.max(0, Math.min(1, gainRaw / 32767)),
         sampleRate: sampleRate > 0 ? sampleRate : 48000,
         channels,
         codec: view.getUint8(15),
+        senderUuid,
         payload
     };
+}
+
+/** @param {DataView} view @param {number} offset */
+function uuidFromBytes(view, offset) {
+    const hex = [];
+    for (let i = 0; i < SENDER_UUID_SIZE; i++) {
+        hex.push(view.getUint8(offset + i).toString(16).padStart(2, "0"));
+    }
+    return (
+        `${hex.slice(0, 4).join("")}-` +
+        `${hex.slice(4, 6).join("")}-` +
+        `${hex.slice(6, 8).join("")}-` +
+        `${hex.slice(8, 10).join("")}-` +
+        `${hex.slice(10, 16).join("")}`
+    );
 }
 
 async function decodeOpus(opusPayload) {

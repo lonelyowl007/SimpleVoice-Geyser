@@ -249,6 +249,8 @@ public final class JoinPacket implements Packet {
                 false
         );
 
+        VoicePlayersBroadcaster.broadcast();
+
         SvgCore.getLogger().info(
                 "[WebSocket] "
                         + connection.getPlayer().getName()

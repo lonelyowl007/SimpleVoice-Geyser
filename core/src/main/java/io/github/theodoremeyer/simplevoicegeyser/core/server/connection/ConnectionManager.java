@@ -6,6 +6,8 @@ import io.github.theodoremeyer.simplevoicegeyser.core.audio.AudioSessionNegotiat
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.compatibility.ClientIdentity;
 import org.eclipse.jetty.websocket.api.Session;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,6 +71,13 @@ public final class ConnectionManager {
      */
     public SvgConnection get(UUID uuid) {
         return connections.get(uuid);
+    }
+
+    /**
+     * All active authenticated websocket connections.
+     */
+    public Collection<SvgConnection> getAll() {
+        return Collections.unmodifiableCollection(connections.values());
     }
 
     /**

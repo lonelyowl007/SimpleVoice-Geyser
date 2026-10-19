@@ -321,6 +321,62 @@ main {
     font-size: 0.7em;
     opacity: 0.9;
 }
+.adjustVolumesPanel {
+    display: flex;
+    flex-flow: column;
+    gap: 6px;
+    margin: 4px 0 8px 0;
+}
+.volumeSearchInput {
+    box-sizing: border-box;
+    min-height: 36px;
+}
+.volumeList {
+    display: flex;
+    flex-flow: column;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+.volumeRow {
+    align-items: flex-start;
+    gap: 8px;
+}
+.volumeAvatar {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.volumeAvatarMaster,
+.volumeAvatarOther {
+    filter: brightness(0) saturate(100%) invert(85%);
+}
+.volumeRowBody {
+    display: flex;
+    flex-flow: column;
+    gap: 2px;
+    min-width: 0;
+}
+.volumeName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.volumeAmpLabel {
+    font-size: 0.75em;
+    opacity: 0.9;
+}
+.volumeMuteWrap {
+    flex-shrink: 0;
+    width: auto;
+    min-width: 4.5em;
+}
+.volumeMuteBtn.muted {
+    opacity: 0.65;
+}
 .textAlignLeft {
     text-align: left;
 }

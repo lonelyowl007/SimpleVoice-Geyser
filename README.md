@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.10-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding)  
+> **Fork version:** `0.1.11-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding + per-player volumes)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -113,6 +113,21 @@ Password / rate-limit / bedrock checks still run first. Voice is not registered 
 | Alerts | Error/fatal banner auto-hides after **60 seconds** (X still works) |
 
 First visit uses `default-language` when `localStorage.preferredLanguage` is unset; the language picker still saves a preference.
+
+### 9) Per-player receive volumes (Adjust Volumes)
+
+**Goal:** SVC-style **Adjust Volumes** in the web client — master / Other / per-player amplification and mute, persisted in browser `localStorage`.
+
+**Why protocol changes?** Incoming audio is mixed into one speaker buffer; svg-v2 frames previously had pan/gain only. Per-player mute/boost needs the sender UUID on the wire plus a player roster for names.
+
+| Piece | Details |
+|-------|---------|
+| `FLAG_HAS_SENDER` (`0x08`) | 16-byte big-endian UUID after the svg-v2 header |
+| `voice_players` JSON | Roster push on web auth + Minecraft join/leave |
+| UI | Overall / Other / players, search, 0–200% sliders, mute; avatars via mc-heads |
+| Prefs | `localStorage` key `svgReceiveVolumes_v1` (client-only) |
+
+**After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh. New jar + new web client are required for per-player control; legacy PCM remains master-only.
 
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 

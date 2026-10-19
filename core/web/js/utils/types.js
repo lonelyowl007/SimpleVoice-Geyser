@@ -27,6 +27,9 @@
  * @property {HTMLInputElement} vadSlider
  * @property {HTMLInputElement} gainSlider
  * @property {HTMLElement} gainValueLabel
+ * @property {HTMLElement} volumesRoot
+ * @property {HTMLInputElement} volumesSearch
+ * @property {HTMLElement} volumesList
  */
 
 /**

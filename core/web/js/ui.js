@@ -2,6 +2,7 @@ import {Logger} from "./utils/logger.js";
 import {SvgLang} from "./utils/lang.js";
 import {PttController} from "./ptt.js";
 import {SvgAudio} from "./audio/audio.js";
+import {AdjustVolumesUI} from "./volumes.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
@@ -179,7 +180,10 @@ export class SvgUI {
             vadMarker,
             vadSlider,
             gainSlider,
-            gainValueLabel
+            gainValueLabel,
+            volumesRoot,
+            volumesSearch,
+            volumesList
         } = this.audio;
 
         const {
@@ -207,6 +211,13 @@ export class SvgUI {
             gainSlider,
             gainValueLabel
         });
+
+        this.adjustVolumesUI = new AdjustVolumesUI({
+            root: volumesRoot,
+            listEl: volumesList,
+            searchInput: volumesSearch
+        });
+        this.adjustVolumesUI.init();
 
         try {
             await this.populateAudioDevices();

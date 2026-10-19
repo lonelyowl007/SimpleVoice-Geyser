@@ -320,7 +320,8 @@ In `svg-v2` mode, server-to-client audio uses a versioned binary frame. Multibyt
 | `sampleRate` |  2 bytes | Sample rate, normally `48000`              |
 | `channels`   |   1 byte | Source channel count                       |
 | `codec`      |   1 byte | `1=opus`, `2=pcm16le`                      |
-| `payloadLen` |  4 bytes | Payload length                             |
+| `payloadLen` |  4 bytes | Codec payload length                       |
+| `senderUUID` | 16 bytes | Optional; when `FLAG_HAS_SENDER` is set    |
 | `payload`    | variable | Codec payload                              |
 
 Known flag values:
@@ -330,8 +331,24 @@ Known flag values:
 | `FLAG_STATIC_PACKET`       | `0x01` | Source packet is static/non-positional.          |
 | `FLAG_DISTANCE_ATTENUATED` | `0x02` | Server calculated distance attenuation metadata. |
 | `FLAG_HAS_PAN`             | `0x04` | Frame includes pan metadata.                     |
+| `FLAG_HAS_SENDER`          | `0x08` | 16-byte big-endian sender UUID follows header.   |
 
-The current `svg-v2` receive path usually sends Opus payloads with compact spatial metadata. The browser decodes the payload and applies pan/gain locally before enqueueing PCM into the speaker worklet.
+The current `svg-v2` receive path usually sends Opus payloads with compact spatial metadata and the sender UUID. The browser decodes the payload, applies pan/gain, then multiplies by the user’s per-player receive volume before enqueueing PCM into the speaker worklet.
+
+### Server To Client `voice_players`
+
+After authentication and whenever a Minecraft player joins or leaves, the server pushes:
+
+```json
+{
+  "type": "voice_players",
+  "players": [
+    { "uuid": "…", "name": "…" }
+  ]
+}
+```
+
+Each websocket client receives a roster that excludes its own UUID. The web UI uses this list (plus recently heard UUIDs from audio frames) for the Adjust Volumes panel.
 
 ## Compatibility Rules
 

@@ -93,6 +93,29 @@ Adds **Input Sensitivity** and **Mic Volume** sliders in the connected web UI (V
 
 ---
 
+### Upgrade to 0.1.10-fork (pending-join wait UI)
+
+Clearer **Waiting for Minecraft** panel with countdown while join grace holds the WebSocket open.
+
+1. Replace the plugin JAR with `0.1.10-fork` (or newer)
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` if you use overrides
+3. Hard-refresh the browser (`Ctrl+F5`)
+
+---
+
+### Upgrade to 0.1.11-fork (per-player Adjust Volumes)
+
+Adds **Adjust Volumes** (Overall / Other / per-player amplification + mute) in the connected web UI. Requires the new jar (svg-v2 sender UUID + `voice_players` roster) and a refreshed web client.
+
+1. Replace the plugin JAR with `0.1.11-fork`
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` so new JS/CSS/HTML is extracted
+3. Hard-refresh the browser (`Ctrl+F5`)
+4. After join, use **Adjust Volumes** under the mic settings; prefs stay in browser `localStorage` (`svgReceiveVolumes_v1`)
+
+Legacy PCM sessions remain master-volume only. Old clients against a new jar ignore unknown flags safely but will not get per-player control until updated.
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

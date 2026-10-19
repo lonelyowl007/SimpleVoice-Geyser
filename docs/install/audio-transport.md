@@ -67,8 +67,11 @@ The browser path currently uses the WASM decoder path for `svg-v2`. WebCodecs fi
 | `sampleRate` |  2 bytes | Sample rate, normally `48000` |
 | `channels`   |   1 byte | Channel count                 |
 | `codec`      |   1 byte | `1=opus`, `2=pcm16le`         |
-| `payloadLen` |  4 bytes | Payload length                |
+| `payloadLen` |  4 bytes | Codec payload length          |
+| `senderUUID` | 16 bytes | Optional; present when `FLAG_HAS_SENDER` (`0x08`) is set (big-endian UUID) |
 | `payload`    | variable | Codec payload                 |
+
+`FLAG_HAS_SENDER` (`0x08`) adds the speaker’s UUID after the 20-byte header so the web client can apply per-player receive volume. `payloadLen` still covers only the codec bytes.
 
 See [Protocol reference](https://theodoremeyer.github.io/projects/simplevoicegeyser/protocol.md) for the full websocket message flow, join payload, capability packet, and audio packet formats.
 
