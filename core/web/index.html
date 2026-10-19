@@ -146,12 +146,39 @@
                     <div class="flexSpacer"></div>
 
                     <div class="micContainer flexRowContainer" data-svg="ptt.mic-card">
-<!--                        <span class="mcTextStyle1" svg-lang="micSLabel"></span>-->
-<!--                        <div class="flexSpacer"></div>-->
 <!--                        Mute Button-->
                         <div class="mcButtonStyle fullWidthWhenMobile flexRowContainer">
                             <img class="micActivityIndicator" src="images/v2/mic.png" data-svg="audio.indicator">
-                            <button class="unmuted mcButtonStyleInner mcTextStyle2" data-svg="audio.mute" svg-lang="muteBtnText"></button>
+                            <button class="unmuted mcButtonStyleInner mcTextStyle2" data-svg="audio.mute" svg-lang="muteBtnText">Mute</button>
+                        </div>
+                    </div>
+
+                    <div class="flexDivider"></div>
+<!--                    Mic sensitivity + volume (Voice Activation / loudness) -->
+                    <div class="micSettingsContainer fullWidth" data-svg="audio.mic-settings">
+                        <div class="micSettingBlock fullWidth">
+                            <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="inputSensitivityLabel">Input Sensitivity</span>
+                            <div class="vad-meter-wrap" data-svg="audio.vad-meter">
+                                <div class="vad-bar-bg">
+                                    <div class="vad-bar-energy" data-svg="audio.vad-energy"></div>
+                                    <div class="vad-threshold-marker" data-svg="audio.vad-marker"></div>
+                                </div>
+                            </div>
+                            <input type="range" class="micRangeSlider" min="1" max="100" value="50" data-svg="audio.vad-slider" aria-label="Input sensitivity">
+                            <div class="vad-labels mcTextStyle1">
+                                <span svg-lang="sensitivitySensitiveLabel">Sensitive</span>
+                                <span svg-lang="sensitivityLessLabel">Less Sensitive</span>
+                            </div>
+                        </div>
+                        <div class="flexDivider"></div>
+                        <div class="micSettingBlock fullWidth">
+                            <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="micVolumeLabel">Mic Volume</span>
+                            <input type="range" class="micRangeSlider" min="50" max="200" value="100" data-svg="audio.gain-slider" aria-label="Microphone volume">
+                            <div class="vad-labels mcTextStyle1">
+                                <span>50%</span>
+                                <span data-svg="audio.gain-value">100%</span>
+                                <span>200%</span>
+                            </div>
                         </div>
                     </div>
 

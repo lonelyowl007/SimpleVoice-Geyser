@@ -265,6 +265,64 @@ main {
     filter: brightness(0.7);
 }
 
+.micSettingsContainer {
+    display: flex;
+    flex-flow: column;
+    gap: 6px;
+    margin: 4px 0 8px 0;
+}
+.micSettingBlock {
+    display: flex;
+    flex-flow: column;
+    gap: 4px;
+}
+.vad-meter-wrap {
+    margin: 6px 0;
+    width: 100%;
+}
+.vad-bar-bg {
+    position: relative;
+    width: 100%;
+    height: 10px;
+    background: var(--color3);
+    box-shadow: inset -1px -1px var(--color2), inset 1px 1px var(--color4);
+    overflow: hidden;
+}
+.vad-bar-energy {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0%;
+    background: #55c233;
+    transition: width 60ms linear;
+}
+.vad-threshold-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    left: 0%;
+    background: #ffffa0;
+    box-shadow: 0 0 2px #000;
+    transform: translateX(-1px);
+}
+.micRangeSlider {
+    width: 100%;
+    accent-color: var(--select-color2);
+    cursor: pointer;
+}
+.vad-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.7em;
+    opacity: 0.9;
+}
+.textAlignLeft {
+    text-align: left;
+}
+
 .whiteFilter {
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(4950%) hue-rotate(125deg) brightness(100%) contrast(110%);
 }
