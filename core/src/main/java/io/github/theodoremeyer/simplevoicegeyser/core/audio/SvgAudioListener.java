@@ -466,6 +466,16 @@ public final class SvgAudioListener {
     }
 
     private Double resolveReceiverYaw(VoicechatConnection receiverConnection) {
+        // Prefer platform-cached yaw (refreshed on entity/region thread). Never call
+        // Bukkit Player#getLocation from the SVG-Audio executor — unsafe on Folia.
+        var svgPlayer = SvgCore.getPlayerManager().getPlayer(listenerId);
+        if (svgPlayer != null) {
+            Double cached = svgPlayer.getCachedLookYaw();
+            if (cached != null) {
+                return cached;
+            }
+        }
+
         if (receiverConnection == null || receiverConnection.getPlayer() == null) {
             return null;
         }
@@ -474,18 +484,7 @@ public final class SvgAudioListener {
             return null;
         }
 
-        try {
-            Method getLocation = platformPlayer.getClass().getMethod("getLocation");
-            Object location = getLocation.invoke(platformPlayer);
-            if (location != null) {
-                Double yaw = invokeNumericNoArgs(location, "getYaw");
-                if (yaw != null) {
-                    return yaw;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-
+        // Fabric / non-Bukkit fallback only (no Bukkit Location reflection).
         Double yaw = invokeNumericNoArgs(platformPlayer, "getYRot");
         if (yaw != null) {
             return yaw;

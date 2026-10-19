@@ -14,6 +14,9 @@
     <img src="https://purpurmc.org/docs/images/purpur-small.png" height="22"/>
     <img src="https://img.shields.io/badge/Purpur-1.20.1–26.3-7c3aed"/>
   </a>
+- <a href="https://papermc.io/software/folia">
+    <img src="https://img.shields.io/badge/Folia-1.21.x–26.3-00a86b"/>
+  </a>
 - <a href="https://fabricmc.net/">
     <img src="https://fabricmc.net/assets/logo.png" height="22"/>
     <img src="https://img.shields.io/badge/Fabric-26.1%2B-1f2937"/>
