@@ -532,6 +532,254 @@ body.pending-minecraft-join .statusLabel {
     width: calc(100% - 4px);
 }
 
+/* —— SVC-style multi-screen panels —— */
+.svcScreens {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+}
+.svcScreen {
+    display: none;
+    flex-flow: column;
+    width: 100%;
+    gap: 8px;
+}
+.svcScreen.svcScreenActive {
+    display: flex;
+}
+.svcPanel {
+    background: #c6c6c6;
+    border: 3px solid #1a1a1a;
+    box-shadow:
+        inset 2px 2px 0 #ffffff,
+        inset -2px -2px 0 #555555,
+        2px 2px 0 #000000;
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-flow: column;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.svcPanelTitle {
+    margin: 0 0 4px;
+    text-align: center;
+    font-size: 1.15em;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+}
+.svcBigBtnRow {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+.svcBigBtn {
+    flex: 1;
+    min-height: 44px;
+    box-sizing: border-box;
+}
+.svcIconRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+.svcIconWrap {
+    display: flex;
+}
+.svcIconBtn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 2px solid #1a1a1a;
+    background: #8b8b8b;
+    box-shadow: inset 1px 1px 0 #c6c6c6, inset -1px -1px 0 #373737;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    image-rendering: pixelated;
+}
+.svcIconBtn:hover {
+    outline: 2px solid var(--select-color2);
+}
+.svcIconBtn .svcIconImg,
+.svcIconBtn .micActivityIndicator {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    box-shadow: none;
+    filter: none;
+}
+.svcIconBtn.muted .svcMuteSlash {
+    display: block;
+}
+.svcMuteSlash {
+    display: none;
+    position: absolute;
+    inset: 6px;
+    background: linear-gradient(
+        to top left,
+        transparent calc(50% - 2px),
+        #e02020 calc(50% - 2px),
+        #e02020 calc(50% + 2px),
+        transparent calc(50% + 2px)
+    );
+    pointer-events: none;
+}
+.svcSlidersIcon {
+    display: block;
+    width: 22px;
+    height: 16px;
+    background:
+        linear-gradient(#fff, #fff) 0 3px / 100% 2px no-repeat,
+        linear-gradient(#fff, #fff) 0 11px / 100% 2px no-repeat,
+        #fff;
+    box-shadow:
+        4px 0 0 3px #8b8b8b,
+        4px 0 0 5px #fff,
+        14px 8px 0 3px #8b8b8b,
+        14px 8px 0 5px #fff;
+    clip-path: inset(0);
+    position: relative;
+}
+.svcSlidersIcon::before,
+.svcSlidersIcon::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 10px;
+    background: #fff;
+    border: 1px solid #222;
+    top: -2px;
+}
+.svcSlidersIcon::before { left: 4px; }
+.svcSlidersIcon::after { left: 14px; top: 6px; height: 10px; }
+.svcLeaveBtn {
+    width: auto !important;
+    min-width: 4.5em;
+    padding: 0 10px;
+    font-size: 0.85em;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+}
+.svcHubPtt {
+    margin-top: 4px;
+}
+.svcHubPtt.dev-hidden,
+.svcScreen [data-svg="ptt.controls"].dev-hidden {
+    display: none !important;
+}
+.svcFullBtn {
+    width: 100%;
+    min-height: 40px;
+    box-sizing: border-box;
+}
+.svcDeviceBtnRow {
+    display: flex;
+    flex-flow: column;
+    gap: 8px;
+}
+.svcListArea {
+    background: #2b2b2b;
+    border: 2px solid #1a1a1a;
+    box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #555;
+    max-height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-flow: column;
+    gap: 2px;
+    padding: 4px;
+}
+.svcListRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border: none;
+    background: #3a3a3a;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    cursor: pointer;
+    font: inherit;
+    box-sizing: border-box;
+}
+.svcListRow:hover {
+    background: #4a4a4a;
+}
+.svcListRow.selected {
+    background: #2a2a2a;
+    outline: 1px solid #555;
+}
+.svcListIcon {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+}
+.svcListCheck {
+    display: none;
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #3d9e2e;
+    border: 1px solid #fff;
+    box-shadow: 0 0 0 1px #000;
+}
+.svcListCheck::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.svcListRow.selected .svcListCheck {
+    display: block;
+}
+.svcListLabel {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.svcSliderWrap {
+    position: relative;
+    width: 100%;
+}
+.svcSliderWrap .svcSlider {
+    width: 100%;
+}
+.svcSliderLabel {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    font-size: 0.75em;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    opacity: 0.95;
+}
+.volumeList.svcListArea {
+    max-height: 260px;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
 body {
     height: 100vh;
     width: 100vw;
@@ -608,6 +856,16 @@ body.connected .joinSec {
     .floatingWidgetsOverlay {
         position: initial;
         bottom: auto;
+    }
+
+    .svcBigBtnRow {
+        flex-flow: column;
+    }
+    .svcPanel {
+        padding: 10px;
+    }
+    .svcListArea {
+        max-height: 220px;
     }
 }
 

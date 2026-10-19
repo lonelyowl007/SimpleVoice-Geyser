@@ -160,6 +160,17 @@ If the browser keeps showing **Update required. Reloading page.**:
 
 ---
 
+### Upgrade to 0.1.15-fork (SVC-like multi-screen UI)
+
+Connected web UI is now hub → Settings / Adjust Volumes / device lists (not one long page).
+
+1. Stop the server
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` (required — new `index.html`, `screens.js`, CSS)
+3. Install `0.1.15-fork`
+4. Start + hard-refresh (`Ctrl+F5`); clear NPM/browser cache if needed
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

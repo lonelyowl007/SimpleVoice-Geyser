@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.14-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + update-required loop fix)  
+> **Fork version:** `0.1.15-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC-like multi-screen UI)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -82,6 +82,28 @@ Settings persist in `localStorage`. Defaults match the previous hardcoded thresh
 **After upgrading:** stop the server, delete `plugins/<SimpleVoice-Geyser>/web/`, start again, then hard-refresh the browser (Ctrl+F5). Enable Websockets on the NPM proxy host.
 
 If the browser loops on **“Update required. Reloading page.”**, the HTML `BUILD_ID` does not match the running jar. Common causes: stale `web/`, proxy cache, or (fixed in `0.1.14-fork`) a jar built with mismatched IDs after a git commit because Gradle skipped re-filtering HTML. Delete `web/`, install a freshly built jar, restart, Ctrl+F5.
+
+### 12) SVC-like multi-screen connected UI (0.1.15-fork)
+
+**Goal:** After join, the web client matches Simple Voice Chat’s menu flow — a compact hub with big buttons and icons — instead of one long scrolling page of every control.
+
+| Screen | Contents |
+|--------|----------|
+| **Hub** | Title “Voice Chat”; **Settings** + **Adjust Volumes**; mute / volumes / Leave icons; PTT hold when mode is PTT; chat under the hub |
+| **Settings** | Mic Volume, Input Sensitivity + meter, Voice/PTT (+ bind controls), Select Microphone / Select Speaker |
+| **Select Microphone / Speaker** | Dark list rows with checkmark on the selected device |
+| **Adjust Volumes** | Same Overall / Other / per-player panel as before (search, sliders, mute) |
+
+**Not included:** Full SVC Group create/join browser (web has no group-list API). Browser noise suppression / AGC stay off. Join-page branding is unchanged.
+
+| File | Change |
+|------|--------|
+| `core/web/index.html` | Connected multi-screen shell |
+| `core/web/js/screens.js` | Screen router + Back stack |
+| `core/web/css/v2.css` | `.svcPanel` / list / icon styling |
+| `core/web/js/ui.js` + `lang.js` | Device lists, Leave, i18n (`en`/`nl`/`pl`/`it`/`es`) |
+
+**After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
 
 ### 6) Join grace — web login before Minecraft join
 

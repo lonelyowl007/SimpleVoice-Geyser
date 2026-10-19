@@ -30,6 +30,19 @@
  * @property {HTMLElement} volumesRoot
  * @property {HTMLInputElement} volumesSearch
  * @property {HTMLElement} volumesList
+ * @property {HTMLElement} micList
+ * @property {HTMLElement} speakerList
+ */
+
+/**
+ * @typedef {Object} ScreenElements
+ * @property {HTMLElement} root
+ * @property {HTMLButtonElement} openSettings
+ * @property {HTMLButtonElement} openVolumes
+ * @property {HTMLButtonElement} hubVolumesIcon
+ * @property {HTMLButtonElement} openMic
+ * @property {HTMLButtonElement} openSpeaker
+ * @property {HTMLButtonElement} leaveBtn
  */
 
 /**
@@ -57,6 +70,7 @@
  * @property {FormElements} form
  * @property {AudioElements} audio
  * @property {PttElements} ptt
+ * @property {ScreenElements} screens
  */
 
 /**

@@ -13,6 +13,16 @@ const ELEMENTS = {
             passwordInput: "form.password"
         },
 
+        screens: {
+            root: "ui.screens",
+            openSettings: "ui.open-settings",
+            openVolumes: "ui.open-volumes",
+            hubVolumesIcon: "ui.hub-volumes-icon",
+            openMic: "ui.open-mic",
+            openSpeaker: "ui.open-speaker",
+            leaveBtn: "ui.leave"
+        },
+
         audio: {
             speakerSelect: "audio.speaker",
             micSelect: "audio.mic",
@@ -27,7 +37,9 @@ const ELEMENTS = {
             gainValueLabel: "audio.gain-value",
             volumesRoot: "audio.volumes",
             volumesSearch: "audio.volumes-search",
-            volumesList: "audio.volumes-list"
+            volumesList: "audio.volumes-list",
+            micList: "audio.mic-list",
+            speakerList: "audio.speaker-list"
         },
 
         ptt: {

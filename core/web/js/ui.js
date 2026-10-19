@@ -3,6 +3,7 @@ import {SvgLang} from "./utils/lang.js";
 import {PttController} from "./ptt.js";
 import {SvgAudio} from "./audio/audio.js";
 import {AdjustVolumesUI} from "./volumes.js";
+import {ScreenRouter} from "./screens.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
@@ -24,6 +25,9 @@ export class SvgUI {
     /** @type {import("./utils/types.js").PttElements} */
     ptt;
 
+    /** @type {import("./utils/types.js").ScreenElements} */
+    screens;
+
 
     /**
      * @param {SvgUIOptions} options
@@ -36,8 +40,10 @@ export class SvgUI {
         this.form = options.form;
         this.audio = options.audio;
         this.ptt = options.ptt;
+        this.screens = options.screens;
 
         this.pttController = null;
+        this.screenRouter = null;
         this._lastVadStart = SvgAudio.DEFAULT_VAD_START;
     }
 
@@ -159,6 +165,92 @@ export class SvgUI {
 
             await this.audioController.setOutputDevice(savedSpeaker);
         }
+
+        this.#renderDeviceLists();
+    }
+
+    #renderDeviceLists() {
+        const { micSelect, speakerSelect, micList, speakerList } = this.audio;
+        if (micList) {
+            this.#fillDeviceList(micList, micSelect, "mic");
+        }
+        if (speakerList) {
+            this.#fillDeviceList(speakerList, speakerSelect, "speaker");
+        }
+    }
+
+    /**
+     * @param {HTMLElement} listEl
+     * @param {HTMLSelectElement} select
+     * @param {"mic"|"speaker"} kind
+     */
+    #fillDeviceList(listEl, select, kind) {
+        listEl.replaceChildren();
+        const iconSrc = kind === "mic" ? "images/v2/mic.png" : "images/v2/docs.png";
+
+        for (const option of select.options) {
+            if (option.disabled && !option.value) {
+                continue;
+            }
+            if (!option.value) {
+                continue;
+            }
+
+            const row = document.createElement("button");
+            row.type = "button";
+            row.className = "svcListRow";
+            if (option.value === select.value) {
+                row.classList.add("selected");
+            }
+
+            const iconWrap = document.createElement("span");
+            iconWrap.className = "svcListIcon";
+            const img = document.createElement("img");
+            img.src = iconSrc;
+            img.alt = "";
+            img.width = 28;
+            img.height = 28;
+            img.className = "svcIconImg";
+            const check = document.createElement("span");
+            check.className = "svcListCheck";
+            iconWrap.appendChild(img);
+            iconWrap.appendChild(check);
+
+            const label = document.createElement("span");
+            label.className = "svcListLabel mcTextStyle2";
+            label.textContent = option.textContent || option.value;
+
+            row.appendChild(iconWrap);
+            row.appendChild(label);
+            row.addEventListener("click", () => {
+                select.value = option.value;
+                select.dispatchEvent(new Event("change", { bubbles: true }));
+                this.#renderDeviceLists();
+                this.screenRouter?.back();
+            });
+            listEl.appendChild(row);
+        }
+
+        if (listEl.childElementCount === 0) {
+            const empty = document.createElement("div");
+            empty.className = "svcListRow";
+            empty.textContent = SvgLang.string(
+                kind === "mic" ? "noMicrophoneDetectedLabel" : "noSpeakerDetectedLabel"
+            ) || "—";
+            listEl.appendChild(empty);
+        }
+    }
+
+    #leaveVoice() {
+        if (!this.webSocketController.isConnected()) {
+            return;
+        }
+        this.webSocketController.disconnect();
+        this.audioController.stopMic();
+        this.pttController?.reset();
+        this.screenRouter?.reset();
+        document.body.classList.remove("pending-minecraft-join");
+        SvgLang.setElement(this.form.joinButton, "joinBtnUnconnectedLabel");
     }
 
     async init() {
@@ -202,6 +294,15 @@ export class SvgUI {
             exitFullscreenPttBtn,
             allowBackgroundPttCheckbox
         } = this.ptt;
+
+        this.screenRouter = new ScreenRouter(this.screens.root);
+        this.screenRouter.bind({
+            openSettings: this.screens.openSettings,
+            openVolumes: this.screens.openVolumes,
+            hubVolumesIcon: this.screens.hubVolumesIcon,
+            openMic: this.screens.openMic,
+            openSpeaker: this.screens.openSpeaker
+        });
 
         this.audioController.setMicIndicator(micIndicator);
         this.#initMicSettingsControls({
@@ -284,16 +385,14 @@ export class SvgUI {
                 this.pttController.isPttActive()
         );
 
+        this.screens.leaveBtn.addEventListener("click", () => this.#leaveVoice());
+
         formEl.addEventListener("submit", async e => {
                 e.preventDefault();
 
                 // During pending wait OR after full join: Join button cancels / leaves.
                 if (this.webSocketController.isConnected()) {
-                    this.webSocketController.disconnect();
-                    this.audioController.stopMic();
-                    this.pttController.reset();
-                    document.body.classList.remove("pending-minecraft-join");
-                    SvgLang.setElement(joinButton, "joinBtnUnconnectedLabel");
+                    this.#leaveVoice();
                     return;
                 }
 
@@ -313,6 +412,7 @@ export class SvgUI {
 
                         if (status.connected) {
                             document.body.classList.remove("pending-minecraft-join");
+                            this.screenRouter?.reset();
 
                             SvgLang.setElement(statusEl,
                                 () => `${SvgLang.string("statusConnectedAsPrefix")} ${status.username}`
@@ -320,8 +420,6 @@ export class SvgUI {
                             statusEl.classList.remove("disconnected");
                             statusEl.classList.add("connected");
                             SvgLang.setElement(joinButton, "joinBtnConnectedLabel");
-                            micSelect.disabled = true;
-                            speakerSelect.disabled = true;
                             const runtime = this.audioController.getAudioRuntime();
 
                             if (runtime.canCaptureMic) {
@@ -343,6 +441,7 @@ export class SvgUI {
                             }
                         } else {
                             document.body.classList.remove("pending-minecraft-join");
+                            this.screenRouter?.reset();
                             SvgLang.setElement(statusEl, "statusDisconnectedLabel");
                             statusEl.classList.remove("connected");
                             statusEl.classList.add("disconnected");
@@ -363,15 +462,14 @@ export class SvgUI {
 
                 this.pttController.setMuted(muted);
 
-                SvgLang.setElement(muteBtn,
-                    () => muted
-                        ? SvgLang.string("muteBtnUnmuteLabel")
-                        : SvgLang.string("muteBtnMuteLabel")
-                );
-
                 muteBtn.classList.toggle("muted", muted);
-
                 muteBtn.classList.toggle("unmuted", !muted);
+                muteBtn.setAttribute(
+                    "aria-label",
+                    muted
+                        ? (SvgLang.string("muteBtnUnmuteLabel") || "Unmute")
+                        : (SvgLang.string("muteBtnMuteLabel") || "Mute")
+                );
             }
         );
 
@@ -386,6 +484,7 @@ export class SvgUI {
                 await this.audioController.setOutputDevice(
                     speakerSelect.value
                 );
+                this.#renderDeviceLists();
             }
         );
 
@@ -410,6 +509,7 @@ export class SvgUI {
                         micSelect.value
                     );
                 }
+                this.#renderDeviceLists();
             }
         );
 
@@ -467,9 +567,11 @@ export class SvgUI {
 
         const applyGain = () => {
             const percent = Number(gainSlider.value) || 100;
-            gainValueLabel.textContent = `${Math.round(percent)}%`;
+            const rounded = Math.round(percent);
+            const prefix = SvgLang.string("micVolumeLabel") || "Mic Volume";
+            gainValueLabel.textContent = `${prefix}: ${rounded}%`;
             this.audioController.setInputGain(percent / 100);
-            localStorage.setItem(GAIN_SLIDER_KEY, String(Math.round(percent)));
+            localStorage.setItem(GAIN_SLIDER_KEY, String(rounded));
         };
 
         vadSlider.addEventListener("input", applySensitivity);

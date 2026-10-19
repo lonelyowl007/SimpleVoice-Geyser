@@ -84,134 +84,158 @@
                     </div>
                 </form>
             </section>
-<!--            Connected Section-->
+<!--            Connected Section — SVC-style multi-screen UI -->
             <section class="connectedSec flexContainer">
-                <div class="flexDivider"></div>
-                <div class="fullWidth">
-                    <div class="flexRowContainer">
-<!--                        Transmit Mode Label-->
-                        <span class="mcTextStyle1" svg-lang="transmitModeLabel">Transmit Mode</span>
-                        <div class="flexDivider"></div>
-                        <div class="flexSpacer"></div>
-<!--                        Transmit Mode Select-->
-                        <div class="mcButtonStyle">
-                            <select class="mcButtonStyleInner mcTextStyle2" aria-label="Transmit mode" data-svg="ptt.mode">
-                                <option value="voice" svg-lang="voiceActivityText">Voice Activation</option>
-                                <option value="ptt" svg-lang="pushToTalkText">Push-To-Talk</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="svcScreens fullWidth" data-svg="ui.screens" data-active-screen="hub">
 
-                    <div class="flexDivider"></div>
-<!--                    PTT Container-->
-                    <div class="dev-hidden" data-svg="ptt.card">
-                        <div class="flexContainer fullWidth" data-svg="ptt.binding-controls">
-<!--                            PTT Bind Button-->
-                            <div class="pttBindBtnContainer mcButtonStyle">
-                                <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.bind" svg-lang="bindPttBtnText"></button>
+<!--                    HUB -->
+                    <div class="svcScreen svcScreenActive" data-screen="hub">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" svg-lang="voiceChatTitle">Voice Chat</h2>
+                            <div class="svcBigBtnRow">
+                                <button type="button" class="svcBigBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-settings" svg-lang="settingsBtn">Settings</button>
+                                <button type="button" class="svcBigBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-volumes" svg-lang="adjustVolumesBtn">Adjust Volumes</button>
                             </div>
-                            <div class="flexDivider"></div>
-                            <div class="flexRowContainer fullWidth flexColumnWhenMobile">
-<!--                                PTT Clear Binding Button-->
-                                <div class="pttClearBtnContainer mcButtonStyle">
-                                    <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.clear" svg-lang="clearPttBtnText"></button>
+                            <div class="svcIconRow">
+                                <div class="svcIconWrap" data-svg="ptt.mic-card">
+                                    <button type="button" class="svcIconBtn unmuted" data-svg="audio.mute" aria-label="Mute">
+                                        <img class="micActivityIndicator svcIconImg" src="images/v2/mic.png" data-svg="audio.indicator" alt="">
+                                        <span class="svcMuteSlash" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <button type="button" class="svcIconBtn" data-svg="ui.hub-volumes-icon" aria-label="Adjust Volumes" title="Adjust Volumes">
+                                    <span class="svcSlidersIcon" aria-hidden="true"></span>
+                                </button>
+                                <div class="flexSpacer"></div>
+                                <button type="button" class="svcIconBtn svcLeaveBtn mcTextStyle2" data-svg="ui.leave" svg-lang="leaveBtnText">Leave</button>
+                            </div>
+                            <div class="svcHubPtt flexRowContainer fullWidth flexColumnWhenMobile" data-svg="ptt.controls">
+                                <div class="mcButtonStyle fullWidthWhenMobile">
+                                    <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.button" svg-lang="pushToTalkBtnText"></button>
                                 </div>
                                 <div class="flexDivider"></div>
-                                <div class="flexSpacer"></div>
-                                <label class="pttBackgroundToggleContainer flexRowContainer fullWidthWhenMobile">
-<!--                                    PTT Background Toggle Label-->
-                                    <span svg-lang="allowBackgroundPttText"></span>
-                                    <div class="flexSpacerWhenMobile"></div>
-                                    <div class="flexDivider"></div>
-<!--                                    PTT Background Toggle Checkbox-->
-                                    <div class="mcCheckboxStyle">
-                                        <input type="checkbox" data-svg="ptt.allow-background"/>
-                                        <div class="mcCheckboxStyleInner"></div>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="flexDivider"></div>
-<!--                            PTT Binding Label-->
-                            <span class="textAlignLeft fullWidth" data-svg="ptt.binding-label" svg-lang="pttBindingLabel"></span>
-<!--                            Superseded by pttBindingLabel?-->
-<!--                            <p id="control-label" svg-lang="pttBindingDescription"></p>-->
-                        </div>
-                    </div>
-                </div>
-                <div class="flexDivider"></div>
-<!--                The Button Container Above Chat-->
-                <div class="flexRowContainer fullWidth flexColumnWhenMobile">
-                    <div class="flexSpacer"></div>
-
-                    <div class="micContainer flexRowContainer" data-svg="ptt.mic-card">
-<!--                        Mute Button-->
-                        <div class="mcButtonStyle fullWidthWhenMobile flexRowContainer">
-                            <img class="micActivityIndicator" src="images/v2/mic.png" data-svg="audio.indicator">
-                            <button class="unmuted mcButtonStyleInner mcTextStyle2" data-svg="audio.mute" svg-lang="muteBtnText">Mute</button>
-                        </div>
-                    </div>
-
-                    <div class="flexDivider"></div>
-<!--                    Mic sensitivity + volume (Voice Activation / loudness) -->
-                    <div class="micSettingsContainer fullWidth" data-svg="audio.mic-settings">
-                        <div class="micSettingBlock fullWidth">
-                            <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="inputSensitivityLabel">Input Sensitivity</span>
-                            <div class="vad-meter-wrap" data-svg="audio.vad-meter">
-                                <div class="vad-bar-bg">
-                                    <div class="vad-bar-energy" data-svg="audio.vad-energy"></div>
-                                    <div class="vad-threshold-marker" data-svg="audio.vad-marker"></div>
+                                <div class="mcButtonStyle fullWidthWhenMobile">
+                                    <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.fullscreen" svg-lang="fullscreenPttBtnText"></button>
                                 </div>
                             </div>
-                            <input type="range" class="micRangeSlider" min="1" max="100" value="50" data-svg="audio.vad-slider" aria-label="Input sensitivity">
-                            <div class="vad-labels mcTextStyle1">
-                                <span svg-lang="sensitivitySensitiveLabel">Sensitive</span>
-                                <span svg-lang="sensitivityLessLabel">Less Sensitive</span>
-                            </div>
                         </div>
                         <div class="flexDivider"></div>
-                        <div class="micSettingBlock fullWidth">
-                            <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="micVolumeLabel">Mic Volume</span>
-                            <input type="range" class="micRangeSlider" min="50" max="600" value="100" data-svg="audio.gain-slider" aria-label="Microphone volume">
-                            <div class="vad-labels mcTextStyle1">
-                                <span>50%</span>
-                                <span data-svg="audio.gain-value">100%</span>
-                                <span>600%</span>
+                        <div class="mcTextviewStyle mcTextStyle1" data-svg="chat.log"></div>
+                        <div class="fullWidth flexRowContainer">
+                            <input class="mcTextboxStyle fullWidth" id="chatInput" data-svg="chat.input" type="text" placeholder="Type a message..." svg-lang-placeholder="chatInputPlaceholder" />
+                            <div class="messageBtnContainer mcButtonStyle">
+                                <button class="mcButtonStyleInner mcTextStyle2" id="chatBtn" data-svg="chat.send" svg-lang="sendBtnText" type="button"></button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flexDivider"></div>
-                    <div class="adjustVolumesPanel fullWidth" data-svg="audio.volumes">
-                        <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="adjustVolumesTitle">Adjust Volumes</span>
-                        <div class="flexDivider"></div>
-                        <input class="mcTextboxStyle fullWidth volumeSearchInput" type="search" data-svg="audio.volumes-search" placeholder="Search…" svg-lang-placeholder="volumeSearchPlaceholder" autocomplete="off" />
-                        <div class="volumeList fullWidth" data-svg="audio.volumes-list"></div>
+<!--                    SETTINGS -->
+                    <div class="svcScreen" data-screen="settings" aria-hidden="true">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" svg-lang="voiceChatSettingsTitle">Voice Chat Settings</h2>
+                            <div class="micSettingsContainer fullWidth" data-svg="audio.mic-settings">
+                                <div class="micSettingBlock fullWidth">
+                                    <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="micVolumeLabel">Mic Volume</span>
+                                    <div class="svcSliderWrap">
+                                        <input type="range" class="micRangeSlider svcSlider" min="50" max="600" value="100" data-svg="audio.gain-slider" aria-label="Microphone volume">
+                                        <span class="svcSliderLabel" data-svg="audio.gain-value">100%</span>
+                                    </div>
+                                </div>
+                                <div class="flexDivider"></div>
+                                <div class="micSettingBlock fullWidth">
+                                    <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="inputSensitivityLabel">Input Sensitivity</span>
+                                    <div class="vad-meter-wrap" data-svg="audio.vad-meter">
+                                        <div class="vad-bar-bg">
+                                            <div class="vad-bar-energy" data-svg="audio.vad-energy"></div>
+                                            <div class="vad-threshold-marker" data-svg="audio.vad-marker"></div>
+                                        </div>
+                                    </div>
+                                    <input type="range" class="micRangeSlider" min="1" max="100" value="50" data-svg="audio.vad-slider" aria-label="Input sensitivity">
+                                    <div class="vad-labels mcTextStyle1">
+                                        <span svg-lang="sensitivitySensitiveLabel">Sensitive</span>
+                                        <span svg-lang="sensitivityLessLabel">Less Sensitive</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flexDivider"></div>
+                            <div class="flexRowContainer fullWidth">
+                                <span class="mcTextStyle1" svg-lang="transmitModeLabel">Transmit Mode</span>
+                                <div class="flexSpacer"></div>
+                                <div class="mcButtonStyle">
+                                    <select class="mcButtonStyleInner mcTextStyle2" aria-label="Transmit mode" data-svg="ptt.mode">
+                                        <option value="voice" svg-lang="voiceActivityText">Voice Activation</option>
+                                        <option value="ptt" svg-lang="pushToTalkText">Push-To-Talk</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="dev-hidden" data-svg="ptt.card">
+                                <div class="flexDivider"></div>
+                                <div class="flexContainer fullWidth" data-svg="ptt.binding-controls">
+                                    <div class="pttBindBtnContainer mcButtonStyle">
+                                        <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.bind" svg-lang="bindPttBtnText"></button>
+                                    </div>
+                                    <div class="flexDivider"></div>
+                                    <div class="flexRowContainer fullWidth flexColumnWhenMobile">
+                                        <div class="pttClearBtnContainer mcButtonStyle">
+                                            <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.clear" svg-lang="clearPttBtnText"></button>
+                                        </div>
+                                        <div class="flexDivider"></div>
+                                        <div class="flexSpacer"></div>
+                                        <label class="pttBackgroundToggleContainer flexRowContainer fullWidthWhenMobile">
+                                            <span svg-lang="allowBackgroundPttText"></span>
+                                            <div class="flexSpacerWhenMobile"></div>
+                                            <div class="flexDivider"></div>
+                                            <div class="mcCheckboxStyle">
+                                                <input type="checkbox" data-svg="ptt.allow-background"/>
+                                                <div class="mcCheckboxStyleInner"></div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="flexDivider"></div>
+                                    <span class="textAlignLeft fullWidth" data-svg="ptt.binding-label" svg-lang="pttBindingLabel"></span>
+                                </div>
+                            </div>
+                            <div class="flexDivider"></div>
+                            <div class="svcDeviceBtnRow">
+                                <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-mic" svg-lang="selectMicrophoneBtn">Select Microphone</button>
+                                <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-speaker" svg-lang="selectSpeakerBtn">Select Speaker</button>
+                            </div>
+                            <div class="flexDivider"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
+                        </div>
                     </div>
 
-                    <div class="flexRowContainer flexColumnWhenMobile fullWidthWhenMobile" data-svg="ptt.controls">
-<!--                        <span class="control-label" svg-lang="pttLabel"></span>-->
-<!--                        PTT Button-->
-                        <div class="mcButtonStyle fullWidthWhenMobile">
-                            <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.button" svg-lang="pushToTalkBtnText"></button>
-                        </div>
-                        <div class="flexDivider"></div>
-<!--                        PTT Fullscreen Button-->
-                        <div class="mcButtonStyle fullWidthWhenMobile">
-                            <button class="mcButtonStyleInner mcTextStyle2" type="button" data-svg="ptt.fullscreen" svg-lang="fullscreenPttBtnText"></button>
+<!--                    ADJUST VOLUMES -->
+                    <div class="svcScreen" data-screen="volumes" aria-hidden="true">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" svg-lang="adjustVolumesTitle">Adjust Volumes</h2>
+                            <div class="adjustVolumesPanel fullWidth" data-svg="audio.volumes">
+                                <input class="mcTextboxStyle fullWidth volumeSearchInput" type="search" data-svg="audio.volumes-search" placeholder="Search…" svg-lang-placeholder="volumeSearchPlaceholder" autocomplete="off" />
+                                <div class="volumeList svcListArea fullWidth" data-svg="audio.volumes-list"></div>
+                            </div>
+                            <div class="flexDivider"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
                         </div>
                     </div>
-                </div>
-                <div class="flexDivider"></div>
-<!--                Chat Log-->
-                <div class="mcTextviewStyle mcTextStyle1" data-svg="chat.log"></div>
-                <div class="fullWidth flexRowContainer">
-<!--                    Redundant text-->
-<!--                    <label class="mcTextStyle1" for="msgInput" svg-lang="msgText"></label>-->
-<!--                    Chat Input-->
-                    <input class="mcTextboxStyle fullWidth" id="chatInput" data-svg="chat.input" type="text" placeholder="Type a message..." svg-lang-placeholder="chatInputPlaceholder" />
-<!--                    Chat Send Button-->
-                    <div class="messageBtnContainer mcButtonStyle">
-                        <button class="mcButtonStyleInner mcTextStyle2" id="chatBtn" data-svg="chat.send" svg-lang="sendBtnText" type="submit"></button>
+
+<!--                    SELECT MICROPHONE -->
+                    <div class="svcScreen" data-screen="mic" aria-hidden="true">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" svg-lang="selectMicrophoneTitle">Select Microphone</h2>
+                            <div class="svcListArea" data-svg="audio.mic-list"></div>
+                            <div class="flexDivider"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
+                        </div>
+                    </div>
+
+<!--                    SELECT SPEAKER -->
+                    <div class="svcScreen" data-screen="speaker" aria-hidden="true">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" svg-lang="selectSpeakerTitle">Select Speaker</h2>
+                            <div class="svcListArea" data-svg="audio.speaker-list"></div>
+                            <div class="flexDivider"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
+                        </div>
                     </div>
                 </div>
             </section>
