@@ -81,7 +81,7 @@ Settings persist in `localStorage`. Defaults match the previous hardcoded thresh
 
 **After upgrading:** stop the server, delete `plugins/<SimpleVoice-Geyser>/web/`, start again, then hard-refresh the browser (Ctrl+F5). Enable Websockets on the NPM proxy host.
 
-If the browser loops on **“Update required. Reloading page.”**, the HTML `BUILD_ID` does not match the running jar (stale `web/` or proxy cache). Delete `web/`, restart with the matching jar, Ctrl+F5. From `0.1.13-fork` onward `index.html` / `legacy.html` are always refreshed from the jar on startup, and the client only auto-reloads once.
+If the browser loops on **“Update required. Reloading page.”**, the HTML `BUILD_ID` does not match the running jar. Common causes: stale `web/`, proxy cache, or (fixed in `0.1.14-fork`) a jar built with mismatched IDs after a git commit because Gradle skipped re-filtering HTML. Delete `web/`, install a freshly built jar, restart, Ctrl+F5.
 
 ### 6) Join grace — web login before Minecraft join
 
