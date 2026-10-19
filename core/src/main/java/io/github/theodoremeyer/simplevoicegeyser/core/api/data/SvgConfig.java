@@ -75,7 +75,7 @@ public final class SvgConfig {
             ));
 
     public final ConfigKey<Boolean> DEFAULT_GROUP_ENABLED =
-            new ConfigKey <>(this, "server.group.default.enabled", true);
+            new ConfigKey <>(this, "server.group.default.enabled", false);
 
     public final ConfigKey<String> DEFAULT_GROUP_PASSWORD =
             new ConfigKey <>(this, "server.group.default.password", "1a2b");

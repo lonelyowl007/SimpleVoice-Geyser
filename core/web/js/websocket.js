@@ -45,6 +45,8 @@ export class SvgWebSocket {
         this.micEncoder = null;
         this.micEncoderGeneration = 0;
         this.micPendingCaptureTimes = [];
+        this._rxBinaryQueue = [];
+        this._rxBinaryProcessing = false;
         this.#resetState();
     }
 
@@ -82,6 +84,8 @@ export class SvgWebSocket {
 
     #resetState() {
         this.#destroyMicEncoder();
+        this._rxBinaryQueue = [];
+        this._rxBinaryProcessing = false;
         this.reconnectAttempts = 0;
         this.manualClose = false;
         this.hasJoined = false;
@@ -224,7 +228,7 @@ export class SvgWebSocket {
                     })
                 }
             } else {
-                await this.#handleIncomingBinaryFrame(event.data);
+                this.#enqueueBinaryFrame(event.data);
             }
         };
 
@@ -532,7 +536,35 @@ export class SvgWebSocket {
         socket.send(JSON.stringify(payload));
     }
 
-     async #handleIncomingBinaryFrame(arrayBuffer) {
+    /**
+     * Serialize binary RX so Opus decode/play never overlaps across frames.
+     * @param {ArrayBuffer} arrayBuffer
+     */
+    #enqueueBinaryFrame(arrayBuffer) {
+        this._rxBinaryQueue.push(arrayBuffer);
+        if (this._rxBinaryProcessing) {
+            return;
+        }
+        this._rxBinaryProcessing = true;
+        void this.#drainBinaryQueue();
+    }
+
+    async #drainBinaryQueue() {
+        try {
+            while (this._rxBinaryQueue.length > 0) {
+                const frame = this._rxBinaryQueue.shift();
+                await this.#handleIncomingBinaryFrame(frame);
+            }
+        } finally {
+            this._rxBinaryProcessing = false;
+            if (this._rxBinaryQueue.length > 0) {
+                this._rxBinaryProcessing = true;
+                void this.#drainBinaryQueue();
+            }
+        }
+    }
+
+    async #handleIncomingBinaryFrame(arrayBuffer) {
         this.rxBinaryFrames++;
         this.rxBinaryBytes += arrayBuffer.byteLength || 0;
 
@@ -550,6 +582,7 @@ export class SvgWebSocket {
             if (senderUuid) {
                 noteHeard(senderUuid);
             }
+            packet.senderId = senderUuid || packet.senderId || "other";
             if (packet?.samples) {
                 applyUserGain(packet.samples, senderUuid);
             }
@@ -563,9 +596,10 @@ export class SvgWebSocket {
             return;
         }
 
-         this.rxLegacyFrames++;
+        this.rxLegacyFrames++;
         const packet = this.#decodeLegacyPcm16(arrayBuffer);
-        // Legacy PCM has no sender UUID — master volume only.
+        // Legacy PCM has no sender UUID — master volume only; mix under one "legacy" voice.
+        packet.senderId = "legacy";
         if (packet?.samples) {
             applyMasterGainOnly(packet.samples);
         }
@@ -575,7 +609,7 @@ export class SvgWebSocket {
             this.rxMonoFrames++;
         }
         this.audioController.playAudio(packet);
-         this.#maybeLogAudioStats();
+        this.#maybeLogAudioStats();
     }
 
     #maybeLogAudioStats() {

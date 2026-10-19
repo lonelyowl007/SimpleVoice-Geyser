@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.12-fork` (upstream base `0.1.4` + voice fix + Paper/Purpur 26.3 + Folia + mic UI + join grace + Svg-App allowlist + web UI polish / NL / branding + per-player volumes + louder mic gain)  
+> **Fork version:** `0.1.13-fork` (upstream base `0.1.4` + voice/Folia/mic/join-grace/UI + per-player volumes + louder mic + proximity default + multi-talk fix)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -136,6 +136,24 @@ First visit uses `default-language` when `localStorage.preferredLanguage` is uns
 **Problem:** With browser AGC off, **Mic Volume at 200%** often changed nothing for listeners — gain lived only in the worklet message path and capped at 2×.
 
 **Fix:** Web Audio `GainNode` before the mic worklet, soft `tanh` limiter, slider **50%–600%**. Documented under §2 above.
+
+### 11) Proximity by default + multi-talk robot fix (0.1.13-fork)
+
+**Problem A — everyone in group `Svg`:** On web join the plugin auto-created one shared SVC **OPEN** group named `Svg` (`server.group.default.enabled` defaulted to `true`). All SVG users heard each other like a party line, not normal proximity.
+
+**Fix A:** Default is now **`server.group.default.enabled: false`**. Web clients use normal Simple Voice Chat proximity. Set `enabled: true` only if you want a shared SVG lobby. **Existing servers** that already have `enabled: true` in `config.yml` must set it to `false` manually (config merge keeps old values).
+
+**Problem B — multi-talk sounds robotic:** One Opus decoder was reused for every speaker (server legacy + client svg-v2). Opus is stateful per stream, so interleaved A/B packets turn metallic. The speaker worklet also **appended** PCM instead of mixing concurrent voices.
+
+**Fix B:**
+| Layer | Change |
+|-------|--------|
+| Server legacy | Per-sender `OpusDecoder` map in `SvgAudioListener` |
+| Client svg-v2 | Per-sender WASM Opus decoder pool (keyed by `FLAG_HAS_SENDER` UUID) |
+| Speaker worklet | Per-voice queues summed in `process()` + soft clamp |
+| WebSocket RX | Binary frames decoded/played one-at-a-time (no overlap) |
+
+Upstream [PR #52](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/pull/52) only covers mic AGC/NS/AEC (already in §1) — it does **not** fix multi-talk decode/mix.
 
 **Note:** Fabric support badges are unchanged (`1.21.11–26.1.2`) in this fork update.
 

@@ -127,6 +127,28 @@ Fixes **Mic Volume** having little/no effect for listeners when browser AGC is o
 
 ---
 
+### Upgrade to 0.1.13-fork (proximity default + multi-talk audio)
+
+- **Default group off:** new installs no longer auto-join the shared `Svg` OPEN group. For proximity, set in live `config.yml`:
+
+```yaml
+server:
+  group:
+    default:
+      enabled: false
+```
+
+  (Existing configs that already have `enabled: true` keep that value until you change it.)
+
+- **Multi-talk fix:** per-sender Opus decoders (server legacy + client svg-v2) and per-voice mixing in the speaker worklet so several people talking no longer sounds robotic.
+
+1. Replace the plugin JAR with `0.1.13-fork`
+2. Set `server.group.default.enabled: false` if you still see everyone in group `Svg`
+3. Delete `plugins/<SimpleVoice-Geyser>/web/`
+4. Restart + hard-refresh (`Ctrl+F5`)
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

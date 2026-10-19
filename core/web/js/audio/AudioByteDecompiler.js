@@ -8,11 +8,16 @@ const SENDER_UUID_SIZE = 16;
 const FLAG_HAS_SENDER = 0x08;
 const CODEC_OPUS = 1;
 const CODEC_PCM16_LE = 2;
+const DECODER_IDLE_MS = 10_000;
 
-let wasmDecoder = null;
+/** @type {typeof import("opus-decoder").OpusDecoder|null} */
+let OpusDecoderClass = null;
 let wasmReady = false;
 let wasmInitError = null;
 let decompilerInitPromise = null;
+
+/** @type {Map<string, { decoder: object, lastUsed: number }>} */
+const decodersBySender = new Map();
 
 let rxSvgV2Frames = 0;
 let rxSvgV2Malformed = 0;
@@ -31,13 +36,16 @@ async function initWasmDecoder() {
         if (!OpusDecoder) {
             throw new Error("OpusDecoder export not found");
         }
-        wasmDecoder = new OpusDecoder({
+        OpusDecoderClass = OpusDecoder;
+        // Probe one instance so capability reporting stays accurate.
+        const probe = new OpusDecoder({
             sampleRate: 48000,
             channels: 1
         });
-        await wasmDecoder.ready;
+        await probe.ready;
+        decodersBySender.set("other", { decoder: probe, lastUsed: Date.now() });
         wasmReady = true;
-        Logger.log("[AudioRX] Opus WASM decoder ready.");
+        Logger.log("[AudioRX] Opus WASM decoder ready (per-sender pools).");
     } catch (err) {
         wasmInitError = err?.message || String(err);
         Logger.log(`[AudioRX] Opus WASM decoder unavailable: ${wasmInitError}`);
@@ -75,7 +83,8 @@ export function getAudioDecompileStats() {
     return {
         frames: rxSvgV2Frames,
         malformed: rxSvgV2Malformed,
-        decodeErrors: rxSvgV2DecodeErrors
+        decodeErrors: rxSvgV2DecodeErrors,
+        decoderCount: decodersBySender.size
     };
 }
 
@@ -99,17 +108,18 @@ export async function decodeSvgV2Frame(arrayBuffer) {
         if (!frame.payload || frame.payload.length === 0) {
             return {
                 format: "svg-v2",
-                packet: { samples: new Float32Array(0), channels: 2 },
+                packet: { samples: new Float32Array(0), channels: 2, senderId: frame.senderUuid || "other" },
                 meta: frame
             };
         }
 
         if (frame.codec === CODEC_OPUS) {
-            const decoded = await decodeOpus(frame.payload);
+            const decoded = await decodeOpus(frame.payload, frame.senderUuid);
             if (!decoded) {
                 throw new Error("No Opus decoder available");
             }
             const packet = applySpatial(decoded, frame.pan, frame.gain);
+            packet.senderId = frame.senderUuid || "other";
             return {
                 format: "svg-v2",
                 packet,
@@ -117,9 +127,11 @@ export async function decodeSvgV2Frame(arrayBuffer) {
             };
         }
         if (frame.codec === CODEC_PCM16_LE) {
+            const packet = decodePcm16Payload(frame.payload, frame.channels, frame.pan, frame.gain);
+            packet.senderId = frame.senderUuid || "other";
             return {
                 format: "svg-v2",
-                packet: decodePcm16Payload(frame.payload, frame.channels, frame.pan, frame.gain),
+                packet,
                 meta: frame
             };
         }
@@ -198,19 +210,69 @@ function uuidFromBytes(view, offset) {
     );
 }
 
-async function decodeOpus(opusPayload) {
+/**
+ * @param {Uint8Array} opusPayload
+ * @param {string|null|undefined} senderUuid
+ */
+async function decodeOpus(opusPayload, senderUuid) {
     await warmupAudioDecompiler();
-
-    if (wasmReady && wasmDecoder) {
-        const decoded = wasmDecoder.decodeFrame(opusPayload);
-        const channelData = decoded?.channelData;
-        if (!Array.isArray(channelData) || channelData.length === 0) {
-            throw new Error("WASM decode returned empty channel data");
-        }
-        return channelData;
+    if (!wasmReady || !OpusDecoderClass) {
+        return null;
     }
 
-    return null;
+    const key = senderUuid || "other";
+    const decoder = await decoderForSender(key);
+    if (!decoder) {
+        return null;
+    }
+
+    const decoded = decoder.decodeFrame(opusPayload);
+    const channelData = decoded?.channelData;
+    if (!Array.isArray(channelData) || channelData.length === 0) {
+        throw new Error("WASM decode returned empty channel data");
+    }
+    return channelData;
+}
+
+/** @param {string} key */
+async function decoderForSender(key) {
+    const now = Date.now();
+    const existing = decodersBySender.get(key);
+    if (existing) {
+        existing.lastUsed = now;
+        return existing.decoder;
+    }
+
+    const decoder = new OpusDecoderClass({
+        sampleRate: 48000,
+        channels: 1
+    });
+    await decoder.ready;
+    decodersBySender.set(key, { decoder, lastUsed: now });
+    pruneIdleDecoders(now);
+    return decoder;
+}
+
+/** @param {number} now */
+function pruneIdleDecoders(now) {
+    if (decodersBySender.size <= 4) {
+        return;
+    }
+    for (const [key, entry] of decodersBySender) {
+        if (now - entry.lastUsed < DECODER_IDLE_MS) {
+            continue;
+        }
+        // Keep at least one fallback decoder around.
+        if (key === "other" && decodersBySender.size <= 5) {
+            continue;
+        }
+        try {
+            entry.decoder?.free?.();
+        } catch {
+            // ignore
+        }
+        decodersBySender.delete(key);
+    }
 }
 
 function applySpatial(channelData, pan, gain) {
