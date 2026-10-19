@@ -164,6 +164,11 @@ export class SvgWebSocket {
 
                     if (packetType === "status" && msg.includes("connected as")) {
                         this.hasJoined = true;
+                        try {
+                            sessionStorage.removeItem("svgOutdatedReloadOnce");
+                        } catch {
+                            // ignore
+                        }
                         await this.#sendCapabilitiesOnce();
                         this.#runEventListeners("statusChange", {
                             connected: true,
@@ -250,9 +255,22 @@ export class SvgWebSocket {
 
             if (code === SvgWebSocket.DisconnectPolicy.OUTDATED || reason === "update_required") {
                 this.stopReconnection();
-                Logger.log("Outdated client. Reloading...");
-                alert("Update required. Reloading page.");
-                location.reload();
+                const reloadKey = "svgOutdatedReloadOnce";
+                if (!sessionStorage.getItem(reloadKey)) {
+                    sessionStorage.setItem(reloadKey, "1");
+                    Logger.log("Outdated client. Cache-bust reload once...");
+                    const url = new URL(location.href);
+                    url.searchParams.set("_svg", String(Date.now()));
+                    location.replace(url.toString());
+                    return;
+                }
+                sessionStorage.removeItem(reloadKey);
+                Logger.log("Outdated client after reload — server web assets are stale.");
+                alert(
+                    "Update required: the website build does not match the plugin.\n\n" +
+                    "On the server: stop, delete plugins/<SimpleVoice-Geyser>/web/, " +
+                    "install the matching jar, start, then hard-refresh (Ctrl+F5)."
+                );
                 return;
             }
 

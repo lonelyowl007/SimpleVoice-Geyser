@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.13-fork` (upstream base `0.1.4` + voice/Folia/mic/join-grace/UI + per-player volumes + louder mic + proximity default + multi-talk fix)  
+> **Fork version:** `0.1.14-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + update-required loop fix)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -80,6 +80,8 @@ Settings persist in `localStorage`. Defaults match the previous hardcoded thresh
 | `core/web/index.html` | English fallback text inside `svg-lang` elements |
 
 **After upgrading:** stop the server, delete `plugins/<SimpleVoice-Geyser>/web/`, start again, then hard-refresh the browser (Ctrl+F5). Enable Websockets on the NPM proxy host.
+
+If the browser loops on **“Update required. Reloading page.”**, the HTML `BUILD_ID` does not match the running jar (stale `web/` or proxy cache). Delete `web/`, restart with the matching jar, Ctrl+F5. From `0.1.13-fork` onward `index.html` / `legacy.html` are always refreshed from the jar on startup, and the client only auto-reloads once.
 
 ### 6) Join grace — web login before Minecraft join
 

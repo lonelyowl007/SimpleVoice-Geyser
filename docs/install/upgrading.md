@@ -149,6 +149,17 @@ server:
 
 ---
 
+### Upgrade to 0.1.14-fork (Update required loop)
+
+If the browser keeps showing **Update required. Reloading page.**:
+
+1. Stop the server
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` (stale `index.html` BUILD_ID)
+3. Install `0.1.14-fork` (always refreshes `index.html` / `legacy.html` from the jar; client only auto-reloads once)
+4. Start + hard-refresh (`Ctrl+F5`); clear NPM/browser cache if needed
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment
