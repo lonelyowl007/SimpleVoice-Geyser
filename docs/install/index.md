@@ -16,10 +16,18 @@ For Host-Specific setup, see [Hosting Guides]({% project_link guides %}).
 
 ### Bukkit-based Servers (Paper / Purpur / Spigot)
 
-* Minecraft 1.21.8+
-* Simple Voice Chat 2.6.x+
+* Minecraft **1.20.1 through 26.3** (full **26.x** line)
+* Simple Voice Chat 2.6.x+ (use **2.6.24+** on Minecraft 26.3)
 * GeyserMC 2.10.1-SNAPSHOT+
 * Floodgate (optional, but recommended)
+
+### Folia
+
+* Folia build matching your Minecraft version (**1.21.x through 26.3**)
+* Simple Voice Chat **2.6.24+**
+* Same plugin jar as Paper/Purpur (`folia-supported: true` with EntityScheduler + spatial yaw cache)
+
+See [Compatibility]({% project_link install/compatibility %}) for the full version tables.
 
 ### Fabric
 

@@ -57,7 +57,7 @@ Folia support is **real region-threading support**, not only the `folia-supporte
 
 | Version   | MC Version   | Voice Chat | Geyser           | Floodgate       | Status |
 |-----------|--------------|------------|------------------|-----------------|--------|
-| 0.1.4+ fork | **1.21.x–26.3** | 2.6.24+ | 2.10.1-SNAPSHOT+ (optional) | 2.2.5-SNAPSHOT+ (optional) | ✅ |
+| 0.1.4+ | **1.21.x–26.3** | 2.6.24+ | 2.10.1-SNAPSHOT+ (optional) | 2.2.5-SNAPSHOT+ (optional) | ✅ |
 
 ### Requirements
 

@@ -52,6 +52,26 @@ The server stores the selected transport mode for that websocket session:
 
 The browser path currently uses the WASM decoder path for `svg-v2`. WebCodecs fields may appear in capability metadata for future app/non-browser clients, but they are not the active browser decode path.
 
+## Microphone capture
+
+The web client requests the microphone through `getUserMedia` with browser processing turned **off**:
+
+* `noiseSuppression: false`
+* `echoCancellation: false`
+* `autoGainControl: false`
+
+Browser noise suppression, echo cancellation, and auto-gain often warp the mic signal when players use the web client over the internet (WAN). That can sound robotic or metallic to listeners. Disabling those constraints keeps a cleaner raw capture for remote voice.
+
+This matches the intent of the stalled upstream change in PR #52, reapplied on current `dev`. Quiet mics can use the web **Mic Volume** / Input Sensitivity controls (software gain) instead of turning browser AGC back on.
+
+## Multi-talk decode and mix
+
+Opus is stateful per stream. Reusing one decoder for every speaker (or appending PCM for concurrent voices) can sound robotic when several people talk at once.
+
+* Server legacy path: per-sender `OpusDecoder` in `SvgAudioListener`
+* Client `svg-v2` path: per-sender Opus decoder pool (keyed by `FLAG_HAS_SENDER` UUID when present)
+* Speaker worklet: per-voice queues mixed in `process()` with a soft clamp
+
 ## Developer Appendix: `svg-v2` Frame
 
 `svg-v2` binary frames use little-endian multibyte fields:
