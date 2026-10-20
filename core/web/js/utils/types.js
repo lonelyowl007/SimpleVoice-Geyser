@@ -38,11 +38,15 @@
  * @typedef {Object} ScreenElements
  * @property {HTMLElement} root
  * @property {HTMLButtonElement} openSettings
- * @property {HTMLButtonElement} openVolumes
+ * @property {HTMLButtonElement} openGroups
  * @property {HTMLButtonElement} hubVolumesIcon
  * @property {HTMLButtonElement} openMic
  * @property {HTMLButtonElement} openSpeaker
  * @property {HTMLButtonElement} leaveBtn
+ * @property {HTMLElement} groupsList
+ * @property {HTMLElement} groupsCurrent
+ * @property {HTMLInputElement} groupsPassword
+ * @property {HTMLButtonElement} groupsLeave
  */
 
 /**

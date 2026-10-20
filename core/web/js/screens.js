@@ -55,7 +55,7 @@ export class ScreenRouter {
      * Wire open/back buttons inside root.
      * @param {{
      *   openSettings?: HTMLElement|null,
-     *   openVolumes?: HTMLElement|null,
+     *   openGroups?: HTMLElement|null,
      *   hubVolumesIcon?: HTMLElement|null,
      *   openMic?: HTMLElement|null,
      *   openSpeaker?: HTMLElement|null
@@ -63,7 +63,7 @@ export class ScreenRouter {
      */
     bind(buttons = {}) {
         buttons.openSettings?.addEventListener("click", () => this.show("settings"));
-        buttons.openVolumes?.addEventListener("click", () => this.show("volumes"));
+        buttons.openGroups?.addEventListener("click", () => this.show("groups"));
         buttons.hubVolumesIcon?.addEventListener("click", () => this.show("volumes"));
         buttons.openMic?.addEventListener("click", () => this.show("mic"));
         buttons.openSpeaker?.addEventListener("click", () => this.show("speaker"));

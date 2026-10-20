@@ -171,6 +171,19 @@ Connected web UI is now hub → Settings / Adjust Volumes / device lists (not on
 
 ---
 
+### Upgrade to 0.1.16-fork (Web Groups list + join)
+
+Web clients can list SVC groups and join with a password (hub **Groups** button). Adjust Volumes stays on the volumes icon.
+
+1. Stop the server
+2. Delete `plugins/<SimpleVoice-Geyser>/web/` (required — new Groups UI + protocol)
+3. Install `0.1.16-fork`
+4. Start + hard-refresh (`Ctrl+F5`); clear NPM/browser cache if needed
+
+Ensure players have `svg.vc.group.join` (included under `svg.vc.group` by default).
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

@@ -16,11 +16,15 @@ const ELEMENTS = {
         screens: {
             root: "ui.screens",
             openSettings: "ui.open-settings",
-            openVolumes: "ui.open-volumes",
+            openGroups: "ui.open-groups",
             hubVolumesIcon: "ui.hub-volumes-icon",
             openMic: "ui.open-mic",
             openSpeaker: "ui.open-speaker",
-            leaveBtn: "ui.leave"
+            leaveBtn: "ui.leave",
+            groupsList: "ui.groups-list",
+            groupsCurrent: "ui.groups-current",
+            groupsPassword: "ui.groups-password",
+            groupsLeave: "ui.groups-leave"
         },
 
         audio: {

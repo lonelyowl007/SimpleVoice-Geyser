@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.15-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC-like multi-screen UI)  
+> **Fork version:** `0.1.16-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -89,12 +89,13 @@ If the browser loops on **“Update required. Reloading page.”**, the HTML `BU
 
 | Screen | Contents |
 |--------|----------|
-| **Hub** | Title “Voice Chat”; **Settings** + **Adjust Volumes**; mute / volumes / Leave icons; PTT hold when mode is PTT; chat under the hub |
+| **Hub** | Title “Voice Chat”; **Settings** + **Groups**; mute / volumes / Leave icons; PTT hold when mode is PTT; chat under the hub |
 | **Settings** | Mic Volume, Input Sensitivity + meter, Voice/PTT (+ bind controls), Select Microphone / Select Speaker |
 | **Select Microphone / Speaker** | Dark list rows with checkmark on the selected device |
-| **Adjust Volumes** | Same Overall / Other / per-player panel as before (search, sliders, mute) |
+| **Groups** | Live SVC group list, join (password if required), leave current group |
+| **Adjust Volumes** | Overall / Other / per-player panel (via volumes icon on hub) |
 
-**Not included:** Full SVC Group create/join browser (web has no group-list API). Browser noise suppression / AGC stay off. Join-page branding is unchanged.
+Browser noise suppression / AGC stay off. Join-page branding is unchanged. Creating groups remains via `/svg cgroup` or Geyser forms (not in the web UI).
 
 | File | Change |
 |------|--------|
@@ -102,6 +103,19 @@ If the browser loops on **“Update required. Reloading page.”**, the HTML `BU
 | `core/web/js/screens.js` | Screen router + Back stack |
 | `core/web/css/v2.css` | `.svcPanel` / list / icon styling |
 | `core/web/js/ui.js` + `lang.js` | Device lists, Leave, i18n (`en`/`nl`/`pl`/`it`/`es`) |
+
+**After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
+
+### 13) Web Groups list + join (0.1.16-fork)
+
+**Goal:** Bedrock/web players can see existing Simple Voice Chat groups and join them (with password when set), like the SVC Group menu — without auto-forcing everyone into the shared `Svg` lobby.
+
+| Piece | Details |
+|-------|---------|
+| Server → client `groups` | `{ name, type, hasPassword }` + `current` membership (never sends passwords) |
+| Client → server | `join_group` / `leave_group` via existing `GroupManager` |
+| UI | Hub **Groups** button → list, password field, Leave Group |
+| Permission | `svg.vc.group.join` (default true, child of `svg.vc.group`) |
 
 **After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
 

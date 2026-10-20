@@ -350,6 +350,39 @@ After authentication and whenever a Minecraft player joins or leaves, the server
 
 Each websocket client receives a roster that excludes its own UUID. The web UI uses this list (plus recently heard UUIDs from audio frames) for the Adjust Volumes panel.
 
+### Server To Client `groups`
+
+After authentication and whenever groups change (create/remove/join/leave), the server pushes a personalized list:
+
+```json
+{
+  "type": "groups",
+  "groups": [
+    { "name": "Party", "type": "OPEN", "hasPassword": true }
+  ],
+  "current": "Party"
+}
+```
+
+| Field | Meaning |
+|-------|---------|
+| `groups[].name` | SVC group name |
+| `groups[].type` | `OPEN`, `NORMAL`, or `ISOLATED` |
+| `groups[].hasPassword` | Whether a password is required (secret never sent) |
+| `current` | Joined group name for this player, or `null` |
+
+### Client To Server `join_group` / `leave_group`
+
+```json
+{ "type": "join_group", "name": "Party", "password": "optional" }
+```
+
+```json
+{ "type": "leave_group" }
+```
+
+Requires an authenticated websocket and an online Minecraft player with `svg.vc.group.join`. Failures return a normal `error` status message; success is followed by an updated `groups` push.
+
 ## Compatibility Rules
 
 | Client/server state                                            | Expected behavior                               |

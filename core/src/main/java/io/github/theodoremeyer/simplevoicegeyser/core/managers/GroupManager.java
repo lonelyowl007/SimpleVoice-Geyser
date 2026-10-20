@@ -9,8 +9,12 @@ import io.github.theodoremeyer.simplevoicegeyser.core.api.chat.SvgColor;
 import io.github.theodoremeyer.simplevoicegeyser.core.api.sender.SvgPlayer;
 import io.github.theodoremeyer.simplevoicegeyser.core.svc.VoiceChatBridge;
 
+import io.github.theodoremeyer.simplevoicegeyser.core.server.packets.GroupsBroadcaster;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,6 +67,7 @@ public final class GroupManager {
                 if (connection != null) {
                     connection.setGroup(groups.get(groupName));
                     SvgPlayer.sendMessage(SvgCore.getPrefix() + SvgColor.DARK_BLUE + "joined Group " + groupName);
+                    GroupsBroadcaster.broadcast();
                     return true;
                 } else {
                     SvgPlayer.sendMessage(SvgCore.getPrefix() + SvgColor.DARK_RED + "Vc connection is null");
@@ -95,6 +100,7 @@ public final class GroupManager {
             }
             connection.setGroup(group);
             SvgPlayer.sendMessage(SvgCore.getPrefix() + SvgColor.BLUE + "Joined Group: " + group.getName());
+            GroupsBroadcaster.broadcast();
             return true;
         } else {
             SvgPlayer.sendMessage("Connection is null!");
@@ -158,23 +164,7 @@ public final class GroupManager {
             return false;
         }
 
-        String groupPassword = null;
-
-        try {
-            Field groupField = group.getClass().getDeclaredField("group");
-            groupField.setAccessible(true);
-            Object groupObject = groupField.get(group);
-
-            Field passwordField = groupObject.getClass()
-                    .getDeclaredField("password");
-            passwordField.setAccessible(true);
-
-            groupPassword = (String) passwordField.get(groupObject);
-
-        } catch (Throwable e) {
-            SvgCore.getLogger().warning("[SVG] Failed to reflect password of group '"
-                    + group.getName() + "' (" + group.getId() + "): " + e.getMessage());
-        }
+        String groupPassword = readGroupPassword(group);
 
         // Debug getLogger password state
         SvgCore.getLogger().debug("[GROUPS]: svgPlayer: " + svgPlayer.getName()
@@ -183,7 +173,7 @@ public final class GroupManager {
                 + " | Actual Password: " + groupPassword);
 
         // Handle password check safely
-        if (groupPassword != null) {
+        if (groupPassword != null && !groupPassword.isEmpty()) {
 
             if (password == null) {
                 return false;
@@ -207,7 +197,55 @@ public final class GroupManager {
         SvgCore.getLogger().debug("[SVG]" + svgPlayer.getName()
                 + " successfully joined group '" + groupName + "'");
 
+        GroupsBroadcaster.broadcast();
         return true;
+    }
+
+    /**
+     * Whether a known group requires a password (never exposes the secret).
+     */
+    public boolean hasPassword(String groupName) {
+        Group group = groups.get(groupName);
+        if (group == null) {
+            return false;
+        }
+        return hasPassword(group);
+    }
+
+    /**
+     * Whether a group requires a password (never exposes the secret).
+     */
+    public boolean hasPassword(Group group) {
+        String password = readGroupPassword(group);
+        return password != null && !password.isEmpty();
+    }
+
+    /**
+     * Snapshot of all tracked groups.
+     */
+    public Collection<Group> getGroups() {
+        return Collections.unmodifiableCollection(groups.values());
+    }
+
+    private String readGroupPassword(Group group) {
+        if (group == null) {
+            return null;
+        }
+        try {
+            Field groupField = group.getClass().getDeclaredField("group");
+            groupField.setAccessible(true);
+            Object groupObject = groupField.get(group);
+
+            Field passwordField = groupObject.getClass()
+                    .getDeclaredField("password");
+            passwordField.setAccessible(true);
+
+            return (String) passwordField.get(groupObject);
+        } catch (Throwable e) {
+            SvgCore.getLogger().warning("[SVG] Failed to reflect password of group '"
+                    + group.getName() + "' (" + group.getId() + "): " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -240,18 +278,20 @@ public final class GroupManager {
         return Optional.ofNullable(group.getName());
     }
     /**
-     * Removes SvgPlayer from any group
-     * @param SvgPlayer SvgPlayer to leave a group
+     * Removes SvgPlayer from any group.
+     * @return true if the player had a voice connection and left (or was already out)
      */
-    public void leaveGroup(SvgPlayer SvgPlayer) {
+    public boolean leaveGroup(SvgPlayer SvgPlayer) {
         VoicechatServerApi api = getApi();
-        if (api == null) return;
+        if (api == null) return false;
 
         VoicechatConnection connection = api.getConnectionOf(SvgPlayer.getUniqueId());
-        if (connection == null) return; //if SvgPlayer exists
+        if (connection == null) return false;
 
-        connection.setGroup(null); //set the SvgPlayers group to a group that doesn't exist
+        connection.setGroup(null);
         SvgPlayer.sendMessage("[SVG] You left your group.");
+        GroupsBroadcaster.broadcast();
+        return true;
     }
 
     /**
@@ -299,7 +339,20 @@ public final class GroupManager {
      * @param group the group to add
      */
     public void addGroup(Group group) {
+        addGroup(group, true);
+    }
+
+    /**
+     * @param broadcast whether to push an updated list to web clients
+     */
+    public void addGroup(Group group, boolean broadcast) {
+        if (group == null || group.getName() == null) {
+            return;
+        }
         groups.put(group.getName(), group);
+        if (broadcast) {
+            GroupsBroadcaster.broadcast();
+        }
     }
 
     /**
@@ -307,6 +360,19 @@ public final class GroupManager {
      * @param group the group to remove
      */
     public void removeGroup(Group group) {
+        removeGroup(group, true);
+    }
+
+    /**
+     * @param broadcast whether to push an updated list to web clients
+     */
+    public void removeGroup(Group group, boolean broadcast) {
+        if (group == null || group.getName() == null) {
+            return;
+        }
         groups.remove(group.getName());
+        if (broadcast) {
+            GroupsBroadcaster.broadcast();
+        }
     }
 }
