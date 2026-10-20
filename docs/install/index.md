@@ -6,49 +6,73 @@ project: simplevoicegeyser
 
 # Installation
 
-Follow these steps on one server and your players can use voice chat from a browser or the Svg-App.
+This guide covers installing and configuring Simple Voice Geyser.
 
-- Running several servers behind Velocity? Do this page first, then follow [Velocity Proxy Setup]({% project_link velocity %}).
-- Using a Minecraft hosting provider? See [Hosting Guides]({% project_link guides %}).
-
-> Simple Voice Geyser depends on Simple Voice Chat and does not work without it.
+For Host-Specific setup, see [Hosting Guides]({% project_link guides %}).
 
 ---
 
-## What you need
+## Requirements
 
-### Paper, Purpur and Spigot
+### Bukkit-based Servers (Paper / Purpur / Spigot)
 
-* Minecraft **1.20.1 through 26.3**
-* Simple Voice Chat 2.6.x or newer (2.6.24 or newer on Minecraft 26.3)
-* GeyserMC 2.10.1-SNAPSHOT or newer, for Bedrock players
-* Floodgate (optional, recommended)
+* Minecraft **1.20.1 through 26.3** (full **26.x** line)
+* Simple Voice Chat 2.6.x+ (use **2.6.24+** on Minecraft 26.3)
+* GeyserMC 2.10.1-SNAPSHOT+
+* Floodgate (optional, but recommended)
+
+### Folia
+
+* Folia build matching your Minecraft version (**1.21.x through 26.3**)
+* Simple Voice Chat **2.6.24+**
+* Same plugin jar as Paper/Purpur (`folia-supported: true` with EntityScheduler + spatial yaw cache)
+
+See [Compatibility]({% project_link install/compatibility %}) for the full version tables.
 
 ### Fabric
 
-* Minecraft 26.1 or newer, with a matching Fabric Loader
-* Fabric API
-* Simple Voice Chat 2.6.x or newer
-* GeyserMC 2.10.1-SNAPSHOT or newer, for Bedrock players
-* LuckPerms and Floodgate (optional)
+* Fabric Loader (matching your Minecraft version)
+* Fabric API (required)
+* Simple Voice Chat 2.6.x+
+* GeyserMC 2.10.1-SNAPSHOT+
+* LuckPerms (optional)
+* Floodgate (optional)
 
-The exact versions are in [Compatibility]({% project_link install/compatibility %}).
-
----
-
-## Step 1: Install
-
-1. Download the latest release from [Modrinth](https://modrinth.com/plugin/simplevoice-geyser) or [GitHub](https://github.com/TheodoreMeyer/SimpleVoice-Geyser/releases).
-2. Put the `.jar` in `plugins/` (Paper, Purpur, Spigot) or `mods/` (Fabric).
-3. Make sure Simple Voice Chat is installed. Add GeyserMC if you have Bedrock players.
-4. Start or restart the server.
-5. Check the console: no errors, and Simple Voice Chat loaded.
+> Simple Voice Geyser depends on Simple Voice Chat and will not function without it.
 
 ---
 
-## Step 2: Open the ports
+## Installation Steps
 
-Players need to reach two things. Allow both in your firewall and port forwarding.
+1. Download the latest release:
+   https://github.com/TheodoreMeyer/SimpleVoice-Geyser/releases
+
+2. Install the plugin/mod:
+
+   * Bukkit: place the `.jar` in `plugins/`
+   * Fabric: place the `.jar` in `mods/`
+
+3. Install dependencies:
+
+   * Simple Voice Chat
+   * GeyserMC
+   * Optional: Floodgate, LuckPerms (Fabric)
+
+4. Start or restart your server
+
+5. Verify startup:
+
+   * No errors in console
+   * Plugin loads successfully
+   * Voice Chat is functioning
+
+---
+
+## Server Configuration
+
+The plugin is configured via:
+```yaml
+client:
 
    # default: 60
    # Seconds to wait after a valid web password for the player to join Minecraft
@@ -184,29 +208,52 @@ config-version: 0.1.3
 
 ---
 
-## Step 3: Give players the address
+## Networking & Security
 
-Players need the address of the voice page. The plugin cannot know your public address, so tell them, or put it in the join message ([how]({% project_link install/config %})).
+Simple Voice Geyser uses a web-based client over HTTP/WebSocket.
 
-- Browsers only allow the microphone on HTTPS pages. For anything beyond your own computer, put HTTPS in front of the page. See [HTTPS and Reverse Proxies]({% project_link install/proxy %}).
-- On a Velocity network, the proxy hosts the page. See [Velocity Proxy Setup]({% project_link velocity %}).
+### Important:
+
+* Browsers **require HTTPS** for microphone access in most environments
+* Running on plain HTTP may result in:
+
+   * microphone access being blocked
+   * connection failures
+
+### Recommendation
+
+Use a reverse proxy (e.g., Nginx, Caddy) to provide:
+
+* HTTPS (TLS)
+* Secure WebSocket (WSS)
 
 ---
 
-## Step 4: Test it
+## Upgrading
 
-1. Join the server and run `/svg pswd <password>` (8 to 32 characters). On Paper, Purpur and Spigot, end the command with `confirm`.
-2. Open the voice page, type your Minecraft name and that password, and click **Join**. Allow the microphone.
-3. Ask a second player to join the same way, or a Java player with the Simple Voice Chat mod, and talk both ways.
+Some versions may introduce breaking changes.
 
-If something fails, see [Troubleshooting]({% project_link troubleshooting %}).
+See: [Upgrading]({% project_link upgrading %})
 
 ---
 
-## After setup
+## Versioning Notes
 
-* Change a setting, such as who may join or the default group password: [Configuration]({% project_link install/config %}).
-* Lock the setup down: [Security]({% project_link install/security %}).
-* Update to a newer version: [Upgrading]({% project_link install/upgrading %}).
+* Versions not be ready for production use may be marked as `-DEV`.
 
-Players who run the Simple Voice Chat mod use the mod, not this page. Versions marked `-DEV` are not ready for production.
+---
+
+## Notes
+
+* This plugin extends Simple Voice Chat; it does not replace it
+
+* It does not provide voice chat on its own
+
+* As of 0.1.2-DEV:
+
+   * Audio Security
+       * Client to server audio is not encoded
+       * Server to client audio is only encoded in Svg-v2 audio protocol
+   * The server runs over HTTP by default
+
+This makes using HTTPS strongly recommended for real deployments.
