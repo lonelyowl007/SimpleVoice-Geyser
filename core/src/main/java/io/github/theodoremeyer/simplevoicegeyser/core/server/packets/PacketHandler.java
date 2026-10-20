@@ -23,6 +23,7 @@ public final class PacketHandler {
         register(new CapabilitiesPacket());
         register(new JoinGroupPacket());
         register(new LeaveGroupPacket());
+        register(new CreateGroupPacket());
     }
 
     /**

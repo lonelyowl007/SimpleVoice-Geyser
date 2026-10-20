@@ -56,6 +56,7 @@ export class ScreenRouter {
      * @param {{
      *   openSettings?: HTMLElement|null,
      *   openGroups?: HTMLElement|null,
+     *   openCreateGroup?: HTMLElement|null,
      *   hubVolumesIcon?: HTMLElement|null,
      *   openMic?: HTMLElement|null,
      *   openSpeaker?: HTMLElement|null
@@ -64,6 +65,7 @@ export class ScreenRouter {
     bind(buttons = {}) {
         buttons.openSettings?.addEventListener("click", () => this.show("settings"));
         buttons.openGroups?.addEventListener("click", () => this.show("groups"));
+        buttons.openCreateGroup?.addEventListener("click", () => this.show("create-group"));
         buttons.hubVolumesIcon?.addEventListener("click", () => this.show("volumes"));
         buttons.openMic?.addEventListener("click", () => this.show("mic"));
         buttons.openSpeaker?.addEventListener("click", () => this.show("speaker"));

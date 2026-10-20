@@ -17,14 +17,17 @@ const ELEMENTS = {
             root: "ui.screens",
             openSettings: "ui.open-settings",
             openGroups: "ui.open-groups",
+            openCreateGroup: "ui.open-create-group",
             hubVolumesIcon: "ui.hub-volumes-icon",
             openMic: "ui.open-mic",
             openSpeaker: "ui.open-speaker",
-            leaveBtn: "ui.leave",
             groupsList: "ui.groups-list",
             groupsCurrent: "ui.groups-current",
             groupsPassword: "ui.groups-password",
-            groupsLeave: "ui.groups-leave"
+            groupsLeave: "ui.groups-leave",
+            createGroupName: "ui.create-group-name",
+            createGroupPassword: "ui.create-group-password",
+            createGroupSubmit: "ui.create-group-submit"
         },
 
         audio: {
@@ -39,6 +42,8 @@ const ELEMENTS = {
             vadSlider: "audio.vad-slider",
             gainSlider: "audio.gain-slider",
             gainValueLabel: "audio.gain-value",
+            masterSlider: "audio.master-slider",
+            masterValueLabel: "audio.master-value",
             volumesRoot: "audio.volumes",
             volumesSearch: "audio.volumes-search",
             volumesList: "audio.volumes-list",

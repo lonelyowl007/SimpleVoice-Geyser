@@ -1,7 +1,7 @@
 import {SvgLang} from "./utils/lang.js";
 
 /**
- * SVC-style Groups list UI for the web client.
+ * SVC-style Groups list + create UI for the web client.
  */
 export class GroupsUI {
     /**
@@ -10,8 +10,13 @@ export class GroupsUI {
      *   currentEl: HTMLElement,
      *   passwordInput: HTMLInputElement,
      *   leaveBtn: HTMLButtonElement,
+     *   createNameInput?: HTMLInputElement,
+     *   createPasswordInput?: HTMLInputElement,
+     *   createSubmitBtn?: HTMLButtonElement,
      *   joinGroup: (name: string, password: string) => void,
-     *   leaveGroup: () => void
+     *   leaveGroup: () => void,
+     *   createGroup: (name: string, password: string) => void,
+     *   onCreated?: () => void
      * }} options
      */
     constructor(options) {
@@ -19,8 +24,13 @@ export class GroupsUI {
         this.currentEl = options.currentEl;
         this.passwordInput = options.passwordInput;
         this.leaveBtn = options.leaveBtn;
+        this.createNameInput = options.createNameInput || null;
+        this.createPasswordInput = options.createPasswordInput || null;
+        this.createSubmitBtn = options.createSubmitBtn || null;
         this.joinGroup = options.joinGroup;
         this.leaveGroup = options.leaveGroup;
+        this.createGroup = options.createGroup;
+        this.onCreated = options.onCreated || null;
         /** @type {{ name: string, type?: string, hasPassword?: boolean }[]} */
         this.groups = [];
         /** @type {string|null} */
@@ -32,6 +42,22 @@ export class GroupsUI {
     init() {
         this.leaveBtn?.addEventListener("click", () => {
             this.leaveGroup();
+        });
+        this.createSubmitBtn?.addEventListener("click", () => {
+            const name = String(this.createNameInput?.value || "").trim();
+            if (!name) {
+                this.createNameInput?.focus();
+                return;
+            }
+            const password = String(this.createPasswordInput?.value || "");
+            this.createGroup(name, password);
+            if (this.createNameInput) {
+                this.createNameInput.value = "";
+            }
+            if (this.createPasswordInput) {
+                this.createPasswordInput.value = "";
+            }
+            this.onCreated?.();
         });
         this.render();
     }
@@ -60,6 +86,12 @@ export class GroupsUI {
         if (this.passwordInput) {
             this.passwordInput.value = "";
         }
+        if (this.createNameInput) {
+            this.createNameInput.value = "";
+        }
+        if (this.createPasswordInput) {
+            this.createPasswordInput.value = "";
+        }
         this.render();
     }
 
@@ -87,7 +119,7 @@ export class GroupsUI {
 
         if (this.groups.length === 0) {
             const empty = document.createElement("div");
-            empty.className = "svcListRow";
+            empty.className = "svcListRow svcListRowStatic";
             SvgLang.setElement(empty, "groupsEmptyLabel");
             this.listEl.appendChild(empty);
             return;
@@ -111,23 +143,18 @@ export class GroupsUI {
             iconWrap.className = "svcListIcon";
             const icon = document.createElement("span");
             icon.className = group.hasPassword ? "svcGroupLock" : "svcGroupOpen";
+            icon.title = group.hasPassword
+                ? (SvgLang.string("groupHasPasswordHint") || "Password required")
+                : (SvgLang.string("groupPublicHint") || "Public");
             icon.setAttribute("aria-hidden", "true");
-            const check = document.createElement("span");
-            check.className = "svcListCheck";
             iconWrap.appendChild(icon);
-            iconWrap.appendChild(check);
 
             const body = document.createElement("span");
             body.className = "svcListLabel mcTextStyle2";
             body.textContent = group.name;
 
-            const type = document.createElement("span");
-            type.className = "svcGroupType mcTextStyle1";
-            type.textContent = String(group.type || "OPEN").toUpperCase();
-
             row.appendChild(iconWrap);
             row.appendChild(body);
-            row.appendChild(type);
 
             row.addEventListener("click", () => {
                 this.selectedName = group.name;

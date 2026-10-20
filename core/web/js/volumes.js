@@ -13,7 +13,7 @@ import {
 const DEFAULT_AVATAR = "images/v2/mic.png";
 
 /**
- * SVC-style Adjust Volumes panel (Overall / Other / players).
+ * SVC-style Adjust Volumes panel (per-player only; master is in Settings).
  */
 export class AdjustVolumesUI {
     /**
@@ -51,7 +51,7 @@ export class AdjustVolumesUI {
         const prefs = getPrefs();
         const rows = getVolumeRows().filter((row) => {
             if (row.kind !== "player") {
-                return true;
+                return false;
             }
             if (!this._search) {
                 return true;
@@ -60,6 +60,14 @@ export class AdjustVolumesUI {
         });
 
         this.listEl.replaceChildren();
+
+        if (rows.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "svcListRow";
+            SvgLang.setElement(empty, "volumesEmptyLabel");
+            this.listEl.appendChild(empty);
+            return;
+        }
 
         for (const row of rows) {
             this.listEl.appendChild(this.#buildRow(row, prefs));

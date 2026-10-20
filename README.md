@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.16-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups)  
+> **Fork version:** `0.1.17-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups/create)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -89,11 +89,11 @@ If the browser loops on **“Update required. Reloading page.”**, the HTML `BU
 
 | Screen | Contents |
 |--------|----------|
-| **Hub** | Title “Voice Chat”; **Settings** + **Groups**; mute / volumes / Leave icons; PTT hold when mode is PTT; chat under the hub |
-| **Settings** | Mic Volume, Input Sensitivity + meter, Voice/PTT (+ bind controls), Select Microphone / Select Speaker |
+| **Hub** | Title “Voice Chat”; **Settings** + **Groups**; mute + volumes icons; PTT when mode is PTT; chat under the hub (Leave = top-left) |
+| **Settings** | Voice Chat Volume (master), Mic Volume, Input Sensitivity, Voice/PTT, device pickers |
 | **Select Microphone / Speaker** | Dark list rows with checkmark on the selected device |
-| **Groups** | Live SVC group list, join (password if required), leave current group |
-| **Adjust Volumes** | Overall / Other / per-player panel (via volumes icon on hub) |
+| **Groups** | Join or Create Group list, password join, leave, Create Group screen |
+| **Adjust Volumes** | Per-player panel only (via volumes icon on hub) |
 
 Browser noise suppression / AGC stay off. Join-page branding is unchanged. Creating groups remains via `/svg cgroup` or Geyser forms (not in the web UI).
 
@@ -116,6 +116,20 @@ Browser noise suppression / AGC stay off. Join-page branding is unchanged. Creat
 | Client → server | `join_group` / `leave_group` via existing `GroupManager` |
 | UI | Hub **Groups** button → list, password field, Leave Group |
 | Permission | `svg.vc.group.join` (default true, child of `svg.vc.group`) |
+
+**After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
+
+### 14) UI polish + web Create Group (0.1.17-fork)
+
+**Goal:** Match SVC menus more closely and fix layout bugs from the multi-screen hub.
+
+| Fix | Details |
+|-----|---------|
+| Leave | Single top-left Leave (connected Join button); hub Leave removed |
+| Sliders | Mic / Voice Chat Volume labels sit **above** the track (no text through the bar) |
+| Settings | **Voice Chat Volume** (master receive) moved here; Adjust Volumes = players only |
+| Groups | Clean list (lock/public icon, no Java type garbage); Create Group screen (name + optional password) |
+| Protocol | `create_group` `{ name, password? }` → `GroupManager.createGroup` (`svg.vc.group.create`) |
 
 **After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
 

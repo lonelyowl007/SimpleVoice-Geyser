@@ -27,6 +27,8 @@
  * @property {HTMLInputElement} vadSlider
  * @property {HTMLInputElement} gainSlider
  * @property {HTMLElement} gainValueLabel
+ * @property {HTMLInputElement} masterSlider
+ * @property {HTMLElement} masterValueLabel
  * @property {HTMLElement} volumesRoot
  * @property {HTMLInputElement} volumesSearch
  * @property {HTMLElement} volumesList
@@ -39,14 +41,17 @@
  * @property {HTMLElement} root
  * @property {HTMLButtonElement} openSettings
  * @property {HTMLButtonElement} openGroups
+ * @property {HTMLButtonElement} openCreateGroup
  * @property {HTMLButtonElement} hubVolumesIcon
  * @property {HTMLButtonElement} openMic
  * @property {HTMLButtonElement} openSpeaker
- * @property {HTMLButtonElement} leaveBtn
  * @property {HTMLElement} groupsList
  * @property {HTMLElement} groupsCurrent
  * @property {HTMLInputElement} groupsPassword
  * @property {HTMLButtonElement} groupsLeave
+ * @property {HTMLInputElement} createGroupName
+ * @property {HTMLInputElement} createGroupPassword
+ * @property {HTMLButtonElement} createGroupSubmit
  */
 
 /**

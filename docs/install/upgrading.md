@@ -184,6 +184,17 @@ Ensure players have `svg.vc.group.join` (included under `svg.vc.group` by defaul
 
 ---
 
+### Upgrade to 0.1.17-fork (UI polish + Create Group)
+
+Slider labels, single Leave, master volume in Settings, and web Create Group.
+
+1. Stop the server
+2. Delete `plugins/<SimpleVoice-Geyser>/web/`
+3. Install `0.1.17-fork`
+4. Start + hard-refresh (`Ctrl+F5`)
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

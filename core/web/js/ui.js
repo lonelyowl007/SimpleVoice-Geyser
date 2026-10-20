@@ -5,6 +5,7 @@ import {SvgAudio} from "./audio/audio.js";
 import {AdjustVolumesUI} from "./volumes.js";
 import {GroupsUI} from "./groups.js";
 import {ScreenRouter} from "./screens.js";
+import {getPrefs, setMaster} from "./audio/receive-volumes.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
@@ -301,6 +302,7 @@ export class SvgUI {
         this.screenRouter.bind({
             openSettings: this.screens.openSettings,
             openGroups: this.screens.openGroups,
+            openCreateGroup: this.screens.openCreateGroup,
             hubVolumesIcon: this.screens.hubVolumesIcon,
             openMic: this.screens.openMic,
             openSpeaker: this.screens.openSpeaker
@@ -312,7 +314,9 @@ export class SvgUI {
             vadMarker,
             vadSlider,
             gainSlider,
-            gainValueLabel
+            gainValueLabel,
+            masterSlider: this.audio.masterSlider,
+            masterValueLabel: this.audio.masterValueLabel
         });
 
         this.adjustVolumesUI = new AdjustVolumesUI({
@@ -327,13 +331,23 @@ export class SvgUI {
             currentEl: this.screens.groupsCurrent,
             passwordInput: this.screens.groupsPassword,
             leaveBtn: this.screens.groupsLeave,
+            createNameInput: this.screens.createGroupName,
+            createPasswordInput: this.screens.createGroupPassword,
+            createSubmitBtn: this.screens.createGroupSubmit,
             joinGroup: (name, password) => this.webSocketController.joinGroup(name, password),
-            leaveGroup: () => this.webSocketController.leaveGroup()
+            leaveGroup: () => this.webSocketController.leaveGroup(),
+            createGroup: (name, password) => this.webSocketController.createGroup(name, password),
+            onCreated: () => this.screenRouter?.show("groups", { push: false })
         });
         this.groupsUI.init();
         this.webSocketController.addEventListener(
             "groups",
-            (data) => this.groupsUI.update(data),
+            (data) => {
+                this.groupsUI.update(data);
+                if (data?.current && this.screenRouter?.current() === "create-group") {
+                    this.screenRouter.show("groups", { push: false });
+                }
+            },
             true
         );
 
@@ -401,8 +415,6 @@ export class SvgUI {
             () =>
                 this.pttController.isPttActive()
         );
-
-        this.screens.leaveBtn.addEventListener("click", () => this.#leaveVoice());
 
         formEl.addEventListener("submit", async e => {
                 e.preventDefault();
@@ -542,13 +554,15 @@ export class SvgUI {
     }
 
     /**
-     * Wire sensitivity / mic-volume sliders, energy meter, and localStorage.
+     * Wire sensitivity / mic-volume / master receive sliders, energy meter, and localStorage.
      * @param {{
      *   vadEnergyBar: HTMLElement,
      *   vadMarker: HTMLElement,
      *   vadSlider: HTMLInputElement,
      *   gainSlider: HTMLInputElement,
-     *   gainValueLabel: HTMLElement
+     *   gainValueLabel: HTMLElement,
+     *   masterSlider?: HTMLInputElement,
+     *   masterValueLabel?: HTMLElement
      * }} els
      */
     #initMicSettingsControls(els) {
@@ -557,7 +571,9 @@ export class SvgUI {
             vadMarker,
             vadSlider,
             gainSlider,
-            gainValueLabel
+            gainValueLabel,
+            masterSlider,
+            masterValueLabel
         } = els;
 
         const savedSensitivity = Number(localStorage.getItem(VAD_SLIDER_KEY));
@@ -590,6 +606,23 @@ export class SvgUI {
             this.audioController.setInputGain(percent / 100);
             localStorage.setItem(GAIN_SLIDER_KEY, String(rounded));
         };
+
+        const applyMaster = () => {
+            if (!masterSlider || !masterValueLabel) {
+                return;
+            }
+            const percent = Number(masterSlider.value) || 100;
+            const rounded = Math.max(0, Math.min(200, Math.round(percent)));
+            const prefix = SvgLang.string("voiceChatVolumeLabel") || "Voice Chat Volume";
+            masterValueLabel.textContent = `${prefix}: ${rounded}%`;
+            setMaster(rounded, { notify: false });
+        };
+
+        if (masterSlider) {
+            masterSlider.value = String(getPrefs().master ?? 100);
+            masterSlider.addEventListener("input", applyMaster);
+            applyMaster();
+        }
 
         vadSlider.addEventListener("input", applySensitivity);
         gainSlider.addEventListener("input", applyGain);
