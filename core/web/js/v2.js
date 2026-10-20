@@ -2,6 +2,18 @@ import { SvgBuilder } from "./utils/builder.js";
 import { SvgLang } from "./utils/lang.js";
 import { SvgWebSocket } from "./websocket.js";
 
+// Safety net if the inline cleaner in index.html did not run
+try {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("_svg")) {
+        url.searchParams.delete("_svg");
+        const clean = `${url.pathname}${url.search}${url.hash}`;
+        history.replaceState(null, "", clean || url.pathname);
+    }
+} catch {
+    // ignore
+}
+
 await SvgLang.loadWebConfig();
 SvgLang.detectLanguage();
 SvgLang.applyBranding();

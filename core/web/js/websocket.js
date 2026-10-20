@@ -271,6 +271,8 @@ export class SvgWebSocket {
                 if (!sessionStorage.getItem(reloadKey)) {
                     sessionStorage.setItem(reloadKey, "1");
                     Logger.log("Outdated client. Cache-bust reload once...");
+                    // Bust caches via a temporary query param; the page strips it
+                    // from the address bar on load (see index.html / v2.js).
                     const url = new URL(location.href);
                     url.searchParams.set("_svg", String(Date.now()));
                     location.replace(url.toString());
