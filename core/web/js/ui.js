@@ -330,6 +330,7 @@ export class SvgUI {
             listEl: this.screens.groupsList,
             openCurrentBtn: this.screens.groupsOpenCurrent,
             passwordInput: this.screens.groupsPassword,
+            joinSubmitBtn: this.screens.groupsJoinSubmit,
             leaveBtn: this.screens.groupsLeave,
             menuTitleEl: this.screens.groupMenuTitle,
             menuMembersEl: this.screens.groupMenuMembers,
@@ -340,16 +341,17 @@ export class SvgUI {
             leaveGroup: () => this.webSocketController.leaveGroup(),
             createGroup: (name, password) => this.webSocketController.createGroup(name, password),
             openGroupMenu: () => {
-                if (this.screenRouter?.current() === "create-group") {
+                const cur = this.screenRouter?.current();
+                if (cur === "create-group" || cur === "group-password") {
                     this.screenRouter.show("group-menu", { push: false });
                 } else {
                     this.screenRouter?.show("group-menu");
                 }
             },
             openGroupsList: () => {
-                // Prefer returning to the join/create list without stacking menus
                 this.screenRouter?.show("groups", { push: false });
-            }
+            },
+            openPasswordScreen: () => this.screenRouter?.show("group-password")
         });
         this.groupsUI.init();
         this.webSocketController.addEventListener(
