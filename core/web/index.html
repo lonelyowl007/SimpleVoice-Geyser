@@ -354,6 +354,14 @@
     <script>
         window.PROJECT_VERSION = "@@PROJECT_VERSION@@";
         window.BUILD_ID = "@@GIT_COMMIT@@";
+        // Temporary ?_svg=… cache-bust from outdated-client reload — hide from the address bar
+        try {
+            var __svgUrl = new URL(window.location.href);
+            if (__svgUrl.searchParams.has("_svg")) {
+                __svgUrl.searchParams.delete("_svg");
+                history.replaceState(null, "", __svgUrl.pathname + __svgUrl.search + __svgUrl.hash);
+            }
+        } catch (e) { /* ignore */ }
     </script>
     <script type="module" src="js/v2.js"></script>
 </body>

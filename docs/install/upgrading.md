@@ -227,6 +227,16 @@ Password field is no longer on the groups list — only shown after clicking a l
 
 ---
 
+### Upgrade to 0.1.21-fork (Clean address bar)
+
+Temporary `?_svg=…` cache-bust query is removed from the URL after load (address bar stays clean).
+
+1. Delete `plugins/<SimpleVoice-Geyser>/web/`
+2. Install `0.1.21-fork`
+3. Restart + hard-refresh (`Ctrl+F5`)
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment
