@@ -22,9 +22,11 @@ const ELEMENTS = {
             openMic: "ui.open-mic",
             openSpeaker: "ui.open-speaker",
             groupsList: "ui.groups-list",
-            groupsCurrent: "ui.groups-current",
+            groupsOpenCurrent: "ui.groups-open-current",
             groupsPassword: "ui.groups-password",
             groupsLeave: "ui.groups-leave",
+            groupMenuTitle: "ui.group-menu-title",
+            groupMenuMembers: "ui.group-menu-members",
             createGroupName: "ui.create-group-name",
             createGroupPassword: "ui.create-group-password",
             createGroupSubmit: "ui.create-group-submit"

@@ -370,6 +370,8 @@ After authentication and whenever groups change (create/remove/join/leave), the 
 | `groups[].type` | `OPEN`, `NORMAL`, or `ISOLATED` |
 | `groups[].hasPassword` | Whether a password is required (secret never sent) |
 | `current` | Joined group name for this player, or `null` |
+| `currentType` / `currentHasPassword` | Metadata for the joined group |
+| `members` | Online players in `current`: `{ uuid, name, self }` |
 
 ### Client To Server `join_group` / `leave_group` / `create_group`
 

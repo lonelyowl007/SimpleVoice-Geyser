@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.17-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups/create)  
+> **Fork version:** `0.1.18-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups menu)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -130,6 +130,18 @@ Browser noise suppression / AGC stay off. Join-page branding is unchanged. Creat
 | Settings | **Voice Chat Volume** (master receive) moved here; Adjust Volumes = players only |
 | Groups | Clean list (lock/public icon, no Java type garbage); Create Group screen (name + optional password) |
 | Protocol | `create_group` `{ name, password? }` → `GroupManager.createGroup` (`svg.vc.group.create`) |
+
+**After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
+
+### 15) In-group menu (0.1.18-fork)
+
+**Goal:** Clicking a group opens an SVC-style group screen (title `Name (Open)`, member list with **You** badge, Leave Group) instead of a vague checkbox selection.
+
+| Piece | Details |
+|-------|---------|
+| List | `Joined` / `Open` / `Locked` badges; lock icon only when password; green “checkbox” removed |
+| Menu | Members from server (`groups.members`); auto-opens after create/join |
+| Shortcut | “Open group: …” button when already joined |
 
 **After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
 

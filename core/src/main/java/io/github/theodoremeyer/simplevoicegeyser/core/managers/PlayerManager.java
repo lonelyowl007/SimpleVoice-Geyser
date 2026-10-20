@@ -3,6 +3,7 @@ package io.github.theodoremeyer.simplevoicegeyser.core.managers;
 import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
 import io.github.theodoremeyer.simplevoicegeyser.core.api.sender.SvgPlayer;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.ConnectionStates;
+import io.github.theodoremeyer.simplevoicegeyser.core.server.packets.GroupsBroadcaster;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.packets.VoicePlayersBroadcaster;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -72,6 +73,7 @@ public final class PlayerManager {
         playersByName.put(player.getName(), player);
         SvgCore.getPendingJoinWaiter().notifyPlayerJoined(player.getUniqueId());
         VoicePlayersBroadcaster.broadcast();
+        GroupsBroadcaster.broadcast();
     }
 
     /**
@@ -90,6 +92,7 @@ public final class PlayerManager {
         players.remove(player.getUniqueId());
         playersByName.remove(player.getName());
         VoicePlayersBroadcaster.broadcast();
+        GroupsBroadcaster.broadcast();
     }
 
     // Is Player Online

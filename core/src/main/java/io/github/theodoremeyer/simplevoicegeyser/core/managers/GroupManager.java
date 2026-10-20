@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -259,6 +260,42 @@ public final class GroupManager {
             names.add(group.getName());
         }
         return names;
+    }
+
+    /**
+     * Online players currently in the named SVC group.
+     * @return list of {uuid, name} maps as SvgPlayer snapshots
+     */
+    public List<SvgPlayer> getMembers(String groupName) {
+        List<SvgPlayer> members = new ArrayList<>();
+        if (groupName == null || groupName.isEmpty()) {
+            return members;
+        }
+        VoicechatServerApi api = getApi();
+        if (api == null) {
+            return members;
+        }
+        for (SvgPlayer player : SvgCore.getPlayerManager().getAllPlayers()) {
+            VoicechatConnection connection = api.getConnectionOf(player.getUniqueId());
+            if (connection == null || !connection.isInGroup() || connection.getGroup() == null) {
+                continue;
+            }
+            if (groupName.equals(connection.getGroup().getName())) {
+                members.add(player);
+            }
+        }
+        members.sort(Comparator.comparing(SvgPlayer::getName, String.CASE_INSENSITIVE_ORDER));
+        return members;
+    }
+
+    /**
+     * Look up a tracked group by name.
+     */
+    public Group getGroup(String groupName) {
+        if (groupName == null) {
+            return null;
+        }
+        return groups.get(groupName);
     }
     /**
      * Returns the name of the current group the SvgPlayer is in

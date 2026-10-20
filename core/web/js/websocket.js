@@ -198,7 +198,10 @@ export class SvgWebSocket {
                     if (packetType === "groups") {
                         this.#runEventListeners("groups", {
                             groups: data.groups || [],
-                            current: data.current ?? null
+                            current: data.current ?? null,
+                            members: data.members || [],
+                            currentType: data.currentType ?? null,
+                            currentHasPassword: !!data.currentHasPassword
                         });
                     }
 
