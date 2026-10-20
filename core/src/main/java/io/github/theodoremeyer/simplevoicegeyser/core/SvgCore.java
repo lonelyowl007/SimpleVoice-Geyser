@@ -200,6 +200,40 @@ public final class SvgCore {
     }
 
     /**
+     * Stop and start the Jetty web server so bind/port/context-path/idle-timeout
+     * and other servlet wiring pick up the current config (used by {@code /svg reload}).
+     *
+     * @return true if the web server was restarted successfully
+     */
+    public static synchronized boolean restartWebServer() {
+        SvgCore core = getInstance();
+        if (core == null || core.state != State.RUNNING) {
+            return false;
+        }
+
+        try {
+            core.connectionManager.disconnectAll("Config reloaded");
+
+            if (core.jettyServer != null) {
+                core.jettyServer.stop();
+                core.jettyServer = null;
+                getLogger().info("Jetty web server stopped for reload.");
+            }
+
+            int port = getConfig().PORT.get();
+            String host = getConfig().BIND_ADDRESS.get();
+            core.jettyServer = new JettyServer(host, port);
+            core.jettyServer.start();
+            getLogger().info("Jetty web server restarted on " + host + ":" + port);
+            return true;
+        } catch (Exception e) {
+            getLogger().severe("Failed to restart Jetty web server: " + e.getMessage());
+            getLogger().debug("Jetty restart failed", e);
+            return false;
+        }
+    }
+
+    /**
      * Get the logger for the project
      * @return Logger
      */

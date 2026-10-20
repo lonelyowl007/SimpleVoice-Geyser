@@ -217,6 +217,16 @@ Password field is no longer on the groups list — only shown after clicking a l
 
 ---
 
+### Upgrade to 0.1.20-fork (Reload restarts web server)
+
+`/svg reload` now restarts Jetty so port/bind/context-path/idle-timeout and related web settings apply without a full Minecraft restart. Web clients are disconnected.
+
+1. Replace the plugin JAR with `0.1.20-fork`
+2. Restart once (or use `/svg reload` after install)
+3. Optional: delete `web/` + hard-refresh if you also update the UI
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

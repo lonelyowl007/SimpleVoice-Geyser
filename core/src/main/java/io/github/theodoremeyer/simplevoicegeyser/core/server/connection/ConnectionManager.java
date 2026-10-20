@@ -117,8 +117,19 @@ public final class ConnectionManager {
      * Disconnect all Connections
      */
     public void disconnectAll() {
+        disconnectAll("Server shutting down");
+    }
+
+    /**
+     * Disconnect all Connections with a custom close reason.
+     * @param reason websocket close reason
+     */
+    public void disconnectAll(String reason) {
+        String closeReason = reason == null || reason.isBlank()
+                ? "Server shutting down"
+                : reason;
         for (SvgConnection connection : connections.values()) {
-            connection.disconnect(1001, "Server shutting down");
+            connection.disconnect(1001, closeReason);
         }
 
         connections.clear();
