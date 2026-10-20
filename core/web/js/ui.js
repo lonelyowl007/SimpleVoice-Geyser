@@ -3,6 +3,7 @@ import {SvgLang} from "./utils/lang.js";
 import {PttController} from "./ptt.js";
 import {SvgAudio} from "./audio/audio.js";
 import {AdjustVolumesUI} from "./volumes.js";
+import {GroupsUI} from "./groups.js";
 import {ScreenRouter} from "./screens.js";
 
 /**
@@ -249,6 +250,7 @@ export class SvgUI {
         this.audioController.stopMic();
         this.pttController?.reset();
         this.screenRouter?.reset();
+        this.groupsUI?.reset();
         document.body.classList.remove("pending-minecraft-join");
         SvgLang.setElement(this.form.joinButton, "joinBtnUnconnectedLabel");
     }
@@ -298,7 +300,7 @@ export class SvgUI {
         this.screenRouter = new ScreenRouter(this.screens.root);
         this.screenRouter.bind({
             openSettings: this.screens.openSettings,
-            openVolumes: this.screens.openVolumes,
+            openGroups: this.screens.openGroups,
             hubVolumesIcon: this.screens.hubVolumesIcon,
             openMic: this.screens.openMic,
             openSpeaker: this.screens.openSpeaker
@@ -319,6 +321,21 @@ export class SvgUI {
             searchInput: volumesSearch
         });
         this.adjustVolumesUI.init();
+
+        this.groupsUI = new GroupsUI({
+            listEl: this.screens.groupsList,
+            currentEl: this.screens.groupsCurrent,
+            passwordInput: this.screens.groupsPassword,
+            leaveBtn: this.screens.groupsLeave,
+            joinGroup: (name, password) => this.webSocketController.joinGroup(name, password),
+            leaveGroup: () => this.webSocketController.leaveGroup()
+        });
+        this.groupsUI.init();
+        this.webSocketController.addEventListener(
+            "groups",
+            (data) => this.groupsUI.update(data),
+            true
+        );
 
         try {
             await this.populateAudioDevices();

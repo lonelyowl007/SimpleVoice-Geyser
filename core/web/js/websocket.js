@@ -30,7 +30,9 @@ export class SvgWebSocket {
     };
     #eventListeners = {
         statusChange: [],
-        message: []
+        message: [],
+        voicePlayers: [],
+        groups: []
     };
 
     /**
@@ -191,6 +193,13 @@ export class SvgWebSocket {
                     if (packetType === "voice_players") {
                         setRoster(data.players);
                         this.#runEventListeners("voicePlayers", data.players);
+                    }
+
+                    if (packetType === "groups") {
+                        this.#runEventListeners("groups", {
+                            groups: data.groups || [],
+                            current: data.current ?? null
+                        });
                     }
 
                     if (packetType === "error") {
@@ -365,6 +374,27 @@ export class SvgWebSocket {
     sendChat(msg) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify({ type: "chat", message: msg }));
+        }
+    }
+
+    /**
+     * @param {string} name
+     * @param {string} [password]
+     */
+    joinGroup(name, password) {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            return;
+        }
+        const payload = { type: "join_group", name: String(name || "") };
+        if (password) {
+            payload.password = String(password);
+        }
+        this.ws.send(JSON.stringify(payload));
+    }
+
+    leaveGroup() {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({ type: "leave_group" }));
         }
     }
 

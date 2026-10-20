@@ -255,6 +255,7 @@ public final class JoinPacket implements Packet {
         );
 
         VoicePlayersBroadcaster.broadcast();
+        GroupsBroadcaster.sendTo(connection);
 
         SvgCore.getLogger().info(
                 "[WebSocket] "
