@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Broadcasts the SVC group list so web clients can join/leave groups.
@@ -66,6 +67,28 @@ public final class GroupsBroadcaster {
             current = manager.getJoinedGroupName(player).orElse(null);
         }
         packet.put("current", current != null ? current : JSONObject.NULL);
+
+        JSONArray members = new JSONArray();
+        String currentType = null;
+        boolean currentHasPassword = false;
+        if (manager != null && current != null) {
+            Group currentGroup = manager.getGroup(current);
+            if (currentGroup != null) {
+                currentType = typeName(currentGroup);
+                currentHasPassword = manager.hasPassword(currentGroup);
+            }
+            UUID self = player != null ? player.getUniqueId() : null;
+            for (SvgPlayer member : manager.getMembers(current)) {
+                JSONObject entry = new JSONObject();
+                entry.put("uuid", member.getUniqueId().toString());
+                entry.put("name", member.getName());
+                entry.put("self", self != null && self.equals(member.getUniqueId()));
+                members.put(entry);
+            }
+        }
+        packet.put("members", members);
+        packet.put("currentType", currentType != null ? currentType : JSONObject.NULL);
+        packet.put("currentHasPassword", currentHasPassword);
         return packet;
     }
 

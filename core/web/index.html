@@ -209,15 +209,25 @@
                     <div class="svcScreen" data-screen="groups" aria-hidden="true">
                         <div class="svcPanel">
                             <h2 class="svcPanelTitle" svg-lang="groupsTitle">Join or Create Group</h2>
-                            <div class="svcGroupCurrent mcTextStyle1 textAlignLeft fullWidth" data-svg="ui.groups-current"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2 svcCurrentGroupBtn dev-hidden" data-svg="ui.groups-open-current"></button>
                             <div class="svcListArea svcGroupsList" data-svg="ui.groups-list"></div>
                             <div class="svcFieldBlock fullWidth">
                                 <label class="mcTextStyle1 textAlignLeft fullWidth" for="groupPassword" svg-lang="groupPasswordLabel">Group Password</label>
                                 <input class="mcTextboxStyle svcFieldInput" id="groupPassword" type="password" data-svg="ui.groups-password" placeholder="Password (if required)" svg-lang-placeholder="groupPasswordPlaceholder" autocomplete="off" />
                             </div>
                             <div class="flexDivider"></div>
-                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.groups-leave" svg-lang="leaveGroupBtn">Leave Group</button>
                             <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-create-group" svg-lang="createGroupBtn">Create Group</button>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
+                        </div>
+                    </div>
+
+<!--                    GROUP MENU (in-group, SVC-style) -->
+                    <div class="svcScreen" data-screen="group-menu" aria-hidden="true">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" data-svg="ui.group-menu-title">Group</h2>
+                            <div class="svcListArea svcGroupMembersList" data-svg="ui.group-menu-members"></div>
+                            <div class="flexDivider"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.groups-leave" svg-lang="leaveGroupBtn">Leave Group</button>
                             <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
                         </div>
                     </div>

@@ -756,48 +756,72 @@ body.pending-minecraft-join .statusLabel {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.svcGroupCurrent {
-    min-height: 1.2em;
-    opacity: 0.95;
-}
-.svcGroupType {
-    flex-shrink: 0;
-    font-size: 0.7em;
-    opacity: 0.85;
-    padding: 2px 6px;
-    background: #222;
-    border: 1px solid #555;
-}
-.svcGroupLock,
-.svcGroupOpen {
-    display: block;
-    width: 22px;
-    height: 22px;
-    margin: 3px auto;
-    box-sizing: border-box;
+.svcCurrentGroupBtn {
+    margin-bottom: 4px;
+    background: #3d6b2e !important;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
 }
 .svcGroupLock {
+    display: block;
+    flex-shrink: 0;
+    width: 16px;
+    height: 18px;
+    margin-right: 2px;
+    box-sizing: border-box;
     border: 2px solid #f0c040;
-    border-radius: 3px 3px 2px 2px;
+    border-radius: 2px;
     position: relative;
     background: #5a4a10;
 }
 .svcGroupLock::before {
     content: "";
     position: absolute;
-    left: 4px;
-    top: -8px;
-    width: 10px;
-    height: 8px;
+    left: 2px;
+    top: -7px;
+    width: 8px;
+    height: 7px;
     border: 2px solid #f0c040;
     border-bottom: none;
     border-radius: 8px 8px 0 0;
     box-sizing: border-box;
 }
-.svcGroupOpen {
-    border: 2px solid #8ecf8e;
-    border-radius: 3px;
-    background: #2a4a2a;
+.svcGroupBadge {
+    flex-shrink: 0;
+    font-size: 0.7em;
+    opacity: 0.9;
+    padding: 2px 6px;
+    background: #222;
+    border: 1px solid #555;
+    color: #ddd;
+}
+.svcGroupBadgeJoined {
+    background: #2a6b2a;
+    border-color: #5fcf5f;
+    color: #fff;
+}
+.svcGroupRowJoined {
+    outline: 1px solid #5fcf5f;
+    background: #2f3f2f;
+}
+.svcGroupsList .svcListCheck {
+    display: none !important;
+}
+.svcMemberRow {
+    gap: 10px;
+}
+.svcMemberSelf {
+    outline: 1px solid #5fcf5f;
+    background: #2f3f2f;
+}
+.svcMemberAvatar {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+.svcGroupMembersList {
+    min-height: 140px;
 }
 .svcSliderWrap {
     width: 100%;
@@ -833,10 +857,6 @@ body.pending-minecraft-join .statusLabel {
 }
 .svcGroupsList {
     min-height: 120px;
-}
-.svcGroupsList .svcListCheck {
-    /* Selected group uses selected background; hide fake checkbox badge */
-    display: none !important;
 }
 .svcListRowStatic {
     cursor: default;

@@ -46,9 +46,11 @@
  * @property {HTMLButtonElement} openMic
  * @property {HTMLButtonElement} openSpeaker
  * @property {HTMLElement} groupsList
- * @property {HTMLElement} groupsCurrent
+ * @property {HTMLButtonElement} groupsOpenCurrent
  * @property {HTMLInputElement} groupsPassword
  * @property {HTMLButtonElement} groupsLeave
+ * @property {HTMLElement} groupMenuTitle
+ * @property {HTMLElement} groupMenuMembers
  * @property {HTMLInputElement} createGroupName
  * @property {HTMLInputElement} createGroupPassword
  * @property {HTMLButtonElement} createGroupSubmit

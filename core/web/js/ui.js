@@ -328,26 +328,33 @@ export class SvgUI {
 
         this.groupsUI = new GroupsUI({
             listEl: this.screens.groupsList,
-            currentEl: this.screens.groupsCurrent,
+            openCurrentBtn: this.screens.groupsOpenCurrent,
             passwordInput: this.screens.groupsPassword,
             leaveBtn: this.screens.groupsLeave,
+            menuTitleEl: this.screens.groupMenuTitle,
+            menuMembersEl: this.screens.groupMenuMembers,
             createNameInput: this.screens.createGroupName,
             createPasswordInput: this.screens.createGroupPassword,
             createSubmitBtn: this.screens.createGroupSubmit,
             joinGroup: (name, password) => this.webSocketController.joinGroup(name, password),
             leaveGroup: () => this.webSocketController.leaveGroup(),
             createGroup: (name, password) => this.webSocketController.createGroup(name, password),
-            onCreated: () => this.screenRouter?.show("groups", { push: false })
+            openGroupMenu: () => {
+                if (this.screenRouter?.current() === "create-group") {
+                    this.screenRouter.show("group-menu", { push: false });
+                } else {
+                    this.screenRouter?.show("group-menu");
+                }
+            },
+            openGroupsList: () => {
+                // Prefer returning to the join/create list without stacking menus
+                this.screenRouter?.show("groups", { push: false });
+            }
         });
         this.groupsUI.init();
         this.webSocketController.addEventListener(
             "groups",
-            (data) => {
-                this.groupsUI.update(data);
-                if (data?.current && this.screenRouter?.current() === "create-group") {
-                    this.screenRouter.show("groups", { push: false });
-                }
-            },
+            (data) => this.groupsUI.update(data),
             true
         );
 
