@@ -11,6 +11,7 @@ export class GroupsUI {
      *   listEl: HTMLElement,
      *   openCurrentBtn?: HTMLButtonElement,
      *   passwordInput: HTMLInputElement,
+     *   joinSubmitBtn?: HTMLButtonElement,
      *   leaveBtn: HTMLButtonElement,
      *   menuTitleEl?: HTMLElement,
      *   menuMembersEl?: HTMLElement,
@@ -21,13 +22,15 @@ export class GroupsUI {
      *   leaveGroup: () => void,
      *   createGroup: (name: string, password: string) => void,
      *   openGroupMenu: () => void,
-     *   openGroupsList: () => void
+     *   openGroupsList: () => void,
+     *   openPasswordScreen: () => void
      * }} options
      */
     constructor(options) {
         this.listEl = options.listEl;
         this.openCurrentBtn = options.openCurrentBtn || null;
         this.passwordInput = options.passwordInput;
+        this.joinSubmitBtn = options.joinSubmitBtn || null;
         this.leaveBtn = options.leaveBtn;
         this.menuTitleEl = options.menuTitleEl || null;
         this.menuMembersEl = options.menuMembersEl || null;
@@ -39,6 +42,7 @@ export class GroupsUI {
         this.createGroup = options.createGroup;
         this.openGroupMenu = options.openGroupMenu;
         this.openGroupsList = options.openGroupsList;
+        this.openPasswordScreen = options.openPasswordScreen;
         /** @type {{ name: string, type?: string, hasPassword?: boolean }[]} */
         this.groups = [];
         /** @type {{ uuid: string, name: string, self?: boolean }[]} */
@@ -50,6 +54,8 @@ export class GroupsUI {
         this.currentHasPassword = false;
         /** @type {string|null} pending group to open after join/create */
         this._pendingOpen = null;
+        /** @type {string|null} locked group awaiting password */
+        this._passwordTarget = null;
     }
 
     init() {
@@ -60,6 +66,13 @@ export class GroupsUI {
         this.openCurrentBtn?.addEventListener("click", () => {
             if (this.current) {
                 this.openGroupMenu?.();
+            }
+        });
+        this.joinSubmitBtn?.addEventListener("click", () => this.#submitPasswordJoin());
+        this.passwordInput?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                this.#submitPasswordJoin();
             }
         });
         this.createSubmitBtn?.addEventListener("click", () => {
@@ -126,6 +139,7 @@ export class GroupsUI {
         this.currentType = null;
         this.currentHasPassword = false;
         this._pendingOpen = null;
+        this._passwordTarget = null;
         if (this.passwordInput) {
             this.passwordInput.value = "";
         }
@@ -222,13 +236,32 @@ export class GroupsUI {
             this.openGroupMenu?.();
             return;
         }
-        const password = this.passwordInput?.value || "";
-        if (group.hasPassword && !password) {
-            this.passwordInput?.focus();
+        if (group.hasPassword) {
+            this._passwordTarget = group.name;
+            if (this.passwordInput) {
+                this.passwordInput.value = "";
+            }
+            this.openPasswordScreen?.();
+            queueMicrotask(() => this.passwordInput?.focus());
             return;
         }
         this._pendingOpen = group.name;
-        this.joinGroup(group.name, password);
+        this.joinGroup(group.name, "");
+    }
+
+    #submitPasswordJoin() {
+        const name = this._passwordTarget;
+        if (!name) {
+            this.openGroupsList?.();
+            return;
+        }
+        const password = String(this.passwordInput?.value || "");
+        if (!password) {
+            this.passwordInput?.focus();
+            return;
+        }
+        this._pendingOpen = name;
+        this.joinGroup(name, password);
     }
 
     #renderMenu() {

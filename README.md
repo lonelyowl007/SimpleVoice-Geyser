@@ -2,7 +2,7 @@
 
 > **Fork of** [TheodoreMeyer/SimpleVoice-Geyser](https://github.com/TheodoreMeyer/SimpleVoice-Geyser)  
 > Maintained by [lonelyowl007](https://github.com/lonelyowl007/SimpleVoice-Geyser)  
-> **Fork version:** `0.1.18-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups menu)  
+> **Fork version:** `0.1.19-fork` (upstream base `0.1.4` + voice/Folia/mic/UI + volumes + proximity/multi-talk + SVC UI + web Groups menu)  
 > **Download prebuilt jars:** [Releases](https://github.com/lonelyowl007/SimpleVoice-Geyser/releases) (use `Svg-Spigot-*.jar` for Paper / Purpur / Folia)
 
 ## What this fork changes
@@ -142,6 +142,12 @@ Browser noise suppression / AGC stay off. Join-page branding is unchanged. Creat
 | List | `Joined` / `Open` / `Locked` badges; lock icon only when password; green “checkbox” removed |
 | Menu | Members from server (`groups.members`); auto-opens after create/join |
 | Shortcut | “Open group: …” button when already joined |
+
+**After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
+
+### 16) Group password only when locked (0.1.19-fork)
+
+The groups list no longer shows a password field. Clicking a **Locked** group opens an SVC-style **Enter Group Password** screen with Join Group; open groups join immediately.
 
 **After upgrading:** delete `plugins/<SimpleVoice-Geyser>/web/`, restart, hard-refresh (`Ctrl+F5`).
 

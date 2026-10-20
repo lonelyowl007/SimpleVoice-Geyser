@@ -206,6 +206,17 @@ Clicking a group opens the member menu (SVC-style). Wipe web assets after upgrad
 
 ---
 
+### Upgrade to 0.1.19-fork (Group password screen)
+
+Password field is no longer on the groups list — only shown after clicking a locked group (SVC “Enter Group Password”).
+
+1. Stop the server
+2. Delete `plugins/<SimpleVoice-Geyser>/web/`
+3. Install `0.1.19-fork`
+4. Start + hard-refresh (`Ctrl+F5`)
+
+---
+
 ## Best Practices
 
 - Test upgrades in a staging environment

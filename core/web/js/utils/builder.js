@@ -24,6 +24,7 @@ const ELEMENTS = {
             groupsList: "ui.groups-list",
             groupsOpenCurrent: "ui.groups-open-current",
             groupsPassword: "ui.groups-password",
+            groupsJoinSubmit: "ui.groups-join-submit",
             groupsLeave: "ui.groups-leave",
             groupMenuTitle: "ui.group-menu-title",
             groupMenuMembers: "ui.group-menu-members",

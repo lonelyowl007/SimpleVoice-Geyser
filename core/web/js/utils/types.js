@@ -48,6 +48,7 @@
  * @property {HTMLElement} groupsList
  * @property {HTMLButtonElement} groupsOpenCurrent
  * @property {HTMLInputElement} groupsPassword
+ * @property {HTMLButtonElement} groupsJoinSubmit
  * @property {HTMLButtonElement} groupsLeave
  * @property {HTMLElement} groupMenuTitle
  * @property {HTMLElement} groupMenuMembers
