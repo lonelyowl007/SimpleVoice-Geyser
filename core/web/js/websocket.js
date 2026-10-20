@@ -398,6 +398,21 @@ export class SvgWebSocket {
         }
     }
 
+    /**
+     * @param {string} name
+     * @param {string} [password]
+     */
+    createGroup(name, password) {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            return;
+        }
+        const payload = { type: "create_group", name: String(name || "").trim() };
+        if (password) {
+            payload.password = String(password);
+        }
+        this.ws.send(JSON.stringify(payload));
+    }
+
     async #sendCapabilitiesOnce() {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN || this.capabilitiesSent) {
             return;

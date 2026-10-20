@@ -70,9 +70,27 @@ public final class GroupsBroadcaster {
     }
 
     private static String typeName(Group group) {
-        if (group.getType() == null) {
+        Group.Type type = group.getType();
+        if (type == null) {
             return "OPEN";
         }
-        return String.valueOf(group.getType()).toUpperCase(Locale.ROOT);
+        // SVC wraps types; identity compare first (String.valueOf prints GROUP$TYPE$1@…)
+        if (type == Group.Type.NORMAL) {
+            return "NORMAL";
+        }
+        if (type == Group.Type.ISOLATED) {
+            return "ISOLATED";
+        }
+        if (type == Group.Type.OPEN) {
+            return "OPEN";
+        }
+        if (type instanceof Enum<?> enumType) {
+            return enumType.name().toUpperCase(Locale.ROOT);
+        }
+        String raw = String.valueOf(type);
+        if (raw.contains("@") || raw.contains("$")) {
+            return "OPEN";
+        }
+        return raw.toUpperCase(Locale.ROOT);
     }
 }

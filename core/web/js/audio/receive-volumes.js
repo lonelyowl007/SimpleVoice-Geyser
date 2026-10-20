@@ -264,11 +264,8 @@ export function getVolumeRows() {
         players.push({ key: uuid, kind: "player", uuid, name });
     }
     players.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
-    return [
-        { key: "master", kind: "master", uuid: null, name: "Overall" },
-        { key: "other", kind: "other", uuid: null, name: "Other" },
-        ...players
-    ];
+    // Master (Voice Chat Volume) lives in Settings; Other stays in prefs without a UI row.
+    return players;
 }
 
 /** @param {() => void} listener */

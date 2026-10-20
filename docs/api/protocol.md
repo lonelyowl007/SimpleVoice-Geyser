@@ -371,7 +371,7 @@ After authentication and whenever groups change (create/remove/join/leave), the 
 | `groups[].hasPassword` | Whether a password is required (secret never sent) |
 | `current` | Joined group name for this player, or `null` |
 
-### Client To Server `join_group` / `leave_group`
+### Client To Server `join_group` / `leave_group` / `create_group`
 
 ```json
 { "type": "join_group", "name": "Party", "password": "optional" }
@@ -381,7 +381,11 @@ After authentication and whenever groups change (create/remove/join/leave), the 
 { "type": "leave_group" }
 ```
 
-Requires an authenticated websocket and an online Minecraft player with `svg.vc.group.join`. Failures return a normal `error` status message; success is followed by an updated `groups` push.
+```json
+{ "type": "create_group", "name": "Party", "password": "optional" }
+```
+
+`join_group` / `leave_group` require `svg.vc.group.join`. `create_group` requires `svg.vc.group.create`. Empty `password` creates a public OPEN group; a non-empty password creates a password-protected OPEN group. Failures return a normal `error` status message; success is followed by an updated `groups` push.
 
 ## Compatibility Rules
 

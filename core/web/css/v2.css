@@ -800,22 +800,50 @@ body.pending-minecraft-join .statusLabel {
     background: #2a4a2a;
 }
 .svcSliderWrap {
-    position: relative;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    gap: 4px;
+}
+.svcSliderWrap .svcSlider,
+.micSettingBlock .svcSlider {
     width: 100%;
 }
-.svcSliderWrap .svcSlider {
-    width: 100%;
-}
+.svcSliderCaption,
 .svcSliderLabel {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    font-size: 0.75em;
+    display: block;
+    position: static;
+    transform: none;
+    font-size: 0.9em;
     color: #fff;
     text-shadow: 1px 1px 0 #000;
-    opacity: 0.95;
+    margin-bottom: 2px;
+}
+.svcFieldBlock {
+    display: flex;
+    flex-flow: column;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.svcFieldInput {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.svcGroupsList {
+    min-height: 120px;
+}
+.svcGroupsList .svcListCheck {
+    /* Selected group uses selected background; hide fake checkbox badge */
+    display: none !important;
+}
+.svcListRowStatic {
+    cursor: default;
+    opacity: 0.85;
+}
+.svcListRowStatic:hover {
+    background: #3a3a3a;
 }
 .volumeList.svcListArea {
     max-height: 260px;

@@ -106,8 +106,6 @@
                                 <button type="button" class="svcIconBtn" data-svg="ui.hub-volumes-icon" aria-label="Adjust Volumes" title="Adjust Volumes">
                                     <span class="svcSlidersIcon" aria-hidden="true"></span>
                                 </button>
-                                <div class="flexSpacer"></div>
-                                <button type="button" class="svcIconBtn svcLeaveBtn mcTextStyle2" data-svg="ui.leave" svg-lang="leaveBtnText">Leave</button>
                             </div>
                             <div class="svcHubPtt flexRowContainer fullWidth flexColumnWhenMobile" data-svg="ptt.controls">
                                 <div class="mcButtonStyle fullWidthWhenMobile">
@@ -135,11 +133,13 @@
                             <h2 class="svcPanelTitle" svg-lang="voiceChatSettingsTitle">Voice Chat Settings</h2>
                             <div class="micSettingsContainer fullWidth" data-svg="audio.mic-settings">
                                 <div class="micSettingBlock fullWidth">
-                                    <span class="mcTextStyle1 textAlignLeft fullWidth" svg-lang="micVolumeLabel">Mic Volume</span>
-                                    <div class="svcSliderWrap">
-                                        <input type="range" class="micRangeSlider svcSlider" min="50" max="600" value="100" data-svg="audio.gain-slider" aria-label="Microphone volume">
-                                        <span class="svcSliderLabel" data-svg="audio.gain-value">100%</span>
-                                    </div>
+                                    <span class="mcTextStyle1 textAlignLeft fullWidth svcSliderCaption" data-svg="audio.master-value" svg-lang="voiceChatVolumeLabel">Voice Chat Volume: 100%</span>
+                                    <input type="range" class="micRangeSlider svcSlider" min="0" max="200" value="100" data-svg="audio.master-slider" aria-label="Voice chat volume">
+                                </div>
+                                <div class="flexDivider"></div>
+                                <div class="micSettingBlock fullWidth">
+                                    <span class="mcTextStyle1 textAlignLeft fullWidth svcSliderCaption" data-svg="audio.gain-value">Mic Volume: 100%</span>
+                                    <input type="range" class="micRangeSlider svcSlider" min="50" max="600" value="100" data-svg="audio.gain-slider" aria-label="Microphone volume">
                                 </div>
                                 <div class="flexDivider"></div>
                                 <div class="micSettingBlock fullWidth">
@@ -208,14 +208,34 @@
 <!--                    GROUPS -->
                     <div class="svcScreen" data-screen="groups" aria-hidden="true">
                         <div class="svcPanel">
-                            <h2 class="svcPanelTitle" svg-lang="groupsTitle">Groups</h2>
+                            <h2 class="svcPanelTitle" svg-lang="groupsTitle">Join or Create Group</h2>
                             <div class="svcGroupCurrent mcTextStyle1 textAlignLeft fullWidth" data-svg="ui.groups-current"></div>
-                            <div class="svcListArea" data-svg="ui.groups-list"></div>
-                            <div class="flexDivider"></div>
-                            <label class="mcTextStyle1 textAlignLeft fullWidth" for="groupPassword" svg-lang="groupPasswordLabel">Group Password</label>
-                            <input class="mcTextboxStyle fullWidth" id="groupPassword" type="password" data-svg="ui.groups-password" placeholder="Password (if required)" svg-lang-placeholder="groupPasswordPlaceholder" autocomplete="off" />
+                            <div class="svcListArea svcGroupsList" data-svg="ui.groups-list"></div>
+                            <div class="svcFieldBlock fullWidth">
+                                <label class="mcTextStyle1 textAlignLeft fullWidth" for="groupPassword" svg-lang="groupPasswordLabel">Group Password</label>
+                                <input class="mcTextboxStyle svcFieldInput" id="groupPassword" type="password" data-svg="ui.groups-password" placeholder="Password (if required)" svg-lang-placeholder="groupPasswordPlaceholder" autocomplete="off" />
+                            </div>
                             <div class="flexDivider"></div>
                             <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.groups-leave" svg-lang="leaveGroupBtn">Leave Group</button>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-create-group" svg-lang="createGroupBtn">Create Group</button>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
+                        </div>
+                    </div>
+
+<!--                    CREATE GROUP -->
+                    <div class="svcScreen" data-screen="create-group" aria-hidden="true">
+                        <div class="svcPanel">
+                            <h2 class="svcPanelTitle" svg-lang="createGroupTitle">Create Group</h2>
+                            <div class="svcFieldBlock fullWidth">
+                                <label class="mcTextStyle1 textAlignLeft fullWidth" for="createGroupName" svg-lang="createGroupNameLabel">Group Name</label>
+                                <input class="mcTextboxStyle svcFieldInput" id="createGroupName" type="text" data-svg="ui.create-group-name" placeholder="Name" svg-lang-placeholder="createGroupNamePlaceholder" autocomplete="off" maxlength="32" />
+                            </div>
+                            <div class="svcFieldBlock fullWidth">
+                                <label class="mcTextStyle1 textAlignLeft fullWidth" for="createGroupPassword" svg-lang="createGroupPasswordLabel">Password (optional)</label>
+                                <input class="mcTextboxStyle svcFieldInput" id="createGroupPassword" type="password" data-svg="ui.create-group-password" placeholder="Leave empty for public" svg-lang-placeholder="createGroupPasswordPlaceholder" autocomplete="off" />
+                            </div>
+                            <div class="flexDivider"></div>
+                            <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.create-group-submit" svg-lang="createGroupSubmitBtn">Create</button>
                             <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-screen-back svg-lang="backBtnText">Back</button>
                         </div>
                     </div>
