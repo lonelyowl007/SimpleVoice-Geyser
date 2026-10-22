@@ -1,8 +1,11 @@
 package io.github.theodoremeyer.simplevoicegeyser.fabric.impl;
 
 import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
+import io.github.theodoremeyer.simplevoicegeyser.core.server.packets.ChatBroadcaster;
 import io.github.theodoremeyer.simplevoicegeyser.fabric.impl.sender.FabricPlayer;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
@@ -44,6 +47,19 @@ public class SvgListener {
                             return null;
                         });
             }
+        });
+
+        // Public chat → web clients
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+            if (sender == null || message == null) {
+                return;
+            }
+            Component content = message.decoratedContent();
+            String plain = content == null ? "" : content.getString();
+            if (plain.isBlank()) {
+                return;
+            }
+            ChatBroadcaster.onMinecraftChat(sender.getScoreboardName(), sender.getUUID(), plain);
         });
     }
 }
