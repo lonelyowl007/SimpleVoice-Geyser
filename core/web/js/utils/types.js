@@ -63,6 +63,7 @@
  * @typedef {Object} PttElements
  * @property {HTMLElement} micCard
  * @property {HTMLSelectElement} transmitModeSelect
+ * @property {HTMLButtonElement} [activationMethodBtn]
  * @property {HTMLElement} pttCard
  * @property {HTMLElement} pttBindingControls
  * @property {HTMLButtonElement} bindPttBtn

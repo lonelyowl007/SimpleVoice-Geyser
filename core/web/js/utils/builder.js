@@ -59,6 +59,7 @@ const ELEMENTS = {
         ptt: {
             micCard: "ptt.mic-card",
             transmitModeSelect: "ptt.mode",
+            activationMethodBtn: { optional: "ptt.activation-btn" },
 
             pttCard: "ptt.card",
             pttBindingControls: "ptt.binding-controls",
@@ -151,6 +152,8 @@ export class SvgBuilder {
 
             if (typeof value === "string") {
                 result[key] = this.#require(value);
+            } else if (value && typeof value === "object" && typeof value.optional === "string") {
+                result[key] = this.elements[value.optional] || null;
             } else {
                 result[key] = this.#resolveObject(value);
             }
