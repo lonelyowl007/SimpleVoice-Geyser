@@ -6,9 +6,11 @@ import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
 import io.github.theodoremeyer.simplevoicegeyser.core.api.sender.SvgPlayer;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.ConnectionStates;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.servlets.JettyWebSocket;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,9 +90,17 @@ public final class PendingJoinWaiter {
 
         entry.pollTask = executor.scheduleAtFixedRate(
                 () -> {
-                    ReadyResult resolved = tryResolve(uuid);
-                    if (resolved != null) {
-                        complete(uuid, entry, resolved);
+                    try {
+                        ReadyResult resolved = tryResolve(uuid);
+                        if (resolved != null) {
+                            complete(uuid, entry, resolved);
+                        }
+                    } catch (Throwable t) {
+                        // scheduleAtFixedRate suppresses later runs after an uncaught exception
+                        SvgCore.getLogger().debug(
+                                "PendingJoinWaiter: poll error for " + uuid,
+                                t
+                        );
                     }
                 },
                 POLL_MS,
@@ -120,12 +130,28 @@ public final class PendingJoinWaiter {
      */
     public void notifyPlayerJoined(UUID uuid) {
         PendingEntry entry = pending.get(uuid);
-        if (entry == null) {
+        if (entry != null) {
+            ReadyResult resolved = tryResolve(uuid);
+            if (resolved != null) {
+                complete(uuid, entry, resolved);
+            }
             return;
         }
-        ReadyResult resolved = tryResolve(uuid);
-        if (resolved != null) {
-            complete(uuid, entry, resolved);
+
+        // Auth UUID may differ from Floodgate online UUID — match pending waits by name.
+        SvgPlayer joined = SvgCore.getPlayerManager().getPlayer(uuid);
+        if (joined == null) {
+            return;
+        }
+        for (Map.Entry<UUID, PendingEntry> pendingEntry : pending.entrySet()) {
+            UUID authUuid = pendingEntry.getKey();
+            ReadyResult resolved = tryResolve(authUuid);
+            if (resolved != null
+                    && resolved.player() != null
+                    && uuid.equals(resolved.player().getUniqueId())) {
+                complete(authUuid, pendingEntry.getValue(), resolved);
+                return;
+            }
         }
     }
 
@@ -184,40 +210,72 @@ public final class PendingJoinWaiter {
         }
     }
 
-    private ReadyResult tryResolve(UUID uuid) {
-        SvgPlayer player = SvgCore.getPlayerManager().getPlayer(uuid);
-        if (player == null) {
+    private ReadyResult tryResolve(UUID authUuid) {
+        try {
+            SvgPlayer player = resolveOnlinePlayer(authUuid);
+            if (player == null) {
+                return null;
+            }
+
+            // Always use the live online UUID for SVC (may differ from accounts.json).
+            UUID uuid = player.getUniqueId();
+            if (!uuid.equals(authUuid)) {
+                SvgCore.getLogger().debug(
+                        "[PendingJoin] Using online UUID " + uuid
+                                + " for auth account " + authUuid
+                                + " (" + player.getName() + ")"
+                );
+            }
+
+            if (!player.hasPermission("svg.vc.join")) {
+                return ReadyResult.rejected(
+                        uuid,
+                        "Access Denied. You may have been banned from vc."
+                );
+            }
+
+            VoicechatServerApi api = SvgCore.getBridge() == null
+                    ? null
+                    : SvgCore.getBridge().getVcServerApi();
+            if (api == null) {
+                return ReadyResult.rejected(uuid, "Voice chat server unavailable.");
+            }
+
+            VoicechatConnection connection = api.getConnectionOf(uuid);
+            if (connection == null) {
+                // Player online but SVC not ready yet — keep waiting.
+                return null;
+            }
+
+            if (connection.isInstalled()) {
+                return ReadyResult.rejected(
+                        uuid,
+                        "Access Denied: Please remove the Simple Voice Chat mod."
+                );
+            }
+
+            return ReadyResult.ready(uuid, player);
+        } catch (Throwable t) {
+            SvgCore.getLogger().debug("PendingJoinWaiter: tryResolve failed for " + authUuid, t);
             return null;
         }
+    }
 
-        if (!player.hasPermission("svg.vc.join")) {
-            return ReadyResult.rejected(
-                    uuid,
-                    "Access Denied. You may have been banned from vc."
-            );
+    /**
+     * Resolve the online player for an auth UUID, including Floodgate name fallback
+     * when accounts.json still points at an old UUID.
+     */
+    @Nullable
+    private static SvgPlayer resolveOnlinePlayer(UUID authUuid) {
+        SvgPlayer player = SvgCore.getPlayerManager().getPlayer(authUuid);
+        if (player != null) {
+            return player;
         }
-
-        VoicechatServerApi api = SvgCore.getBridge() == null
-                ? null
-                : SvgCore.getBridge().getVcServerApi();
-        if (api == null) {
-            return ReadyResult.rejected(uuid, "Voice chat server unavailable.");
-        }
-
-        VoicechatConnection connection = api.getConnectionOf(uuid);
-        if (connection == null) {
-            // Player online but SVC not ready yet — keep waiting.
+        String storedName = SvgCore.getPasswordManager().getUsername(authUuid);
+        if (storedName == null || storedName.isBlank()) {
             return null;
         }
-
-        if (connection.isInstalled()) {
-            return ReadyResult.rejected(
-                    uuid,
-                    "Access Denied: Please remove the Simple Voice Chat mod."
-            );
-        }
-
-        return ReadyResult.ready(uuid, player);
+        return SvgCore.getPlayerManager().findOnlineByUsername(storedName);
     }
 
     /**
