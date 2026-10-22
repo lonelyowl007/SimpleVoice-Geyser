@@ -117,6 +117,12 @@ public final class SvgConfig {
     public final ConfigKey<Boolean> UPDATE_CHECKER_ENABLED =
             new ConfigKey <>(this, "updatechecker.enable", true);
 
+    public final ConfigKey<Boolean> CONFIG_BACKUPS_ENABLED =
+            new ConfigKey<>(this, ConfigBackupUtil.ENABLED_PATH, ConfigBackupUtil.DEFAULT_ENABLED);
+
+    public final ConfigKey<Integer> CONFIG_BACKUPS_MAX_FILES =
+            new ConfigKey<>(this, ConfigBackupUtil.MAX_FILES_PATH, ConfigBackupUtil.DEFAULT_MAX_FILES);
+
     public final ConfigKey<String> CONFIG_VERSION =
             new ConfigKey <>(this, "config-version", SvgCore.VERSION);
 
@@ -149,6 +155,8 @@ public final class SvgConfig {
             AUDIO_MIC_ALLOW_LEGACY,
             DEBUG,
             UPDATE_CHECKER_ENABLED,
+            CONFIG_BACKUPS_ENABLED,
+            CONFIG_BACKUPS_MAX_FILES,
             CONFIG_VERSION
     );
 

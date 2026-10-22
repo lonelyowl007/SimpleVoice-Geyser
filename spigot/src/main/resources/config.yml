@@ -125,6 +125,17 @@ debug: false
 updatechecker:
   enable: true
 
+# Config file backups (written under plugins/SimpleVoice-Geyser/backups/configs/)
+config:
+  backups:
+    # default: true
+    # Create a backup before auto-updating config.yml with new keys / version.
+    enabled: true
+
+    # default: 6
+    # Max backups to keep. Oldest files are deleted first. Use 0 for unlimited.
+    max-files: 6
+
 # default: 0.1.1-dev-migration1
 # Internal config schema marker used for migration tracking.
 config-version: 0.1.1-dev-migration1

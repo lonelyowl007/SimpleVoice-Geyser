@@ -32,6 +32,7 @@ This page documents version upgrade behavior and breaking changes.
 - Hub matches SVC Java icon row (mic | mute speaker/deafen | Adjust Volumes) with darker MC buttons. Wipe `web/` after upgrade.
 - Adjust Volumes matches SVC (large avatar, wide amp bar behind name, no mute button — slide to 0%). Wipe `web/` after upgrade.
 - Pending web join resolves Floodgate players already online even when `accounts.json` UUID is stale (name/dot fallback). Wipe `web/` after upgrade; re-run `/svg pswd` if stuck.
+- Config backups move to `backups/configs/` (rotates to `config.backups.max-files`, default 6). Legacy root `config-*.yml.bak` files are migrated on the next backup.
 
 ---
 
