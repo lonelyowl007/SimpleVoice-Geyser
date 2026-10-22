@@ -62,7 +62,7 @@ The web client requests the microphone through `getUserMedia` with browser proce
 
 Browser noise suppression, echo cancellation, and auto-gain often warp the mic signal when players use the web client over the internet (WAN). That can sound robotic or metallic to listeners. Disabling those constraints keeps a cleaner raw capture for remote voice.
 
-This matches the intent of the stalled upstream change in PR #52, reapplied on current `dev`. Quiet mics may need the player to speak closer to the microphone or raise system/input gain; software mic-volume UI is a separate change.
+Quiet mics may need the player to speak closer to the microphone or raise system/input gain; software mic-volume UI is a separate change.
 
 ## Developer Appendix: `svg-v2` Frame
 

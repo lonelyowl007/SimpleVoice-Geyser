@@ -67,5 +67,7 @@ tasks.runServer { // https://github.com/jpenilla/run-task/wiki
         url("https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot")
         // ViaVersion — protocol bridge for mixed Java/Bedrock clients on Paper 26.3
         url("https://cdn.modrinth.com/data/P1OZGk5p/versions/vd9B8ESF/ViaVersion-5.12.2-SNAPSHOT.jar")
+        // ViaBackwards — older client protocols when harness runs on latest MC
+        url("https://cdn.modrinth.com/data/NpvuJQoq/versions/dWw67APC/ViaBackwards-5.12.1.jar")
     }
 }
