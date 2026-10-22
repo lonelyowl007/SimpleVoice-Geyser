@@ -5,12 +5,24 @@ import {
     onVolumesChange,
     setMaster,
     setOther,
-    setOtherMuted,
-    setPlayer,
-    setPlayerMuted
+    setPlayer
 } from "./audio/receive-volumes.js";
 
 const DEFAULT_AVATAR = "images/v2/mic.png";
+const AVATAR_SIZE = 48;
+
+/**
+ * Format amplification like SVC Java: 100% → "0%", 105% → "+5%", 80% → "-20%".
+ * @param {number} percent
+ * @returns {string}
+ */
+function formatAmplification(percent) {
+    const delta = Math.round(percent) - 100;
+    if (delta > 0) {
+        return `+${delta}%`;
+    }
+    return `${delta}%`;
+}
 
 /**
  * SVC-style Adjust Volumes panel (per-player only; master is in Settings).
@@ -85,17 +97,20 @@ export class AdjustVolumesUI {
                 ? prefs.other
                 : (prefs.players[row.uuid] || { percent: 100, muted: false });
 
+        // Legacy mute flag: show as 0% (SVC has no mute button; slider to 0).
+        const percent = entry.muted ? 0 : entry.percent;
+
         const rowEl = document.createElement("div");
-        rowEl.className = "volumeRow flexRowContainer fullWidth";
+        rowEl.className = "volumeRow fullWidth";
         rowEl.dataset.volumeKey = row.key;
 
         const avatar = document.createElement("img");
         avatar.className = "volumeAvatar";
         avatar.alt = "";
-        avatar.width = 32;
-        avatar.height = 32;
+        avatar.width = AVATAR_SIZE;
+        avatar.height = AVATAR_SIZE;
         if (row.kind === "player" && row.uuid) {
-            avatar.src = `https://mc-heads.net/avatar/${row.uuid}/32`;
+            avatar.src = `https://mc-heads.net/avatar/${row.uuid}/${AVATAR_SIZE}`;
             avatar.onerror = () => {
                 avatar.onerror = null;
                 avatar.src = DEFAULT_AVATAR;
@@ -109,11 +124,11 @@ export class AdjustVolumesUI {
         }
         rowEl.appendChild(avatar);
 
-        const body = document.createElement("div");
-        body.className = "volumeRowBody fullWidth";
+        const bar = document.createElement("div");
+        bar.className = "volumeBar";
 
         const nameEl = document.createElement("span");
-        nameEl.className = "mcTextStyle1 volumeName textAlignLeft";
+        nameEl.className = "mcTextStyle2 volumeBarName";
         if (row.kind === "master") {
             SvgLang.setElement(nameEl, "volumeOverallLabel");
         } else if (row.kind === "other") {
@@ -121,26 +136,24 @@ export class AdjustVolumesUI {
         } else {
             nameEl.textContent = row.name;
         }
-        body.appendChild(nameEl);
+        bar.appendChild(nameEl);
 
         const ampLabel = document.createElement("span");
-        ampLabel.className = "mcTextStyle1 volumeAmpLabel textAlignLeft";
-        const percent = entry.percent;
+        ampLabel.className = "mcTextStyle1 volumeBarAmp";
         const updateAmpLabel = (p) => {
             SvgLang.setElement(ampLabel, () =>
-                `${SvgLang.string("volumeAmplificationPrefix")}${Math.round(p)}%`
+                `${SvgLang.string("volumeAmplificationPrefix")}${formatAmplification(p)}`
             );
         };
         updateAmpLabel(percent);
-        body.appendChild(ampLabel);
+        bar.appendChild(ampLabel);
 
         const slider = document.createElement("input");
         slider.type = "range";
-        slider.className = "micRangeSlider volumeSlider";
+        slider.className = "volumeSlider svcMcSlider";
         slider.min = "0";
         slider.max = "200";
         slider.value = String(percent);
-        slider.disabled = !!entry.muted && row.kind !== "master";
         slider.setAttribute(
             "aria-label",
             row.kind === "master"
@@ -156,37 +169,13 @@ export class AdjustVolumesUI {
             if (row.kind === "master") {
                 setMaster(value, silent);
             } else if (row.kind === "other") {
-                setOther(value, prefs.other.muted, silent);
+                setOther(value, false, silent);
             } else {
-                setPlayer(row.uuid, value, entry.muted, silent);
+                setPlayer(row.uuid, value, false, silent);
             }
         });
-        body.appendChild(slider);
-        rowEl.appendChild(body);
-
-        if (row.kind !== "master") {
-            const muteBtn = document.createElement("button");
-            muteBtn.type = "button";
-            muteBtn.className = "mcButtonStyleInner mcTextStyle2 volumeMuteBtn";
-            muteBtn.classList.toggle("muted", !!entry.muted);
-            SvgLang.setElement(muteBtn, () =>
-                entry.muted
-                    ? SvgLang.string("volumeUnmuteBtn")
-                    : SvgLang.string("volumeMuteBtn")
-            );
-            muteBtn.addEventListener("click", () => {
-                const next = !entry.muted;
-                if (row.kind === "other") {
-                    setOtherMuted(next);
-                } else {
-                    setPlayerMuted(row.uuid, next);
-                }
-            });
-            const muteWrap = document.createElement("div");
-            muteWrap.className = "mcButtonStyle volumeMuteWrap";
-            muteWrap.appendChild(muteBtn);
-            rowEl.appendChild(muteWrap);
-        }
+        bar.appendChild(slider);
+        rowEl.appendChild(bar);
 
         return rowEl;
     }

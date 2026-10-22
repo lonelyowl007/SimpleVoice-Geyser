@@ -30,6 +30,7 @@ This page documents version upgrade behavior and breaking changes.
 - Minecraft public chat is mirrored into the web chat panel when `client.web-chat-enabled` is true (wipe `web/` so inbound `chat` packets are displayed).
 - Voice Chat Settings restyled to match Simple Voice Chat Java (square sliders, full-width activation toggle, mic/speaker side by side). Wipe `web/` and hard-refresh (Ctrl+F5) after upgrade.
 - Hub matches SVC Java icon row (mic | mute speaker/deafen | Adjust Volumes) with darker MC buttons. Wipe `web/` after upgrade.
+- Adjust Volumes matches SVC (large avatar, wide amp bar behind name, no mute button — slide to 0%). Wipe `web/` after upgrade.
 
 ---
 
