@@ -198,6 +198,8 @@ If `server.audio.transport-mode` is `auto`, the server selects `svg-v2` only whe
 
 ## Chat Packet
 
+Requires `client.web-chat-enabled` (default `true`). When disabled, web→game and game→web chat are both off.
+
 Client to server:
 
 ```json
@@ -211,19 +213,32 @@ Server behavior:
 
 | Condition                                    | Result                                                                       |
 |----------------------------------------------|------------------------------------------------------------------------------|
+| `web-chat-enabled` is false                  | Server sends an error.                                                       |
 | Client is not authenticated                  | Server sends an error.                                                       |
 | Message contains unsupported characters only | Server sends an error.                                                       |
-| Message is valid                             | Server forwards sanitized chat and echoes a chat response to the web client. |
+| Message is valid                             | Server forwards sanitized chat into Minecraft as `[Web Chat]: …`.            |
 
-Server chat response:
+The web client shows a local `[You] …` line. Other authenticated web clients receive the Minecraft chat mirror (below) after the message enters the game.
+
+### Server → client chat (Minecraft mirror)
+
+Public in-game chat is pushed to authenticated web clients:
 
 ```json
 {
   "type": "chat",
-  "message": "You: Hello from web chat",
+  "message": "<PlayerName> hello everyone",
   "fatal": false
 }
 ```
+
+| Source | Behavior |
+|--------|----------|
+| Player chats in Minecraft | All web clients get `<Name> message`. |
+| Web client sends chat | Peers get `<Name> message`; sender keeps local `[You]`. |
+| Cancelled chat events (mute plugins, etc.) | Not mirrored. |
+
+Whispers / private messages / commands are not mirrored.
 
 ## Server Status And Error Packets
 

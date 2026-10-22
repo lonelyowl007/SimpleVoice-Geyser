@@ -205,6 +205,13 @@ export class SvgWebSocket {
                         });
                     }
 
+                    if (packetType === "chat") {
+                        const chatMsg = String(data.message || "");
+                        if (chatMsg) {
+                            Logger.log(chatMsg);
+                        }
+                    }
+
                     if (packetType === "error") {
                         const isFatalError = msg.includes("bedrock player to join") ||
                             msg.includes("use /svg pswd") ||
