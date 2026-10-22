@@ -284,6 +284,7 @@ export class SvgUI {
         const {
             micCard,
             transmitModeSelect,
+            activationMethodBtn,
             pttCard,
             pttBindingControls,
             bindPttBtn,
@@ -399,6 +400,7 @@ export class SvgUI {
             new PttController( /** @type {PttElements} */{
                 micCard: micCard,
                 transmitModeSelect: transmitModeSelect,
+                activationMethodBtn: activationMethodBtn,
                 pttCard: pttCard,
                 pttBindingControls: pttBindingControls,
                 bindPttBtn: bindPttBtn,

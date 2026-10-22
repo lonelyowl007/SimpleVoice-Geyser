@@ -28,6 +28,7 @@ This page documents version upgrade behavior and breaking changes.
 - `/svg reload` restarts Jetty; players need `svg.admin` (default op).
 - Web **Create Group** chooses Isolated / Normal / Open with a live hint (default Isolated). Password is join-only; wipe `web/` after upgrade so the type UI loads.
 - Minecraft public chat is mirrored into the web chat panel when `client.web-chat-enabled` is true (wipe `web/` so inbound `chat` packets are displayed).
+- Voice Chat Settings restyled to match Simple Voice Chat Java (square sliders, full-width activation toggle, mic/speaker side by side). Wipe `web/` and hard-refresh (Ctrl+F5) after upgrade.
 
 ---
 
