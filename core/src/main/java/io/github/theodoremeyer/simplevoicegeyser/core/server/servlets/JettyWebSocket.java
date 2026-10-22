@@ -160,6 +160,12 @@ public final class JettyWebSocket {
 
             String sessionName = connection != null ? connection.getPlayer().getName() : "unknown session";
             SvgCore.getLogger().info("[WebSocket] Session timed out for " + sessionName);
+            return;
+        }
+
+        if (isBenignDisconnect(error)) {
+            SvgCore.getLogger().debug("WebSocket: benign disconnect", error);
+            return;
         }
 
         String type = error == null
@@ -172,6 +178,24 @@ public final class JettyWebSocket {
 
         SvgCore.getLogger().debug("WebSocket: websocket error", error);
         SvgCore.getLogger().info("[WebSocket] Error: " + type + ": " + message);
+    }
+
+    private static boolean isBenignDisconnect(Throwable error) {
+        if (error == null) {
+            return false;
+        }
+        if (error instanceof java.nio.channels.ClosedChannelException
+                || error instanceof java.io.EOFException) {
+            return true;
+        }
+        if (error instanceof IOException) {
+            String message = error.getMessage();
+            if (message != null) {
+                String lower = message.toLowerCase();
+                return lower.contains("closed") || lower.contains("broken pipe");
+            }
+        }
+        return false;
     }
 
     public void sendRaw(ConnectionStates.MessageType type, String message, boolean fatal) {

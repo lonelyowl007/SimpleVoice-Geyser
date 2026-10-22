@@ -5,7 +5,7 @@ import {SvgAudio} from "./audio/audio.js";
 import {AdjustVolumesUI} from "./volumes.js";
 import {GroupsUI} from "./groups.js";
 import {ScreenRouter} from "./screens.js";
-import {getPrefs, setMaster} from "./audio/receive-volumes.js";
+import {getPrefs, setMaster, isDeafened, toggleDeafen} from "./audio/receive-volumes.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
@@ -270,6 +270,7 @@ export class SvgUI {
             speakerSelect,
             micSelect,
             muteBtn,
+            muteSpeakerBtn,
             micIndicator,
             vadEnergyBar,
             vadMarker,
@@ -514,6 +515,23 @@ export class SvgUI {
                 );
             }
         );
+
+        if (muteSpeakerBtn) {
+            const syncDeafenUi = (deafened) => {
+                muteSpeakerBtn.classList.toggle("muted", deafened);
+                muteSpeakerBtn.classList.toggle("unmuted", !deafened);
+                muteSpeakerBtn.setAttribute(
+                    "aria-label",
+                    deafened
+                        ? (SvgLang.string("muteSpeakerUnmuteLabel") || "Unmute speaker")
+                        : (SvgLang.string("muteSpeakerMuteLabel") || "Mute speaker")
+                );
+            };
+            syncDeafenUi(isDeafened());
+            muteSpeakerBtn.addEventListener("click", () => {
+                syncDeafenUi(toggleDeafen());
+            });
+        }
 
         speakerSelect.addEventListener("change",
             async () => {

@@ -5,7 +5,7 @@
 const STORAGE_KEY = "svgReceiveVolumes_v1";
 
 /** @typedef {{ percent: number, muted: boolean }} VolumeEntry */
-/** @typedef {{ master: number, other: VolumeEntry, players: Record<string, VolumeEntry> }} VolumePrefs */
+/** @typedef {{ master: number, deafen: boolean, other: VolumeEntry, players: Record<string, VolumeEntry> }} VolumePrefs */
 /** @typedef {{ uuid: string, name: string }} RosterPlayer */
 
 /** @type {VolumePrefs} */
@@ -77,6 +77,7 @@ function isPlaceholderName(label, uuid) {
 function defaultPrefs() {
     return {
         master: 100,
+        deafen: false,
         other: { percent: 100, muted: false },
         players: {}
     };
@@ -116,6 +117,7 @@ function loadPrefs() {
         }
         return {
             master: clampPercent(parsed?.master ?? 100),
+            deafen: !!parsed?.deafen,
             other: normalizeEntry(parsed?.other),
             players
         };
@@ -148,6 +150,9 @@ function persist(notify = true) {
  * @returns {number} linear gain multiplier (0 when muted)
  */
 export function getEffectiveGain(uuid) {
+    if (prefs.deafen) {
+        return 0;
+    }
     const master = clampPercent(prefs.master) / 100;
     /** @type {VolumeEntry} */
     let entry;
@@ -182,6 +187,9 @@ export function applyUserGain(samples, uuid) {
  * @returns {Float32Array}
  */
 export function applyMasterGainOnly(samples) {
+    if (prefs.deafen) {
+        return multiplySamples(samples, 0);
+    }
     return multiplySamples(samples, clampPercent(prefs.master) / 100);
 }
 
@@ -207,6 +215,7 @@ function multiplySamples(samples, gain) {
 export function getPrefs() {
     return {
         master: prefs.master,
+        deafen: !!prefs.deafen,
         other: { ...prefs.other },
         players: { ...prefs.players }
     };
@@ -219,6 +228,21 @@ export function getPrefs() {
 export function setMaster(percent, opts = {}) {
     prefs.master = clampPercent(percent);
     persist(opts.notify !== false);
+}
+
+/** @returns {boolean} */
+export function isDeafened() {
+    return !!prefs.deafen;
+}
+
+/**
+ * @param {boolean} [force] if set, apply that value; otherwise toggle
+ * @returns {boolean} new deafen state
+ */
+export function toggleDeafen(force) {
+    prefs.deafen = force === undefined ? !prefs.deafen : !!force;
+    persist(true);
+    return prefs.deafen;
 }
 
 /**

@@ -19,6 +19,7 @@
  * @property {HTMLSelectElement} speakerSelect
  * @property {HTMLSelectElement} micSelect
  * @property {HTMLButtonElement} muteBtn
+ * @property {HTMLButtonElement} [muteSpeakerBtn]
  * @property {HTMLElement} micIndicator
  * @property {HTMLElement} micSettings
  * @property {HTMLElement} vadMeter

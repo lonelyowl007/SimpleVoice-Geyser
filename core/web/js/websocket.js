@@ -340,11 +340,8 @@ export class SvgWebSocket {
         };
 
         this.ws.onerror = () => {
+            // Do not stop reconnection here — onclose decides reconnect policy.
             Logger.log("WebSocket error occurred.");
-
-            if (this.ws.readyState !== WebSocket.OPEN) {
-                this.stopReconnection();
-            }
         };
     }
 
