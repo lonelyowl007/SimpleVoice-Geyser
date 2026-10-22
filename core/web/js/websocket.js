@@ -406,12 +406,17 @@ export class SvgWebSocket {
     /**
      * @param {string} name
      * @param {string} [password]
+     * @param {string} [groupType] isolated | normal | open (default isolated)
      */
-    createGroup(name, password) {
+    createGroup(name, password, groupType) {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
             return;
         }
-        const payload = { type: "create_group", name: String(name || "").trim() };
+        const payload = {
+            type: "create_group",
+            name: String(name || "").trim(),
+            groupType: String(groupType || "isolated").trim().toLowerCase() || "isolated"
+        };
         if (password) {
             payload.password = String(password);
         }

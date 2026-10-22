@@ -30,6 +30,8 @@ const ELEMENTS = {
             groupMenuMembers: "ui.group-menu-members",
             createGroupName: "ui.create-group-name",
             createGroupPassword: "ui.create-group-password",
+            createGroupType: "ui.create-group-type",
+            createGroupTypeHint: "ui.create-group-type-hint",
             createGroupSubmit: "ui.create-group-submit"
         },
 

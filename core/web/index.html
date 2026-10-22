@@ -252,7 +252,16 @@
                             </div>
                             <div class="svcFieldBlock fullWidth">
                                 <label class="mcTextStyle1 textAlignLeft fullWidth" for="createGroupPassword" svg-lang="createGroupPasswordLabel">Password (optional)</label>
-                                <input class="mcTextboxStyle svcFieldInput" id="createGroupPassword" type="password" data-svg="ui.create-group-password" placeholder="Leave empty for public" svg-lang-placeholder="createGroupPasswordPlaceholder" autocomplete="off" />
+                                <input class="mcTextboxStyle svcFieldInput" id="createGroupPassword" type="password" data-svg="ui.create-group-password" placeholder="Leave empty for no password" svg-lang-placeholder="createGroupPasswordPlaceholder" autocomplete="off" />
+                            </div>
+                            <div class="svcFieldBlock fullWidth">
+                                <label class="mcTextStyle1 textAlignLeft fullWidth" for="createGroupType" svg-lang="createGroupTypeLabel">Group Type</label>
+                                <select class="mcButtonStyleInner mcTextStyle2 fullWidth" id="createGroupType" data-svg="ui.create-group-type" aria-label="Group type">
+                                    <option value="isolated" selected svg-lang="groupTypeIsolated">Isolated</option>
+                                    <option value="normal" svg-lang="groupTypeNormal">Normal</option>
+                                    <option value="open" svg-lang="groupTypeOpen">Open</option>
+                                </select>
+                                <p class="mcTextStyle1 textAlignLeft fullWidth createGroupTypeHint" data-svg="ui.create-group-type-hint" svg-lang="createGroupTypeHintIsolated">Only group members hear each other. Nearby outsiders cannot hear you, and you cannot hear them.</p>
                             </div>
                             <div class="flexDivider"></div>
                             <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.create-group-submit" svg-lang="createGroupSubmitBtn">Create</button>

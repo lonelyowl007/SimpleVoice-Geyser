@@ -17,10 +17,12 @@ export class GroupsUI {
      *   menuMembersEl?: HTMLElement,
      *   createNameInput?: HTMLInputElement,
      *   createPasswordInput?: HTMLInputElement,
+     *   createTypeSelect?: HTMLSelectElement,
+     *   createTypeHintEl?: HTMLElement,
      *   createSubmitBtn?: HTMLButtonElement,
      *   joinGroup: (name: string, password: string) => void,
      *   leaveGroup: () => void,
-     *   createGroup: (name: string, password: string) => void,
+     *   createGroup: (name: string, password: string, type?: string) => void,
      *   openGroupMenu: () => void,
      *   openGroupsList: () => void,
      *   openPasswordScreen: () => void
@@ -36,6 +38,8 @@ export class GroupsUI {
         this.menuMembersEl = options.menuMembersEl || null;
         this.createNameInput = options.createNameInput || null;
         this.createPasswordInput = options.createPasswordInput || null;
+        this.createTypeSelect = options.createTypeSelect || null;
+        this.createTypeHintEl = options.createTypeHintEl || null;
         this.createSubmitBtn = options.createSubmitBtn || null;
         this.joinGroup = options.joinGroup;
         this.leaveGroup = options.leaveGroup;
@@ -60,6 +64,7 @@ export class GroupsUI {
 
     init() {
         this.leaveBtn?.addEventListener("click", () => {
+            this._pendingOpen = null;
             this.leaveGroup();
             this.openGroupsList?.();
         });
@@ -75,6 +80,7 @@ export class GroupsUI {
                 this.#submitPasswordJoin();
             }
         });
+        this.createTypeSelect?.addEventListener("change", () => this.#updateCreateTypeHint());
         this.createSubmitBtn?.addEventListener("click", () => {
             const name = String(this.createNameInput?.value || "").trim();
             if (!name) {
@@ -82,16 +88,43 @@ export class GroupsUI {
                 return;
             }
             const password = String(this.createPasswordInput?.value || "");
+            const type = String(this.createTypeSelect?.value || "isolated").trim().toLowerCase() || "isolated";
             this._pendingOpen = name;
-            this.createGroup(name, password);
+            this.createGroup(name, password, type);
             if (this.createNameInput) {
                 this.createNameInput.value = "";
             }
             if (this.createPasswordInput) {
                 this.createPasswordInput.value = "";
             }
+            if (this.createTypeSelect) {
+                this.createTypeSelect.value = "isolated";
+            }
+            this.#updateCreateTypeHint();
         });
+        this.#updateCreateTypeHint();
         this.render();
+    }
+
+    #updateCreateTypeHint() {
+        if (!this.createTypeHintEl) {
+            return;
+        }
+        const type = String(this.createTypeSelect?.value || "isolated").trim().toLowerCase();
+        const key =
+            type === "open"
+                ? "createGroupTypeHintOpen"
+                : type === "normal"
+                    ? "createGroupTypeHintNormal"
+                    : "createGroupTypeHintIsolated";
+        const fallback =
+            type === "open"
+                ? "Party line: nearby players outside the group can hear you too."
+                : type === "normal"
+                    ? "Outsiders cannot hear you. You can still hear nearby players outside the group."
+                    : "Only group members hear each other. Nearby outsiders cannot hear you, and you cannot hear them.";
+        this.createTypeHintEl.setAttribute("svg-lang", key);
+        this.createTypeHintEl.textContent = SvgLang.string(key) || fallback;
     }
 
     /**
@@ -118,15 +151,15 @@ export class GroupsUI {
             this.passwordInput.value = "";
         }
 
+        // Keep _pendingOpen across a transient current=null broadcast that fires
+        // when SVC CreateGroupEvent runs before connection.setGroup.
         const shouldOpen =
             this._pendingOpen
             && this.current
             && this.current.toLowerCase() === this._pendingOpen.toLowerCase();
-        if (shouldOpen || (this._pendingOpen && this.current === this._pendingOpen)) {
+        if (shouldOpen) {
             this._pendingOpen = null;
             this.openGroupMenu?.();
-        } else if (!this.current) {
-            this._pendingOpen = null;
         }
 
         this.render();
@@ -149,6 +182,10 @@ export class GroupsUI {
         if (this.createPasswordInput) {
             this.createPasswordInput.value = "";
         }
+        if (this.createTypeSelect) {
+            this.createTypeSelect.value = "isolated";
+        }
+        this.#updateCreateTypeHint();
         this.render();
     }
 

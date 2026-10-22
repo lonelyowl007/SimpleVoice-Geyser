@@ -336,10 +336,12 @@ export class SvgUI {
             menuMembersEl: this.screens.groupMenuMembers,
             createNameInput: this.screens.createGroupName,
             createPasswordInput: this.screens.createGroupPassword,
+            createTypeSelect: this.screens.createGroupType,
+            createTypeHintEl: this.screens.createGroupTypeHint,
             createSubmitBtn: this.screens.createGroupSubmit,
             joinGroup: (name, password) => this.webSocketController.joinGroup(name, password),
             leaveGroup: () => this.webSocketController.leaveGroup(),
-            createGroup: (name, password) => this.webSocketController.createGroup(name, password),
+            createGroup: (name, password, type) => this.webSocketController.createGroup(name, password, type),
             openGroupMenu: () => {
                 const cur = this.screenRouter?.current();
                 if (cur === "create-group" || cur === "group-password") {
