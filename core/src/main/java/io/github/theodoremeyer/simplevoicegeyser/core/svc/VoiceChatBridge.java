@@ -61,7 +61,7 @@ public class VoiceChatBridge implements VoicechatPlugin {
     private void onGroupRemoved(RemoveGroupEvent event) {
         Group group = event.getGroup();
         if (group != null) {
-            SvgCore.getGroupManager().removeGroup(group, true);
+            SvgCore.getGroupManager().removeGroup(group);
         }
     }
 

@@ -3,38 +3,32 @@ package io.github.theodoremeyer.simplevoicegeyser.spigotmc.impl.sender;
 import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
 import io.github.theodoremeyer.simplevoicegeyser.core.api.sender.SvgPlayer;
 import io.github.theodoremeyer.simplevoicegeyser.spigotmc.SvgPlugin;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 /**
  * Bukkit/Paper/Folia player wrapper.
- * All Bukkit {@link Player} access from off-region threads (Jetty, audio) is hopped
- * onto the player's {@link org.bukkit.entity.Entity#getScheduler() EntityScheduler}.
+ * Off-region access (Jetty, audio) is hopped onto the player's entity/region thread when
+ * Folia EntityScheduler is available; otherwise the Bukkit global scheduler is used (Spigot).
  */
 public class BukkitPlayer extends SvgPlayer {
 
     private static final long SPATIAL_CACHE_PERIOD_TICKS = 2L;
-    private static final long ENTITY_CALL_TIMEOUT_SECONDS = 3L;
 
     private final Player player;
     private final AtomicReference<Double> cachedLookYaw = new AtomicReference<>();
-    private volatile ScheduledTask spatialTask;
+    private final EntityThreadAccess.Cancellable spatialTask = new EntityThreadAccess.Cancellable();
 
     public BukkitPlayer(Player player) {
         this.player = player;
     }
 
     /**
-     * Start periodic spatial cache updates on the entity scheduler (Folia-safe).
+     * Start periodic spatial cache updates on the entity/global scheduler.
      */
     public void startSpatialCache() {
         Plugin plugin = plugin();
@@ -43,24 +37,20 @@ public class BukkitPlayer extends SvgPlayer {
         }
         cancelSpatialCache();
         refreshSpatialCacheOnCurrentThread();
-        spatialTask = player.getScheduler().runAtFixedRate(
+        spatialTask.set(EntityThreadAccess.runAtFixedRate(
+                player,
                 plugin,
-                task -> refreshSpatialCacheOnCurrentThread(),
-                null,
+                this::refreshSpatialCacheOnCurrentThread,
                 1L,
                 SPATIAL_CACHE_PERIOD_TICKS
-        );
+        ));
     }
 
     /**
      * Stop spatial cache updates (call on quit).
      */
     public void cancelSpatialCache() {
-        ScheduledTask task = spatialTask;
-        spatialTask = null;
-        if (task != null) {
-            task.cancel();
-        }
+        spatialTask.cancel();
         cachedLookYaw.set(null);
     }
 
@@ -77,7 +67,7 @@ public class BukkitPlayer extends SvgPlayer {
     @Override
     public boolean hasPermission(String permission) {
         try {
-            return supplyOnEntityThread(() -> player.hasPermission(permission));
+            return EntityThreadAccess.supply(player, plugin(), () -> player.hasPermission(permission));
         } catch (Exception e) {
             SvgCore.getLogger().error(
                     "[Permissions] Unable to determine permission for '" + permission
@@ -90,13 +80,13 @@ public class BukkitPlayer extends SvgPlayer {
 
     @Override
     public void chat(String message) {
-        runOnEntityThread(() -> player.chat(message));
+        EntityThreadAccess.run(player, plugin(), () -> player.chat(message));
     }
 
     @Override
     public boolean isOnline() {
         try {
-            return supplyOnEntityThread(player::isOnline);
+            return EntityThreadAccess.supply(player, plugin(), player::isOnline);
         } catch (Exception e) {
             return player.isOnline();
         }
@@ -109,7 +99,7 @@ public class BukkitPlayer extends SvgPlayer {
 
     @Override
     public void sendMessage(String message) {
-        runOnEntityThread(() -> player.sendMessage(translate(message)));
+        EntityThreadAccess.run(player, plugin(), () -> player.sendMessage(translate(message)));
     }
 
     @Override
@@ -123,43 +113,6 @@ public class BukkitPlayer extends SvgPlayer {
             return;
         }
         cachedLookYaw.set((double) player.getLocation().getYaw());
-    }
-
-    private void runOnEntityThread(Runnable task) {
-        if (!player.isOnline()) {
-            return;
-        }
-        Plugin plugin = plugin();
-        if (plugin == null) {
-            return;
-        }
-        if (Bukkit.isOwnedByCurrentRegion(player)) {
-            task.run();
-            return;
-        }
-        player.getScheduler().run(plugin, scheduled -> task.run(), null);
-    }
-
-    private <T> T supplyOnEntityThread(Supplier<T> supplier) throws Exception {
-        if (!player.isOnline()) {
-            return supplier.get();
-        }
-        if (Bukkit.isOwnedByCurrentRegion(player)) {
-            return supplier.get();
-        }
-        Plugin plugin = plugin();
-        if (plugin == null) {
-            return supplier.get();
-        }
-        CompletableFuture<T> future = new CompletableFuture<>();
-        player.getScheduler().run(plugin, scheduled -> {
-            try {
-                future.complete(supplier.get());
-            } catch (Throwable t) {
-                future.completeExceptionally(t);
-            }
-        }, () -> future.completeExceptionally(new IllegalStateException("Player retired before entity task ran")));
-        return future.get(ENTITY_CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     private Plugin plugin() {

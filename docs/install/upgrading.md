@@ -15,18 +15,19 @@ This page documents version upgrade behavior and breaking changes.
 - Upgrading to newer versions is supported unless stated otherwise
 - Downgrading is **not supported**
 - Always back up your server before upgrading
+- Detailed per-release notes will live under `docs/releases/<version>.md` (see upcoming **0.2.0**)
 
 ---
 
 ## Version-Specific Notes
 
-### Upgrade to 0.1.5
+### Upgrade toward 0.2.0
 
-- No password reset is needed. Passwords from 0.1.4 keep working.
-- New options are added to your config automatically when the server starts, and a backup of the old file is kept. The new options are `server.audio.mic.allowLegacy` and the `proxy` section.
-- The Velocity proxy plugin is new and optional. See [Velocity Proxy Setup]({% project_link velocity %}).
-- If you run a Velocity proxy, use the same version on the proxy and on every backend.
-- Svg-App 1.1.0 works with 0.1.3, 0.1.4 and 0.1.5 servers. See [Svg-App]({% project_link app %}).
+- Svg-App version gate uses `client.require-latest` (default `true`: exact plugin version). Set `false` only as a temporary escape hatch to accept the same major.minor (any patch). Hardcoded `0.1.3` / `0.1.4` allowlists are removed.
+- Folia support keeps Spigot API compile compatibility (EntityScheduler via reflection).
+- `/svg reload` restarts Jetty; players need `svg.admin` (default op).
+
+---
 
 ### Upgrade to 0.0.3-DEV
 
@@ -75,15 +76,14 @@ Adds **Input Sensitivity** and **Mic Volume** sliders in the connected web UI (V
 
 ---
 
-### Upgrade to 0.1.8 (join grace + Svg-App allowlist)
+### Upgrade to 0.1.8 (join grace)
 
 - **Join grace:** after a valid web password, SVG waits up to `client.vctimeout` (default 60s) for you to join Minecraft — useful when Bedrock kicks you for app-switching.
-- **Svg-App:** older Android APKs targeting `0.1.3` / `0.1.4` are accepted via `client.accepted-app-server-versions` (no APK rebuild in this repo).
 
 1. Replace the plugin JAR with `0.1.8`
 2. Delete `plugins/<SimpleVoice-Geyser>/web/` if you use overrides; let new defaults merge into `config.yml`
 3. Hard-refresh the browser (`Ctrl+F5`)
-4. Optional: tune `client.vctimeout` and `client.accepted-app-server-versions`
+4. Optional: tune `client.vctimeout`
 
 ---
 

@@ -35,7 +35,10 @@ public final class AudioByteCompiler {
     public static final byte FLAG_HAS_PAN = 0x04;
 
     /**
-     * Frame includes a 16-byte sender UUID after the header (before payload).
+     * Frame includes a 16-byte talker UUID after the header (before payload).
+     * Used on <strong>server → web client</strong> frames only: one websocket still
+     * receives voice from many in-game players; this tags which player produced the frame
+     * (Adjust Volumes + per-sender Opus decode). It does not re-identify the websocket owner.
      */
     public static final byte FLAG_HAS_SENDER = 0x08;
 

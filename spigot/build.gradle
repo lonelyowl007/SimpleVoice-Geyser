@@ -7,16 +7,13 @@ plugins {
 
 repositories {
     maven {
-        url = uri('https://repo.papermc.io/repository/maven-public/')
-    }
-    maven {
         url = uri('https://hub.spigotmc.org/nexus/content/groups/public/')
     }
 }
 
 dependencies {
-    // Paper API includes Folia Entity/Region/Global schedulers (also work on Paper)
-    compileOnly("io.papermc.paper:paper-api:${paper_api_version}-R0.1-SNAPSHOT")
+    // Spigot API — Folia EntityScheduler is used at runtime via reflection (see EntityThreadAccess)
+    compileOnly("org.spigotmc:spigot-api:${spigot_api_version}-R0.1-SNAPSHOT")
 
     // CORE MODULE
     implementation(project(":core"))
