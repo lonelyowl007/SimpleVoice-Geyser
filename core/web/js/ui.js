@@ -169,6 +169,7 @@ export class SvgUI {
         }
 
         this.#renderDeviceLists();
+        this.#syncJoinDeviceButtons();
     }
 
     #renderDeviceLists() {
@@ -178,6 +179,30 @@ export class SvgUI {
         }
         if (speakerList) {
             this.#fillDeviceList(speakerList, speakerSelect, "speaker");
+        }
+        this.#syncJoinDeviceButtons();
+    }
+
+    /** Mirror selected device names onto the join-form picker buttons. */
+    #syncJoinDeviceButtons() {
+        const { micSelect, speakerSelect } = this.audio;
+        const joinMic = this.screens?.joinOpenMic;
+        const joinSpeaker = this.screens?.joinOpenSpeaker;
+        if (joinMic && micSelect) {
+            const opt = micSelect.selectedOptions[0];
+            const label = opt && !opt.disabled
+                ? (opt.textContent || opt.value)
+                : (SvgLang.string("micLoad") || "Loading Microphones...");
+            joinMic.textContent = label;
+            joinMic.title = label;
+        }
+        if (joinSpeaker && speakerSelect) {
+            const opt = speakerSelect.selectedOptions[0];
+            const label = opt && !opt.disabled
+                ? (opt.textContent || opt.value)
+                : (SvgLang.string("speakLoad") || "Loading Speakers...");
+            joinSpeaker.textContent = label;
+            joinSpeaker.title = label;
         }
     }
 
@@ -307,7 +332,9 @@ export class SvgUI {
             openCreateGroup: this.screens.openCreateGroup,
             hubVolumesIcon: this.screens.hubVolumesIcon,
             openMic: this.screens.openMic,
-            openSpeaker: this.screens.openSpeaker
+            openSpeaker: this.screens.openSpeaker,
+            joinOpenMic: this.screens.joinOpenMic,
+            joinOpenSpeaker: this.screens.joinOpenSpeaker
         });
 
         this.audioController.setMicIndicator(micIndicator);

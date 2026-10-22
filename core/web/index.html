@@ -58,21 +58,19 @@
                     </div>
 
                     <div class="joinField fullWidth hiddenWhenConnected">
-                        <label class="joinFormLabel mcTextStyle1" for="mic" svg-lang="micSelect">Select Microphone</label>
-                        <div class="micSelect mcButtonStyle fullWidth">
-                            <select class="mcButtonStyleInner mcTextStyle2" id="mic" name="mic" data-svg="audio.mic">
-                                <option disabled selected svg-lang="micLoad">Loading Microphones...</option>
-                            </select>
-                        </div>
+                        <label class="joinFormLabel mcTextStyle1" svg-lang="micSelect">Select Microphone</label>
+                        <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2 joinDeviceBtn" data-svg="ui.join-open-mic" svg-lang="micLoad">Loading Microphones...</button>
+                        <select class="dev-hidden" id="mic" name="mic" data-svg="audio.mic" tabindex="-1" aria-hidden="true">
+                            <option disabled selected svg-lang="micLoad">Loading Microphones...</option>
+                        </select>
                     </div>
 
                     <div class="joinField fullWidth hiddenWhenConnected">
-                        <label class="joinFormLabel mcTextStyle1" for="speaker" svg-lang="speakSelect">Select Speaker</label>
-                        <div class="speakerSelect mcButtonStyle fullWidth">
-                            <select class="mcButtonStyleInner mcTextStyle2" id="speaker" name="speaker" data-svg="audio.speaker">
-                                <option disabled selected svg-lang="speakLoad">Loading Speakers...</option>
-                            </select>
-                        </div>
+                        <label class="joinFormLabel mcTextStyle1" svg-lang="speakSelect">Select Speaker</label>
+                        <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2 joinDeviceBtn" data-svg="ui.join-open-speaker" svg-lang="speakLoad">Loading Speakers...</button>
+                        <select class="dev-hidden" id="speaker" name="speaker" data-svg="audio.speaker" tabindex="-1" aria-hidden="true">
+                            <option disabled selected svg-lang="speakLoad">Loading Speakers...</option>
+                        </select>
                     </div>
 
                     <div class="joinContainer flexRowContainer fullWidth">
