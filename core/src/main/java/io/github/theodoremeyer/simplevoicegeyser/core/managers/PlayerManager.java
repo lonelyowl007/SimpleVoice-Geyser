@@ -69,11 +69,22 @@ public final class PlayerManager {
      * @param player the player to add
      */
     public void addPlayer(SvgPlayer player) {
+        addPlayer(player, true);
+    }
+
+    /**
+     * Add a player, optionally deferring web roster broadcasts (e.g. bulk seed on enable).
+     * @param player the player to add
+     * @param broadcast whether to push voice_players / groups to web clients
+     */
+    public void addPlayer(SvgPlayer player, boolean broadcast) {
         players.put(player.getUniqueId(), player);
         playersByName.put(player.getName(), player);
         SvgCore.getPendingJoinWaiter().notifyPlayerJoined(player.getUniqueId());
-        VoicePlayersBroadcaster.broadcast();
-        GroupsBroadcaster.broadcast();
+        if (broadcast) {
+            VoicePlayersBroadcaster.broadcast();
+            GroupsBroadcaster.broadcast();
+        }
     }
 
     /**

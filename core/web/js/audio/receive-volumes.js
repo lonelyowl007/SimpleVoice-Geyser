@@ -20,6 +20,60 @@ const heardNames = new Map();
 /** @type {Set<() => void>} */
 const changeListeners = new Set();
 
+/**
+ * Normalize UUID strings so roster + audio-frame keys match.
+ * @param {string|null|undefined} uuid
+ * @returns {string}
+ */
+function normalizeUuid(uuid) {
+    return String(uuid || "").trim().toLowerCase();
+}
+
+/**
+ * Temporary label when roster name is unknown.
+ * Floodgate UUIDs share the prefix 00000000-0000-0000-0009-… — never use the first 8 hex chars.
+ * @param {string} uuid
+ * @returns {string}
+ */
+function shortLabel(uuid) {
+    const id = normalizeUuid(uuid);
+    const parts = id.split("-");
+    if (parts.length === 5 && parts[4]) {
+        return parts[4];
+    }
+    return id.length > 12 ? id.slice(-12) : id;
+}
+
+/**
+ * @param {string} uuid
+ * @returns {string}
+ */
+function resolveName(uuid) {
+    const id = normalizeUuid(uuid);
+    return rosterNames.get(id) || heardNames.get(id) || shortLabel(id);
+}
+
+/**
+ * True when `label` looks like a UUID fragment, not a real player name.
+ * @param {string|null|undefined} label
+ * @param {string} uuid
+ */
+function isPlaceholderName(label, uuid) {
+    const name = String(label || "").trim().toLowerCase();
+    if (!name) {
+        return true;
+    }
+    const id = normalizeUuid(uuid);
+    if (name === id || name === shortLabel(id)) {
+        return true;
+    }
+    // Old bug: uuid.slice(0, 8) → "00000000" for every Floodgate player.
+    if (/^[0-9a-f]{8}$/i.test(name) && id.startsWith(name)) {
+        return true;
+    }
+    return false;
+}
+
 function defaultPrefs() {
     return {
         master: 100,
@@ -97,7 +151,11 @@ export function getEffectiveGain(uuid) {
     const master = clampPercent(prefs.master) / 100;
     /** @type {VolumeEntry} */
     let entry;
-    if (uuid && prefs.players[uuid]) {
+    const id = normalizeUuid(uuid);
+    if (id && prefs.players[id]) {
+        entry = prefs.players[id];
+    } else if (uuid && prefs.players[uuid]) {
+        // Legacy prefs keys before UUID normalization.
         entry = prefs.players[uuid];
     } else {
         entry = prefs.other;
@@ -183,25 +241,33 @@ export function setOther(percent, muted, opts = {}) {
  * @param {{ notify?: boolean }} [opts]
  */
 export function setPlayer(uuid, percent, muted, opts = {}) {
-    if (!uuid) {
+    const id = normalizeUuid(uuid);
+    if (!id) {
         return;
     }
-    const prev = prefs.players[uuid] || { percent: 100, muted: false };
-    prefs.players[uuid] = {
+    const prev = prefs.players[id] || prefs.players[uuid] || { percent: 100, muted: false };
+    prefs.players[id] = {
         percent: clampPercent(percent === undefined ? prev.percent : percent),
         muted: muted === undefined ? prev.muted : !!muted
     };
+    if (uuid && uuid !== id && prefs.players[uuid]) {
+        delete prefs.players[uuid];
+    }
     persist(opts.notify !== false);
 }
 
 /** @param {string} uuid @param {boolean} muted */
 export function setPlayerMuted(uuid, muted) {
-    if (!uuid) {
+    const id = normalizeUuid(uuid);
+    if (!id) {
         setOther(prefs.other.percent, muted);
         return;
     }
-    const prev = prefs.players[uuid] || { percent: 100, muted: false };
-    prefs.players[uuid] = { percent: prev.percent, muted: !!muted };
+    const prev = prefs.players[id] || prefs.players[uuid] || { percent: 100, muted: false };
+    prefs.players[id] = { percent: prev.percent, muted: !!muted };
+    if (uuid && uuid !== id && prefs.players[uuid]) {
+        delete prefs.players[uuid];
+    }
     persist();
 }
 
@@ -221,12 +287,16 @@ export function setRoster(players) {
         return;
     }
     for (const p of players) {
-        const uuid = String(p?.uuid || "").trim();
+        const uuid = normalizeUuid(p?.uuid);
         if (!uuid) {
             continue;
         }
-        const name = String(p?.name || uuid).trim() || uuid;
-        rosterNames.set(uuid, name);
+        const name = String(p?.name || "").trim();
+        rosterNames.set(uuid, name || shortLabel(uuid));
+        // Upgrade any heard-only placeholder once the real name arrives.
+        if (name && (!heardNames.has(uuid) || isPlaceholderName(heardNames.get(uuid), uuid))) {
+            heardNames.set(uuid, name);
+        }
     }
     notifyUiOnly();
 }
@@ -236,11 +306,22 @@ export function setRoster(players) {
  * @param {string} [fallbackName]
  */
 export function noteHeard(uuid, fallbackName) {
-    if (!uuid) {
+    const id = normalizeUuid(uuid);
+    if (!id) {
         return;
     }
-    if (!heardNames.has(uuid)) {
-        heardNames.set(uuid, fallbackName || uuid.slice(0, 8));
+    const fromRoster = rosterNames.get(id);
+    if (fromRoster && !isPlaceholderName(fromRoster, id)) {
+        if (heardNames.get(id) !== fromRoster) {
+            heardNames.set(id, fromRoster);
+            notifyUiOnly();
+        }
+        return;
+    }
+    const next = String(fallbackName || "").trim() || shortLabel(id);
+    const prev = heardNames.get(id);
+    if (!prev || (isPlaceholderName(prev, id) && next !== prev)) {
+        heardNames.set(id, next);
         notifyUiOnly();
     }
 }
@@ -253,15 +334,15 @@ export function getVolumeRows() {
     /** @type {Array<{ key: string, kind: 'master'|'other'|'player', uuid: string|null, name: string }>} */
     const players = [];
     const seen = new Set();
-    for (const [uuid, name] of rosterNames) {
+    for (const uuid of rosterNames.keys()) {
         seen.add(uuid);
-        players.push({ key: uuid, kind: "player", uuid, name });
+        players.push({ key: uuid, kind: "player", uuid, name: resolveName(uuid) });
     }
-    for (const [uuid, name] of heardNames) {
+    for (const uuid of heardNames.keys()) {
         if (seen.has(uuid)) {
             continue;
         }
-        players.push({ key: uuid, kind: "player", uuid, name });
+        players.push({ key: uuid, kind: "player", uuid, name: resolveName(uuid) });
     }
     players.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
     // Master (Voice Chat Volume) lives in Settings; Other stays in prefs without a UI row.
