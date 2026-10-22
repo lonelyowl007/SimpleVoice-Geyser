@@ -46,6 +46,8 @@
  * @property {HTMLButtonElement} hubVolumesIcon
  * @property {HTMLButtonElement} openMic
  * @property {HTMLButtonElement} openSpeaker
+ * @property {HTMLButtonElement} joinOpenMic
+ * @property {HTMLButtonElement} joinOpenSpeaker
  * @property {HTMLElement} groupsList
  * @property {HTMLButtonElement} groupsOpenCurrent
  * @property {HTMLInputElement} groupsPassword

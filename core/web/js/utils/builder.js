@@ -21,6 +21,8 @@ const ELEMENTS = {
             hubVolumesIcon: "ui.hub-volumes-icon",
             openMic: "ui.open-mic",
             openSpeaker: "ui.open-speaker",
+            joinOpenMic: "ui.join-open-mic",
+            joinOpenSpeaker: "ui.join-open-speaker",
             groupsList: "ui.groups-list",
             groupsOpenCurrent: "ui.groups-open-current",
             groupsPassword: "ui.groups-password",
