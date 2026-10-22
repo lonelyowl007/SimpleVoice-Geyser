@@ -384,10 +384,20 @@ After authentication and whenever groups change (create/remove/join/leave), the 
 ```
 
 ```json
-{ "type": "create_group", "name": "Party", "password": "optional" }
+{ "type": "create_group", "name": "Party", "password": "optional", "groupType": "isolated" }
 ```
 
-`join_group` / `leave_group` require `svg.vc.group.join`. `create_group` requires `svg.vc.group.create`. Empty `password` creates a public OPEN group; a non-empty password creates a password-protected OPEN group. Failures return a normal `error` status message; success is followed by an updated `groups` push.
+`join_group` / `leave_group` require `svg.vc.group.join`. `create_group` requires `svg.vc.group.create`. Optional `groupType` is `isolated`, `normal`, or `open` (default **`isolated`**).
+
+Password is **join-only** (who may enter). It does **not** change audio isolation — that is entirely `groupType`:
+
+| `groupType` | Nearby outsiders hear members? | Members hear nearby outsiders? |
+|-------------|--------------------------------|--------------------------------|
+| `isolated` (default) | No | No |
+| `normal` | No | Yes |
+| `open` | Yes (party line) | Yes |
+
+Empty `password` = no join lock; a non-empty password requires the password to join. Failures return a normal `error` status message; success is followed by an updated `groups` push (after the creator has joined, so `current` matches the new group).
 
 ## Compatibility Rules
 

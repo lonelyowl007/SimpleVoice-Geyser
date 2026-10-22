@@ -850,6 +850,12 @@ body.pending-minecraft-join .statusLabel {
     width: 100%;
     box-sizing: border-box;
 }
+.createGroupTypeHint {
+    margin: 2px 0 0;
+    line-height: 1.35;
+    opacity: 0.9;
+    white-space: normal;
+}
 .svcFieldInput {
     width: 100%;
     max-width: 100%;

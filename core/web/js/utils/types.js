@@ -54,6 +54,8 @@
  * @property {HTMLElement} groupMenuMembers
  * @property {HTMLInputElement} createGroupName
  * @property {HTMLInputElement} createGroupPassword
+ * @property {HTMLSelectElement} createGroupType
+ * @property {HTMLElement} createGroupTypeHint
  * @property {HTMLButtonElement} createGroupSubmit
  */
 

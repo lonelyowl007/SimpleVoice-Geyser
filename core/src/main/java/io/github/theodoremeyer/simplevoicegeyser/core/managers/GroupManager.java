@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * SVG Group System manager
@@ -37,6 +38,12 @@ public final class GroupManager {
     private final Map<String, Group> groups = new ConcurrentHashMap<>(); //list of active groups
 
     /**
+     * When &gt; 0, {@link #addGroup(Group, boolean)} skips broadcasting so SVG
+     * {@link #createGroup} can {@code setGroup} before the first {@code groups} push.
+     */
+    private final AtomicInteger suppressBroadcastDepth = new AtomicInteger();
+
+    /**
      * Create a group manager to control groups with
      * @param api the bridge to SVG
      */
@@ -49,7 +56,7 @@ public final class GroupManager {
      * @param SvgPlayer SvgPlayer creating the group
      * @param groupName name of the group being created
      * @param password password of the group, default is 1a2b
-     * @param groupType Open, Normal, or Isolated. Default is Open.
+     * @param groupType Open, Normal, or Isolated. Default is Normal.
      * @param persistent Whether the group stays with no SvgPlayers or not
      * @param created whether to allow join already created groups
      * @return True/False
@@ -79,20 +86,27 @@ public final class GroupManager {
 
         if (groupType == null) groupType = Type.NORMAL;
 
+        // Suppress CreateGroupEvent → addGroup broadcast until setGroup so web
+        // clients do not clear pending-open on a premature current=null push.
+        suppressBroadcastDepth.incrementAndGet();
         Group group;
-        if (password == null || password.isEmpty()) { //build the group
-            group = api.groupBuilder()
-                    .setName(groupName)
-                    .setType(groupType)
-                    .setPersistent(persistent)
-                    .build();
-        } else {
-            group = api.groupBuilder()
-                    .setName(groupName)
-                    .setPassword(password)
-                    .setType(groupType)
-                    .setPersistent(persistent)
-                    .build();
+        try {
+            if (password == null || password.isEmpty()) {
+                group = api.groupBuilder()
+                        .setName(groupName)
+                        .setType(groupType)
+                        .setPersistent(persistent)
+                        .build();
+            } else {
+                group = api.groupBuilder()
+                        .setName(groupName)
+                        .setPassword(password)
+                        .setType(groupType)
+                        .setPersistent(persistent)
+                        .build();
+            }
+        } finally {
+            suppressBroadcastDepth.decrementAndGet();
         }
 
         if (connection != null) {
@@ -387,7 +401,7 @@ public final class GroupManager {
             return;
         }
         groups.put(group.getName(), group);
-        if (broadcast) {
+        if (broadcast && suppressBroadcastDepth.get() == 0) {
             GroupsBroadcaster.broadcast();
         }
     }

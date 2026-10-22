@@ -64,11 +64,19 @@ public class CreateGroupPacket implements Packet {
             password = null;
         }
 
+        // Default ISOLATED (group-only audio). Field is groupType — packet
+        // discriminator already uses "type": "create_group".
+        Group.Type groupType = Group.Type.ISOLATED;
+        String typeRaw = json.optString("groupType", "").trim();
+        if (!typeRaw.isEmpty()) {
+            groupType = SvgCore.getGroupManager().stringToType(typeRaw);
+        }
+
         boolean ok = SvgCore.getGroupManager().createGroup(
                 player,
                 name,
                 password,
-                Group.Type.OPEN,
+                groupType,
                 false,
                 false
         );
@@ -82,7 +90,28 @@ public class CreateGroupPacket implements Packet {
             return;
         }
 
-        socket.getConnection().sendStatus("Created group: " + name);
+        boolean hasPassword = password != null && !password.isEmpty();
+        String typeLabel = typeLabel(groupType);
+        SvgCore.getLogger().info(
+                "[Groups] Created group name=" + name
+                        + " type=" + typeLabel
+                        + " password=" + (hasPassword ? "yes" : "no")
+                        + " by=" + player.getName()
+        );
+        socket.getConnection().sendStatus("Created group: " + name + " (" + typeLabel + ")");
         GroupsBroadcaster.sendTo(socket.getConnection());
+    }
+
+    private static String typeLabel(Group.Type type) {
+        if (type == Group.Type.ISOLATED) {
+            return "ISOLATED";
+        }
+        if (type == Group.Type.NORMAL) {
+            return "NORMAL";
+        }
+        if (type == Group.Type.OPEN) {
+            return "OPEN";
+        }
+        return String.valueOf(type);
     }
 }

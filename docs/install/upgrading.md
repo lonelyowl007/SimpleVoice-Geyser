@@ -26,6 +26,7 @@ This page documents version upgrade behavior and breaking changes.
 - Svg-App version gate uses `client.require-latest` (default `true`: exact plugin version). Set `false` only as a temporary escape hatch to accept the same major.minor (any patch). Hardcoded `0.1.3` / `0.1.4` allowlists are removed.
 - Folia support keeps Spigot API compile compatibility (EntityScheduler via reflection).
 - `/svg reload` restarts Jetty; players need `svg.admin` (default op).
+- Web **Create Group** chooses Isolated / Normal / Open with a live hint (default Isolated). Password is join-only; wipe `web/` after upgrade so the type UI loads.
 
 ---
 
@@ -242,6 +243,17 @@ Temporary `?_svg=…` cache-bust query is removed from the URL after load (addre
 1. Delete `plugins/<SimpleVoice-Geyser>/web/`
 2. Install `0.1.21`
 3. Restart + hard-refresh (`Ctrl+F5`)
+
+---
+
+### Groups create navigation + type (toward 0.2.0)
+
+Creating a group from the web UI now opens the in-group menu (fixes a race where a premature `groups` push cleared pending navigation). Create offers **Isolated / Normal / Open** with a live hint (default **Isolated**). Password is join-only; it does not make audio private — pick **Isolated** (or **Normal**) for that.
+
+1. Delete `plugins/<SimpleVoice-Geyser>/web/`
+2. Install the new jar
+3. Restart + hard-refresh (`Ctrl+F5`)
+4. Confirm the create screen shows a type hint under the dropdown; after create the group menu title includes `(Isolated)` / `(Normal)` / `(Open)`
 
 ---
 
