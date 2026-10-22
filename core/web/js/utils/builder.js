@@ -39,6 +39,7 @@ const ELEMENTS = {
             speakerSelect: "audio.speaker",
             micSelect: "audio.mic",
             muteBtn: "audio.mute",
+            muteSpeakerBtn: { optional: "audio.mute-speaker" },
             micIndicator: "audio.indicator",
             micSettings: "audio.mic-settings",
             vadMeter: "audio.vad-meter",
