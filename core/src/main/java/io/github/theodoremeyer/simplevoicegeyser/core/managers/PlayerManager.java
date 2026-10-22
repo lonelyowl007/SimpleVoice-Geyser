@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,6 +54,41 @@ public final class PlayerManager {
     @Nullable
     public SvgPlayer getPlayer(String name) {
         return playersByName.get(name);
+    }
+
+    /**
+     * Find an online player by username, ignoring case and an optional Floodgate leading dot.
+     * Used when accounts.json UUID is stale but the Bedrock player is already on the server.
+     *
+     * @param username login / stored username
+     * @return online player or null
+     */
+    @Nullable
+    public SvgPlayer findOnlineByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            return null;
+        }
+        String trimmed = username.trim();
+        SvgPlayer exact = playersByName.get(trimmed);
+        if (exact != null) {
+            return exact;
+        }
+
+        String lower = trimmed.toLowerCase(Locale.ROOT);
+        String withoutDot = lower.startsWith(".") ? lower.substring(1) : lower;
+        String withDot = lower.startsWith(".") ? lower : "." + lower;
+
+        for (Map.Entry<String, SvgPlayer> entry : playersByName.entrySet()) {
+            String online = entry.getKey().toLowerCase(Locale.ROOT);
+            String onlineWithoutDot = online.startsWith(".") ? online.substring(1) : online;
+            if (online.equals(lower)
+                    || online.equals(withDot)
+                    || online.equals(withoutDot)
+                    || onlineWithoutDot.equals(withoutDot)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     /**

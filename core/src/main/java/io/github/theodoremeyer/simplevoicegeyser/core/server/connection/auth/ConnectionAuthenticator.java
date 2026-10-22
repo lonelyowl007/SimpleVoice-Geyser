@@ -110,8 +110,24 @@ public final class ConnectionAuthenticator {
                             .getPlayer(uuid);
 
             if (player == null) {
-                // Credentials OK — JoinPacket will wait up to client.vctimeout.
-                return AuthResponse.pending(uuid);
+                // Floodgate / linked accounts: password UUID can lag behind the online UUID.
+                SvgPlayer byName = SvgCore.getPlayerManager().findOnlineByUsername(username);
+                if (byName != null) {
+                    UUID onlineUuid = byName.getUniqueId();
+                    if (!onlineUuid.equals(uuid)) {
+                        SvgCore.getLogger().warning(
+                                "[Authenticator] Account UUID " + uuid
+                                        + " does not match online player " + byName.getName()
+                                        + " (" + onlineUuid + "). Using online UUID. "
+                                        + "Re-run /svg pswd in-game to refresh the account."
+                        );
+                        uuid = onlineUuid;
+                    }
+                    player = byName;
+                } else {
+                    // Credentials OK — JoinPacket will wait up to client.vctimeout.
+                    return AuthResponse.pending(uuid);
+                }
             }
 
             AuthResponse permissionResult =

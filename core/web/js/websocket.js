@@ -155,9 +155,14 @@ export class SvgWebSocket {
                         this.stopReconnection();
                     }
 
-                    if (packetType === "status" && msg.includes("waiting for you to join minecraft")) {
-                        // Keep the socket open; server is holding a pending join until MC presence.
-                        Logger.log("Waiting for Minecraft join...");
+                    if (packetType === "status" && (
+                        msg.includes("waiting for you to join minecraft")
+                        || msg.includes("waiting for voice chat")
+                    )) {
+                        // Keep the socket open; server is holding a pending join until MC/SVC ready.
+                        Logger.log(msg.includes("voice chat")
+                            ? "Waiting for voice chat..."
+                            : "Waiting for Minecraft join...");
                         this.#runEventListeners("statusChange", {
                             connected: false,
                             waitingForMinecraft: true

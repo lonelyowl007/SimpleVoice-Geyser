@@ -104,15 +104,23 @@ public final class JoinPacket implements Packet {
         int timeoutSeconds = Math.max(1, SvgCore.getConfig().VC_TIMEOUT.get());
 
         socket.setPendingJoinUuid(uuid);
+
+        boolean alreadyOnline = SvgCore.getPlayerManager().getPlayer(uuid) != null
+                || SvgCore.getPlayerManager().findOnlineByUsername(username) != null;
+        String status = alreadyOnline
+                ? "Waiting for voice chat... (" + timeoutSeconds + "s)"
+                : "Waiting for you to join Minecraft... (" + timeoutSeconds + "s)";
+
         socket.sendRaw(
                 ConnectionStates.MessageType.STATUS,
-                "Waiting for you to join Minecraft... (" + timeoutSeconds + "s)",
+                status,
                 false
         );
 
         SvgCore.getLogger().info(
                 "[WebSocket] Pending join for " + username
-                        + " (" + uuid + "); waiting up to " + timeoutSeconds + "s for Minecraft."
+                        + " (" + uuid + "); waiting up to " + timeoutSeconds + "s"
+                        + (alreadyOnline ? " for voice chat (player already online)." : " for Minecraft.")
         );
 
         SvgCore.getPendingJoinWaiter()

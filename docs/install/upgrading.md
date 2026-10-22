@@ -31,6 +31,7 @@ This page documents version upgrade behavior and breaking changes.
 - Voice Chat Settings restyled to match Simple Voice Chat Java (square sliders, full-width activation toggle, mic/speaker side by side). Wipe `web/` and hard-refresh (Ctrl+F5) after upgrade.
 - Hub matches SVC Java icon row (mic | mute speaker/deafen | Adjust Volumes) with darker MC buttons. Wipe `web/` after upgrade.
 - Adjust Volumes matches SVC (large avatar, wide amp bar behind name, no mute button — slide to 0%). Wipe `web/` after upgrade.
+- Pending web join resolves Floodgate players already online even when `accounts.json` UUID is stale (name/dot fallback). Wipe `web/` after upgrade; re-run `/svg pswd` if stuck.
 
 ---
 
