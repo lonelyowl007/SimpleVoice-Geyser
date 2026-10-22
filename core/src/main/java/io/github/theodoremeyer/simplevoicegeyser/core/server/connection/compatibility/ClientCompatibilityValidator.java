@@ -3,11 +3,6 @@ package io.github.theodoremeyer.simplevoicegeyser.core.server.connection.compati
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.ConnectionStates;
 import org.json.JSONObject;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Class in charge of validating the compatibility of a client based on its join packet and expected server version/build.
  * It checks for the presence and validity of clientType, type, serverVersion, and build fields, and ensures that the client is compatible with the server's expected version and build.
@@ -33,6 +28,8 @@ public final class ClientCompatibilityValidator {
 
     /**
      * Validate the Compatibility of a client based on its join packet and expected server version/build.
+     * Svg-App must match {@code expectedServerVersion} exactly ({@code requireLatest} defaults to true).
+     *
      * @param join join packet
      * @param expectedServerVersion expected version
      * @param expectedBrowserBuild expected build
@@ -45,17 +42,18 @@ public final class ClientCompatibilityValidator {
             String expectedBrowserBuild,
             ClientTypePolicy policy
     ) {
-        return validate(join, expectedServerVersion, expectedBrowserBuild, policy, Collections.emptyList());
+        return validate(join, expectedServerVersion, expectedBrowserBuild, policy, true);
     }
 
     /**
-     * Validate client compatibility, allowing extra Svg-App serverVersion values.
+     * Validate client compatibility.
      *
      * @param join join packet
-     * @param expectedServerVersion expected plugin version (always accepted for Svg-App)
+     * @param expectedServerVersion expected plugin version
      * @param expectedBrowserBuild expected web build id
      * @param policy type policy
-     * @param acceptedAppServerVersions additional Svg-App serverVersion strings to accept
+     * @param requireLatest when true, Svg-App must match expected version exactly;
+     *                      when false, same major.minor (any patch) is accepted
      * @return result
      */
     public static ClientCompatibilityResult validate(
@@ -63,7 +61,7 @@ public final class ClientCompatibilityValidator {
             String expectedServerVersion,
             String expectedBrowserBuild,
             ClientTypePolicy policy,
-            Collection<String> acceptedAppServerVersions
+            boolean requireLatest
     ) {
         if (!join.has("clientType")) {
             if (join.has("client")) {
@@ -102,7 +100,7 @@ public final class ClientCompatibilityValidator {
 
         return switch (type) {
             case WEB_TYPE -> validateBrowser(join, expectedServerVersion, expectedBrowserBuild, policy, clientType);
-            case SVG_APP_TYPE -> validateSvgApp(clientType, expectedServerVersion, acceptedAppServerVersions);
+            case SVG_APP_TYPE -> validateSvgApp(clientType, expectedServerVersion, requireLatest);
             default -> throw new IllegalStateException("Unexpected client type: " + type);
         };
     }
@@ -157,7 +155,7 @@ public final class ClientCompatibilityValidator {
     private static ClientCompatibilityResult validateSvgApp(
             JSONObject clientType,
             String expectedServerVersion,
-            Collection<String> acceptedAppServerVersions
+            boolean requireLatest
     ) {
         Object rawServerVersion = clientType.opt("serverVersion");
         if (!(rawServerVersion instanceof String serverVersion) || serverVersion.trim().isEmpty()) {
@@ -165,19 +163,12 @@ public final class ClientCompatibilityValidator {
         }
 
         String trimmed = serverVersion.trim();
-        Set<String> accepted = new HashSet<>();
-        if (expectedServerVersion != null && !expectedServerVersion.isBlank()) {
-            accepted.add(expectedServerVersion.trim());
-        }
-        if (acceptedAppServerVersions != null) {
-            for (String version : acceptedAppServerVersions) {
-                if (version != null && !version.isBlank()) {
-                    accepted.add(version.trim());
-                }
-            }
-        }
+        String expected = expectedServerVersion == null ? "" : expectedServerVersion.trim();
+        boolean compatible = requireLatest
+                ? expected.equals(trimmed)
+                : sameMajorMinor(expected, trimmed);
 
-        if (!accepted.contains(trimmed)) {
+        if (!compatible) {
             return ClientCompatibilityResult.rejected(
                     "This app version is not compatible with this server. Update the app.",
                     ConnectionStates.DisconnectCodes.OUTDATED_CLIENT.getCode(),
@@ -188,5 +179,30 @@ public final class ClientCompatibilityValidator {
         return ClientCompatibilityResult.accepted(
                 ClientIdentity.svgApp(trimmed, clientType.optString("serverBuild", ""))
         );
+    }
+
+    /**
+     * Compares Major.minor (ignores patch and any -SNAPSHOT / -fork suffix on either side).
+     */
+    static boolean sameMajorMinor(String expected, String actual) {
+        String left = majorMinor(expected);
+        String right = majorMinor(actual);
+        return !left.isEmpty() && left.equals(right);
+    }
+
+    private static String majorMinor(String version) {
+        if (version == null || version.isBlank()) {
+            return "";
+        }
+        String core = version.trim();
+        int dash = core.indexOf('-');
+        if (dash >= 0) {
+            core = core.substring(0, dash);
+        }
+        String[] parts = core.split("\\.");
+        if (parts.length < 2) {
+            return core;
+        }
+        return parts[0] + "." + parts[1];
     }
 }

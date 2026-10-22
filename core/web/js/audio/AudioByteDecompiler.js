@@ -4,6 +4,7 @@ const MAGIC_0 = 0x53; // 'S'
 const MAGIC_1 = 0x56; // 'V'
 const VERSION_2 = 2;
 const HEADER_SIZE = 20;
+/** Optional talker UUID on server→browser frames (Adjust Volumes / per-sender decode). */
 const SENDER_UUID_SIZE = 16;
 const FLAG_HAS_SENDER = 0x08;
 const CODEC_OPUS = 1;

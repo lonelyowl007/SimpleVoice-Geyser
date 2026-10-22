@@ -53,7 +53,7 @@ Folia support is **real region-threading support**, not only the `folia-supporte
 * Player chat / messages / permission checks from Jetty run on the player's **EntityScheduler**
 * Spatial audio look-yaw is **cached on the entity thread** (never `Player#getLocation` from the audio executor)
 * Plugin declares `folia-supported: true` in `plugin.yml`
-* Built against Paper API schedulers (compatible with Paper and Folia)
+* Compiles against Spigot API; Folia EntityScheduler is used at runtime via reflection (Spigot stays supported)
 
 | Version   | MC Version   | Voice Chat | Geyser           | Floodgate       | Status |
 |-----------|--------------|------------|------------------|-----------------|--------|

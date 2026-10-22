@@ -18,7 +18,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -43,16 +42,13 @@ public final class JoinPacket implements Packet {
                 + socket.addJoinAttempt() + " from "
                 + socket.getSession().getRemoteAddress());
 
-        List<String> acceptedAppVersions = SvgCore.getConfig().ACCEPTED_APP_SERVER_VERSIONS.get();
-        if (acceptedAppVersions == null) {
-            acceptedAppVersions = List.of();
-        }
+        boolean requireLatest = Boolean.TRUE.equals(SvgCore.getConfig().REQUIRE_LATEST.get());
         ClientCompatibilityResult compatibility = ClientCompatibilityValidator.validate(
                 json,
                 SvgCore.VERSION,
                 SvgCore.BUILD_ID,
                 ClientTypePolicy.fromConfig(SvgCore.getConfig()),
-                acceptedAppVersions
+                requireLatest
         );
 
         if (!compatibility.accepted()) {

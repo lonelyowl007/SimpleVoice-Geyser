@@ -7,16 +7,13 @@ plugins {
 
 repositories {
     maven {
-        url = uri('https://repo.papermc.io/repository/maven-public/')
-    }
-    maven {
         url = uri('https://hub.spigotmc.org/nexus/content/groups/public/')
     }
 }
 
 dependencies {
-    // Paper API includes Folia Entity/Region/Global schedulers (also work on Paper)
-    compileOnly("io.papermc.paper:paper-api:${paper_api_version}-R0.1-SNAPSHOT")
+    // Spigot API — Folia EntityScheduler is used at runtime via reflection (see EntityThreadAccess)
+    compileOnly("org.spigotmc:spigot-api:${spigot_api_version}-R0.1-SNAPSHOT")
 
     // CORE MODULE
     implementation(project(":core"))
@@ -71,5 +68,7 @@ tasks.runServer { // https://github.com/jpenilla/run-task/wiki
         url("https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot")
         // ViaVersion — protocol bridge for mixed Java/Bedrock clients on Paper 26.3
         url("https://cdn.modrinth.com/data/P1OZGk5p/versions/vd9B8ESF/ViaVersion-5.12.2-SNAPSHOT.jar")
+        // ViaBackwards — older client protocols when harness runs on latest MC
+        url("https://cdn.modrinth.com/data/NpvuJQoq/versions/dWw67APC/ViaBackwards-5.12.1.jar")
     }
 }

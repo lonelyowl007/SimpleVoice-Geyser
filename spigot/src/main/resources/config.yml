@@ -18,12 +18,10 @@ client:
   # WARNING: Make sure off-hand-emote is disabled in Geyser to avoid conflicts.
   useEmoteForSVG: true
 
-  # default: [0.1.3, 0.1.4]
-  # Extra Svg-App clientType.serverVersion values accepted besides this plugin's version.
-  # Lets older upstream Android APKs join without rebuilding the Flutter app.
-  accepted-app-server-versions:
-    - "0.1.3"
-    - "0.1.4"
+  # default: true
+  # When true, Svg-App must send clientType.serverVersion equal to this plugin version.
+  # When false, the same major.minor is accepted (any patch) as a temporary escape hatch.
+  require-latest: true
 
   web:
     # default: en

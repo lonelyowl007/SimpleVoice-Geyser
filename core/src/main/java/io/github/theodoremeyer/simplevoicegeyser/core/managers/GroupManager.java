@@ -393,23 +393,14 @@ public final class GroupManager {
     }
 
     /**
-     * Remove a group from the manager
+     * Remove a group from the manager and push an updated list to web clients.
      * @param group the group to remove
      */
     public void removeGroup(Group group) {
-        removeGroup(group, true);
-    }
-
-    /**
-     * @param broadcast whether to push an updated list to web clients
-     */
-    public void removeGroup(Group group, boolean broadcast) {
         if (group == null || group.getName() == null) {
             return;
         }
         groups.remove(group.getName());
-        if (broadcast) {
-            GroupsBroadcaster.broadcast();
-        }
+        GroupsBroadcaster.broadcast();
     }
 }

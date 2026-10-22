@@ -25,7 +25,7 @@ For Host-Specific setup, see [Hosting Guides]({% project_link guides %}).
 
 * Folia build matching your Minecraft version (**1.21.x through 26.3**)
 * Simple Voice Chat **2.6.24+**
-* Same plugin jar as Paper/Purpur (`folia-supported: true` with EntityScheduler + spatial yaw cache)
+* Same plugin jar as Paper/Purpur/Spigot (`folia-supported: true`; EntityScheduler via reflection + spatial yaw cache)
 
 See [Compatibility]({% project_link install/compatibility %}) for the full version tables.
 

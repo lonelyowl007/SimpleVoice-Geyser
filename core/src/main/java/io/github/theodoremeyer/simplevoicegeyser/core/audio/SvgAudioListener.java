@@ -31,7 +31,11 @@ public final class SvgAudioListener {
 
     private final UUID listenerId;
     private final VoicechatServerApi serverApi;
-    /** Per-sender Opus decoders for legacy PCM path (Opus is stateful per stream). */
+    /**
+     * Per <em>upstream SVC talker</em> Opus decoders for the legacy PCM path.
+     * This listener is 1:1 with a websocket, but it can receive interleaved Opus from many
+     * in-game players; Opus is stateful per stream, so one shared decoder sounds robotic.
+     */
     private final Map<UUID, OpusDecoder> decoders = new HashMap<>();
     private final Map<UUID, Long> decoderLastUsedNanos = new HashMap<>();
     private final Object decoderLock = new Object();

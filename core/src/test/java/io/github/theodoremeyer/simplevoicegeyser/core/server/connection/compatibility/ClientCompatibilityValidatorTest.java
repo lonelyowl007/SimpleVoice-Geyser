@@ -102,19 +102,51 @@ class ClientCompatibilityValidatorTest {
     }
 
     @Test
-    void acceptsSvgAppWhenServerVersionIsOnAllowlist() {
+    void acceptsSvgAppSameMajorMinorWhenRequireLatestIsFalse() {
         ClientCompatibilityResult result = ClientCompatibilityValidator.validate(
                 joinWithClientType(new JSONObject()
                         .put("type", "Svg-App")
-                        .put("serverVersion", "0.1.3")),
-                SERVER_VERSION,
+                        .put("serverVersion", "0.2.1")),
+                "0.2.0-SNAPSHOT",
                 BUILD_ID,
                 ALLOW_ALL,
-                List.of("0.1.3", "0.1.4")
+                false
         );
 
         assertTrue(result.accepted());
-        assertEquals(ClientIdentity.svgApp("0.1.3", ""), result.identity());
+        assertEquals(ClientIdentity.svgApp("0.2.1", ""), result.identity());
+    }
+
+    @Test
+    void rejectsSvgAppOtherMajorMinorWhenRequireLatestIsFalse() {
+        ClientCompatibilityResult result = ClientCompatibilityValidator.validate(
+                joinWithClientType(new JSONObject()
+                        .put("type", "Svg-App")
+                        .put("serverVersion", "0.1.4")),
+                "0.2.0-SNAPSHOT",
+                BUILD_ID,
+                ALLOW_ALL,
+                false
+        );
+
+        assertFalse(result.accepted());
+        assertEquals("app_protocol_unsupported", result.closeReason());
+    }
+
+    @Test
+    void rejectsSvgAppPatchMismatchWhenRequireLatestIsTrue() {
+        ClientCompatibilityResult result = ClientCompatibilityValidator.validate(
+                joinWithClientType(new JSONObject()
+                        .put("type", "Svg-App")
+                        .put("serverVersion", "0.2.1")),
+                "0.2.0-SNAPSHOT",
+                BUILD_ID,
+                ALLOW_ALL,
+                true
+        );
+
+        assertFalse(result.accepted());
+        assertEquals("app_protocol_unsupported", result.closeReason());
     }
 
     @Test
