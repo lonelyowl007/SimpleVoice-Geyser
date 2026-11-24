@@ -102,7 +102,12 @@
                                     </button>
                                 </div>
                                 <button type="button" class="svcIconBtn unmuted" data-svg="audio.mute-speaker" aria-label="Mute speaker">
-                                    <span class="svcSpeakerIcon" aria-hidden="true"></span>
+                                    <svg class="svcSpeakerIcon" viewBox="0 0 24 18" width="24" height="18" aria-hidden="true" focusable="false">
+                                        <path fill="currentColor" d="M2 6h3v6H2zm3 0l5-4v14l-5-4z"/>
+                                        <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" d="M13.5 5.5c1.6 1.2 1.6 5.8 0 7"/>
+                                        <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" d="M16.5 3.5c2.8 2 2.8 9 0 11"/>
+                                        <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" d="M19.5 1.75c3.8 2.7 3.8 11.8 0 14.5"/>
+                                    </svg>
                                     <span class="svcMuteSlash" aria-hidden="true"></span>
                                 </button>
                                 <button type="button" class="svcIconBtn" data-svg="ui.hub-volumes-icon" aria-label="Adjust Volumes" title="Adjust Volumes">
@@ -185,6 +190,15 @@
                                         <span class="textAlignLeft fullWidth mcTextStyle1" data-svg="ptt.binding-label" svg-lang="pttBindingLabel"></span>
                                     </div>
                                 </div>
+                                <div class="svcSettingsSeparator" aria-hidden="true"></div>
+                                <label class="chatTimestampsToggle flexRowContainer fullWidth">
+                                    <span class="mcTextStyle2 textAlignLeft" svg-lang="showChatTimestampsLabel">Show chat timestamps</span>
+                                    <div class="flexSpacer"></div>
+                                    <div class="mcCheckboxStyle">
+                                        <input type="checkbox" data-svg="chat.show-timestamps" checked/>
+                                        <div class="mcCheckboxStyleInner"></div>
+                                    </div>
+                                </label>
                                 <div class="svcSettingsSeparator" aria-hidden="true"></div>
                                 <div class="svcDeviceBtnRow">
                                     <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2" data-svg="ui.open-mic" svg-lang="selectMicrophoneBtn">Select Microphone</button>
