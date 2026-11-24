@@ -54,7 +54,7 @@
 
                     <div class="joinField fullWidth hiddenWhenConnected">
                         <label class="joinFormLabel mcTextStyle1" for="password" svg-lang="passwordInput">Password</label>
-                        <input class="passwordInput mcTextboxStyle" data-svg="form.password" type="password" id="password" name="password" required autocomplete="svg-password">
+                        <input class="passwordInput mcTextboxStyle" data-svg="form.password" type="password" id="password" name="password" required autocomplete="current-password">
                     </div>
 
                     <div class="joinField fullWidth hiddenWhenConnected">
@@ -121,12 +121,12 @@
                         </div>
                         <div class="flexDivider"></div>
                         <div class="mcTextviewStyle mcTextStyle1" data-svg="chat.log"></div>
-                        <div class="fullWidth flexRowContainer">
-                            <input class="mcTextboxStyle fullWidth" id="chatInput" data-svg="chat.input" type="text" placeholder="Type a message..." svg-lang-placeholder="chatInputPlaceholder" />
+                        <form class="chatCompose fullWidth flexRowContainer" autocomplete="off" onsubmit="return false;">
+                            <input class="mcTextboxStyle fullWidth" id="chatInput" name="svg-chat-message" data-svg="chat.input" type="text" inputmode="text" placeholder="Type a message..." svg-lang-placeholder="chatInputPlaceholder" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="true" data-form-type="other" data-lpignore="true" data-1p-ignore="true" />
                             <div class="messageBtnContainer mcButtonStyle">
                                 <button class="mcButtonStyleInner mcTextStyle2" id="chatBtn" data-svg="chat.send" svg-lang="sendBtnText" type="button"></button>
                             </div>
-                        </div>
+                        </form>
                     </div>
 
 <!--                    SETTINGS (SVC Java-style stack) -->

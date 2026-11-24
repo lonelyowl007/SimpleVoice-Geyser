@@ -99,11 +99,36 @@ client.webSocketController.addEventListener("statusChange", (status) => {
     if (status.connected) {
         stopPendingJoinCountdown();
         document.body.classList.add("connected");
+        // Disable join credentials so browsers stop treating chat as a password/username field.
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+        if (username) {
+            username.disabled = true;
+            username.autocomplete = "off";
+        }
+        if (password) {
+            password.disabled = true;
+            password.autocomplete = "off";
+        }
+        const chatInput = document.getElementById("chatInput");
+        if (chatInput && chatInput.value === (username?.value || "")) {
+            chatInput.value = "";
+        }
         return;
     }
 
     document.body.classList.remove("connected");
     stopPendingJoinCountdown();
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    if (username) {
+        username.disabled = false;
+        username.autocomplete = "username";
+    }
+    if (password) {
+        password.disabled = false;
+        password.autocomplete = "current-password";
+    }
 
     if (status.code === SvgWebSocket.DisconnectPolicy.OUTDATED || status.reason === "update_required") {
         showAlertOverlay(SvgLang.string("alertOutdatedClient"));

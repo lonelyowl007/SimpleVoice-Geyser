@@ -150,6 +150,17 @@
     color: var(--select-color2);
     box-shadow: inset -2px -4px var(--color4), inset 2px 2px var(--color5);
 }
+/* Chat compose is not a login field — kill browser credential autofill styling */
+#chatInput:-webkit-autofill,
+#chatInput:-webkit-autofill:hover,
+#chatInput:-webkit-autofill:focus,
+#chatInput:-webkit-autofill:active,
+#chatInput:autofill {
+    -webkit-text-fill-color: var(--color6);
+    caret-color: var(--color6);
+    transition: background-color 99999s ease-in-out 0s;
+    box-shadow: inset -2px -4px var(--color3), inset 2px 2px var(--color4), 0 0 0 1000px var(--color2) inset;
+}
 .mcTextviewStyle {
     cursor: text;
     user-select: none;
