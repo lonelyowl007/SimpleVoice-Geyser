@@ -397,6 +397,7 @@ html.svg-popout,
 html.svg-popout body {
     height: 100%;
     min-height: 100%;
+    overflow: hidden;
 }
 html.svg-popout body {
     margin: 0;
@@ -406,14 +407,65 @@ html.svg-popout body {
 html.svg-popout main {
     width: 100%;
     flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-flow: column;
+}
+html.svg-popout .mainStage {
+    width: 100%;
+    max-width: none;
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
 }
 html.svg-popout .mainContainer {
     width: 100%;
     max-width: none;
-    min-height: 100%;
+    min-height: 0;
+    height: 100%;
     border-width: 0;
     clip-path: none;
     box-shadow: none;
+    display: flex;
+    flex-flow: column;
+    overflow: hidden;
+}
+html.svg-popout .joinSec {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    padding: 10px 12px 10px 12px;
+    /* Only theme toggle remains in pop-out chrome */
+    padding-right: max(12px, 52px);
+    overflow: auto;
+}
+html.svg-popout .joinHero {
+    gap: 2px;
+    margin-bottom: 2px;
+}
+html.svg-popout .serverNameDisplay {
+    font-size: 1.15em;
+}
+html.svg-popout .serverTaglineDisplay {
+    font-size: 0.78em;
+}
+html.svg-popout .joinLabel {
+    margin: 2px 0 0 0;
+    font-size: 0.92em;
+}
+html.svg-popout .joinSec form.flexContainer,
+html.svg-popout .joinSec .flexContainer {
+    gap: 4px;
+}
+html.svg-popout .joinContainer {
+    margin-top: 4px;
+}
+html.svg-popout .connectedSec {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
 }
 html.svg-popout footer,
 html.svg-popout .contributorsShowcase,
@@ -429,7 +481,7 @@ body.connected .joinContainer {
     box-sizing: border-box;
 }
 html.svg-popout body.connected .joinContainer {
-    padding-right: 84px;
+    padding-right: 52px;
 }
 
 /* GitHub contributors credit reel (join page) */

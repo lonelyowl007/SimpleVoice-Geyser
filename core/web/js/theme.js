@@ -84,9 +84,9 @@ export function openPopoutWindow() {
         }
         const url = new URL(window.location.href);
         url.searchParams.set("popout", "1");
-        // Prefer a tall narrow window so it sits beside Discord / game.
-        const width = Math.min(520, Math.max(380, window.screen.availWidth || 520));
-        const height = Math.min(820, Math.max(640, Math.floor((window.screen.availHeight || 900) * 0.85)));
+        // Compact panel beside Discord / game — fit the join form, not a tall empty strip.
+        const width = Math.min(440, Math.max(360, Math.floor((window.screen.availWidth || 440) * 0.28)));
+        const height = Math.min(580, Math.max(500, Math.floor((window.screen.availHeight || 720) * 0.62)));
         const left = Math.max(0, Math.floor(((window.screen.availWidth || width) - width) / 2));
         const top = Math.max(0, Math.floor(((window.screen.availHeight || height) - height) / 2));
         const features = [
