@@ -49,7 +49,7 @@ public class SvgListener {
             }
         });
 
-        // Public chat → web clients
+        // Public chat → web clients (prefer display name so rank prefixes keep colors when present)
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
             if (sender == null || message == null) {
                 return;
@@ -59,7 +59,12 @@ public class SvgListener {
             if (plain.isBlank()) {
                 return;
             }
-            ChatBroadcaster.onMinecraftChat(sender.getScoreboardName(), sender.getUUID(), plain);
+            Component display = sender.getDisplayName();
+            String displayName = display == null ? sender.getScoreboardName() : display.getString();
+            if (displayName == null || displayName.isBlank()) {
+                displayName = sender.getScoreboardName();
+            }
+            ChatBroadcaster.onMinecraftChat(displayName, sender.getUUID(), plain);
         });
     }
 }

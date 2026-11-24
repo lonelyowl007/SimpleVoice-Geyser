@@ -89,7 +89,8 @@ const ELEMENTS = {
     chat: {
         logEl: "chat.log",
         inputEl: "chat.input",
-        sendBtn: "chat.send"
+        sendBtn: "chat.send",
+        timestampsToggle: "chat.show-timestamps"
     }
 };
 

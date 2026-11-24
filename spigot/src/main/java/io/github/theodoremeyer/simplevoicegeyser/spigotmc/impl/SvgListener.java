@@ -3,6 +3,7 @@ package io.github.theodoremeyer.simplevoicegeyser.spigotmc.impl;
 import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
 import io.github.theodoremeyer.simplevoicegeyser.core.api.sender.SvgPlayer;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.packets.ChatBroadcaster;
+import io.github.theodoremeyer.simplevoicegeyser.core.server.packets.ChatSanitize;
 import io.github.theodoremeyer.simplevoicegeyser.spigotmc.impl.sender.BukkitPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,6 +50,7 @@ public class SvgListener implements Listener {
     /**
      * Mirror public Minecraft chat into authenticated web clients.
      * Runs MONITOR so cancelled chat (mute plugins, etc.) is not forwarded.
+     * Uses the server chat format + display name so LuckPerms / MiniMessage ranks keep their colors.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event) {
@@ -60,6 +62,28 @@ public class SvgListener implements Listener {
         if (message == null || message.isBlank()) {
             return;
         }
-        ChatBroadcaster.onMinecraftChat(player.getName(), player.getUniqueId(), message);
+
+        String displayName = player.getDisplayName();
+        if (displayName == null || displayName.isBlank()) {
+            displayName = player.getName();
+        }
+
+        String formattedLine = null;
+        String stripped = ChatSanitize.stripWebChatPrefix(message);
+        if (stripped == null) {
+            try {
+                // Same line Java players see: includes rank prefixes from chat plugins.
+                formattedLine = String.format(event.getFormat(), displayName, message);
+            } catch (Exception ignored) {
+                formattedLine = null;
+            }
+        }
+
+        ChatBroadcaster.onMinecraftChat(
+                displayName,
+                player.getUniqueId(),
+                message,
+                formattedLine
+        );
     }
 }

@@ -12,6 +12,7 @@
  * @property {HTMLElement} logEl
  * @property {HTMLInputElement} inputEl
  * @property {HTMLButtonElement} sendBtn
+ * @property {HTMLInputElement} [timestampsToggle]
  */
 
 /**

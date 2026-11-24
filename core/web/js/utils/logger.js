@@ -7,7 +7,7 @@ export class Logger {
     static handler = console.log;
 
     /**
-     * @param {(msg: string) => void} handler
+     * @param {(msg: string, html?: string|null) => void} handler
      */
     static setHandler(handler) {
         Logger.handler = handler;
@@ -15,9 +15,10 @@ export class Logger {
 
     /**
      * @param {string} msg
+     * @param {string} [html]
      */
-    static log(msg) {
-        Logger.handler(msg);
+    static log(msg, html) {
+        Logger.handler(msg, html);
     }
 
     /**
@@ -27,6 +28,8 @@ export class Logger {
         console.log(`[DEBUG]: ` + msg);
     }
 }
+
+const TIMESTAMPS_KEY = "svg.chat.showTimestamps";
 
 export class ChatLogger {
 
@@ -45,6 +48,7 @@ export class ChatLogger {
         this.options = options;
         this.webSocketController =
             webSocketController;
+        this.showTimestamps = this.#loadTimestampsPref();
     }
 
     init() {
@@ -52,6 +56,19 @@ export class ChatLogger {
         Logger.setHandler(
             this.handleMessage.bind(this)
         );
+
+        this.options.logEl.replaceChildren();
+        this.#applyTimestampsClass();
+
+        const toggle = this.options.timestampsToggle;
+        if (toggle) {
+            toggle.checked = this.showTimestamps;
+            toggle.addEventListener("change", () => {
+                this.showTimestamps = !!toggle.checked;
+                localStorage.setItem(TIMESTAMPS_KEY, this.showTimestamps ? "1" : "0");
+                this.#applyTimestampsClass();
+            });
+        }
 
         this.options.sendBtn.addEventListener(
             "click",
@@ -79,17 +96,42 @@ export class ChatLogger {
 
     /**
      * @param {string} msg
+     * @param {string} [html]
      */
-    handleMessage(msg) {
+    handleMessage(msg, html) {
+        const line = document.createElement("div");
+        line.className = "chatLine";
 
-        const time =
-            new Date()
-                .toLocaleTimeString();
+        const time = document.createElement("span");
+        time.className = "chatTime";
+        time.textContent = `[${new Date().toLocaleTimeString()}] `;
 
-        this.options.logEl.textContent +=
-            `\n[${time}] ${msg}`;
+        const body = document.createElement("span");
+        body.className = "chatBody";
+        if (html) {
+            body.innerHTML = html;
+        } else {
+            body.textContent = msg;
+        }
 
+        line.append(time, body);
+        this.options.logEl.appendChild(line);
         this.options.logEl.scrollTop =
             this.options.logEl.scrollHeight;
+    }
+
+    #loadTimestampsPref() {
+        const saved = localStorage.getItem(TIMESTAMPS_KEY);
+        if (saved === null) {
+            return true;
+        }
+        return saved === "1" || saved === "true";
+    }
+
+    #applyTimestampsClass() {
+        this.options.logEl.classList.toggle(
+            "hide-chat-timestamps",
+            !this.showTimestamps
+        );
     }
 }

@@ -186,10 +186,27 @@ public final class SvgConnection {
 
     /**
      * Send a Chat Message to the client
-     * @param message chat message
+     * @param message chat message (plain text)
      */
     public void sendChat(String message) {
-        sendMessage(ConnectionStates.MessageType.CHAT, message, false);
+        sendChat(message, null);
+    }
+
+    /**
+     * Send a chat line with optional HTML (ranks / MiniMessage colors) for the web panel.
+     *
+     * @param message plain text fallback
+     * @param html    safe HTML body, or null for plain-only
+     */
+    public void sendChat(String message, String html) {
+        JSONObject json = new JSONObject();
+        json.put("type", ConnectionStates.MessageType.CHAT.getJsonString());
+        json.put("message", message);
+        json.put("fatal", false);
+        if (html != null && !html.isBlank()) {
+            json.put("html", html);
+        }
+        sendJson(json);
     }
 
     /**

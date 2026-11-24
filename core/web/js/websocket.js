@@ -212,8 +212,9 @@ export class SvgWebSocket {
 
                     if (packetType === "chat") {
                         const chatMsg = String(data.message || "");
-                        if (chatMsg) {
-                            Logger.log(chatMsg);
+                        const chatHtml = data.html != null ? String(data.html) : null;
+                        if (chatMsg || chatHtml) {
+                            Logger.log(chatMsg || "", chatHtml);
                         }
                     }
 
