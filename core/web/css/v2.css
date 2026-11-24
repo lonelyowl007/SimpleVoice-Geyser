@@ -321,11 +321,11 @@ html[data-theme="light"] {
     image-rendering: crisp-edges !important;
 }
 
-/* Top-right theme + pop-out chrome */
+/* Top-right theme + pop-out chrome — overlay corner, no full-height gutter */
 .uiChromeBar {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 10px;
+    right: 10px;
     z-index: 40;
     display: flex;
     flex-flow: row;
@@ -436,14 +436,14 @@ html.svg-popout .joinSec {
     display: flex;
     flex-flow: column;
     justify-content: flex-start;
-    padding: 10px 12px 10px 12px;
-    /* Only theme toggle remains in pop-out chrome */
-    padding-right: max(12px, 52px);
+    padding: 10px 12px;
     overflow: auto;
 }
 html.svg-popout .joinHero {
     gap: 2px;
     margin-bottom: 2px;
+    /* theme-only chrome in pop-out */
+    padding-right: 48px;
 }
 html.svg-popout .serverNameDisplay {
     font-size: 1.15em;
@@ -473,8 +473,8 @@ html.svg-popout .floatingWidgetsOverlay {
     display: none !important;
 }
 html.svg-popout .uiChromeBar {
-    top: 6px;
-    right: 6px;
+    top: 8px;
+    right: 8px;
 }
 body.connected .joinContainer {
     padding-right: 84px;
@@ -1317,8 +1317,6 @@ main {
 .joinSec {
     text-align: center;
     padding: 18px 20px 14px 20px;
-    /* Reserve room for theme / pop-out chrome in the top-right */
-    padding-right: max(20px, 92px);
     width: 100%;
     box-sizing: border-box;
     overflow: visible;
@@ -1330,6 +1328,9 @@ main {
     gap: 8px;
     width: 100%;
     margin-bottom: 8px;
+    /* Keep title clear of overlay chrome; form fields use full width below */
+    padding-right: 84px;
+    box-sizing: border-box;
 }
 .serverNameDisplay {
     margin: 0;
@@ -1906,7 +1907,10 @@ body.connected .joinBtnContainer {
  * (was 10 top / 0 bottom → 4 top / 6 bottom)
  */
 body.connected .joinSec {
-    padding: 4px max(10px, 92px) 6px 10px;
+    padding: 4px 10px 6px 10px;
+}
+body.connected .joinHero {
+    padding-right: 0;
 }
 body.connected .joinContainer {
     align-items: center;
