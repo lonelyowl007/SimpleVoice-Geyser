@@ -18,11 +18,16 @@ public class SvgListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         // Spigot/Paper PlayerManager always stores BukkitPlayer instances.
-        BukkitPlayer bukkitPlayer = new BukkitPlayer(event.getPlayer());
+        BukkitPlayer bukkitPlayer = new BukkitPlayer(player);
         bukkitPlayer.startSpatialCache();
-        SvgCore.getJoinMessageHandler().sendJoinMessage(bukkitPlayer);
         SvgCore.getPlayerManager().addPlayer(bukkitPlayer);
+        SvgCore.getJoinMessageHandler().sendJoinMessage(bukkitPlayer)
+                .exceptionally(throwable -> {
+                    SvgCore.getLogger().error("Error sending join message for player " + player.getName(), throwable);
+                    return null;
+                });
     }
 
     @EventHandler
@@ -33,7 +38,11 @@ public class SvgListener implements Listener {
             bukkitPlayer.cancelSpatialCache();
         }
         if (player != null) {
-            SvgCore.getPlayerManager().removePlayer(player);
+            SvgCore.getPlayerManager().removePlayer(player)
+                    .exceptionally(throwable -> {
+                        SvgCore.getLogger().error("Error removing player " + player.getName() + " from player manager", throwable);
+                        return null;
+                    });
         }
     }
 
