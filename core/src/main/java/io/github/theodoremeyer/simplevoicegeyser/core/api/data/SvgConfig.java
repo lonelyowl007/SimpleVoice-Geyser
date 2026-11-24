@@ -2,17 +2,36 @@ package io.github.theodoremeyer.simplevoicegeyser.core.api.data;
 
 import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class SvgConfig {
 
-    private final SvgFile file;
-
-    public SvgConfig(SvgFile file) {
-        this.file = file;
-        applyDefaults();
+    /**
+     * Defaults from compiled ConfigKey definitions (no file required).
+     */
+    public static Map<String, Object> codeDefaults() {
+        return new SvgConfig(null).getCodeDefaults();
     }
 
+    private final SvgFile file;
+
+    /**
+     * Create the Config with an associated config file
+     * @param file file; if null, defaults are initialized without file binding
+     */
+    public SvgConfig(SvgFile file) {
+        this.file = file;
+        if (file != null) {
+            applyDefaults();
+        }
+    }
+
+    /**
+     * Get the associated config file
+     * @throws IllegalStateException if the config was initialized without a file
+     */
     public SvgFile getFile() {
         if (file == null) {
             throw new IllegalStateException("SvgConfig not initialized");
@@ -188,6 +207,17 @@ public final class SvgConfig {
             CONFIG_BACKUPS_MAX_FILES,
             CONFIG_VERSION
     );
+
+    /**
+     * Map of every ConfigKey path to its compiled default value.
+     */
+    public Map<String, Object> getCodeDefaults() {
+        Map<String, Object> defaults = new LinkedHashMap<>();
+        for (ConfigKey<?> key : ALL_KEYS) {
+            defaults.put(key.path(), key.def());
+        }
+        return defaults;
+    }
 
     public void applyDefaults() {
         SvgFile file = getFile();
