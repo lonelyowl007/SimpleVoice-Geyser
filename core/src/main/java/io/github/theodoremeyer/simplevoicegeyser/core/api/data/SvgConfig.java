@@ -80,6 +80,27 @@ public final class SvgConfig {
     public final ConfigKey<String> WEB_TAGLINE =
             new ConfigKey<>(this, "client.web.tagline", "");
 
+    /**
+     * When true, the join page shows an animated GitHub contributors credit reel.
+     * Default true — servers can turn it off in config if they prefer a cleaner join page.
+     */
+    public final ConfigKey<Boolean> WEB_SHOW_CONTRIBUTORS =
+            new ConfigKey<>(this, "client.web.show-contributors", true);
+
+    /**
+     * GitHub {@code owner/repo} used for the contributors showcase
+     * (defaults to upstream TheodoreMeyer/SimpleVoice-Geyser).
+     */
+    public final ConfigKey<String> WEB_CONTRIBUTORS_REPO =
+            new ConfigKey<>(this, "client.web.contributors-repo", "TheodoreMeyer/SimpleVoice-Geyser");
+
+    /**
+     * Default web UI theme for visitors without a saved preference ({@code dark} or {@code light}).
+     * Players can override locally; the choice is stored in browser localStorage.
+     */
+    public final ConfigKey<String> WEB_DEFAULT_THEME =
+            new ConfigKey<>(this, "client.web.default-theme", "dark");
+
     public final ConfigKey<Boolean> WEB_CHAT_ENABLED =
             new ConfigKey<>(this, "client.web-chat-enabled", true);
 
@@ -182,6 +203,9 @@ public final class SvgConfig {
             WEB_DEFAULT_LANGUAGE,
             WEB_SERVER_NAME,
             WEB_TAGLINE,
+            WEB_SHOW_CONTRIBUTORS,
+            WEB_CONTRIBUTORS_REPO,
+            WEB_DEFAULT_THEME,
             JOIN_MESSAGE_ENABLED,
             JOIN_MESSAGE_TEXT,
             DEFAULT_GROUP_ENABLED,

@@ -88,7 +88,8 @@ function clampPercent(value) {
     if (!Number.isFinite(n)) {
         return 100;
     }
-    return Math.max(0, Math.min(200, Math.round(n)));
+    // Match Simple Voice Chat voice volume amplification (0–400%).
+    return Math.max(0, Math.min(400, Math.round(n)));
 }
 
 function normalizeEntry(raw) {

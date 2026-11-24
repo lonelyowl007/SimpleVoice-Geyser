@@ -96,6 +96,14 @@ class FileManager {
         modifiedFiles.clear();
         outdatedFiles.clear();
 
+        boolean pluginUpgraded = versioning.beginPluginUpgradeSync(SvgCore.BUILD_ID);
+        if (pluginUpgraded) {
+            SvgCore.getLogger().info(
+                    "[Web] Plugin build changed — syncing bundled web assets automatically "
+                            + "(customized files are still preserved)."
+            );
+        }
+
         int extracted = extractAllWebResources();
         if (extracted == 0) {
             SvgCore.getLogger().error(
@@ -107,6 +115,7 @@ class FileManager {
             );
         }
 
+        versioning.finishPluginUpgradeSync(SvgCore.BUILD_ID);
         versioning.save();
 
         logModifiedFiles();
@@ -333,12 +342,19 @@ class FileManager {
 
             /*
              * If there is no previous hash, this file predates the
-             * versioning system.
+             * versioning system (or .versioning was wiped).
              *
-             * We cannot safely determine whether the user modified it,
-             * so preserve the existing file.
+             * On a plugin upgrade we refresh from the JAR so servers do not
+             * need to manually delete plugins/.../web after every update.
+             * Between upgrades we still preserve the local copy.
              */
             if (previousBundledHash == null) {
+
+                if (versioning.isUpgradeSync()) {
+                    writeFile(targetFile, bundledData);
+                    versioning.setHash(outputPath, bundledHash);
+                    return;
+                }
 
                 modifiedFiles.add(outputPath);
 
@@ -531,16 +547,44 @@ class FileManager {
     private static final class Versioning {
 
         private static final String FILE_NAME = ".versioning";
+        private static final String PLUGIN_BUILD_KEY = "_svg_plugin_build_id";
 
         private final File file;
 
         private final Properties hashes = new Properties();
+
+        private boolean upgradeSync;
 
         private Versioning(File webDirectory) {
 
             this.file = new File(webDirectory, FILE_NAME);
 
             load();
+        }
+
+        /**
+         * Detect whether this startup is a new plugin build vs the last extract.
+         *
+         * @return true when web assets should prefer jar sync for unknown files
+         */
+        private boolean beginPluginUpgradeSync(String currentBuildId) {
+            String previous = hashes.getProperty(PLUGIN_BUILD_KEY, "");
+            String current = currentBuildId == null ? "" : currentBuildId;
+            // First install or missing marker → treat as upgrade so stock files sync.
+            upgradeSync = previous.isBlank() || !previous.equals(current);
+            return upgradeSync;
+        }
+
+        private void finishPluginUpgradeSync(String currentBuildId) {
+            hashes.setProperty(
+                    PLUGIN_BUILD_KEY,
+                    currentBuildId == null ? "" : currentBuildId
+            );
+            upgradeSync = false;
+        }
+
+        private boolean isUpgradeSync() {
+            return upgradeSync;
         }
 
         /**

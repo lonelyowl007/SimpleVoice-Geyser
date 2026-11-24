@@ -6,8 +6,13 @@ export class SvgAudio {
     static DEFAULT_VAD_START = 0.00008;
     static DEFAULT_VAD_STOP = 0.00004;
     static DEFAULT_INPUT_GAIN = 1.0;
-    /** Max software mic boost (browser AGC is off; quiet mics need headroom). */
-    static MAX_INPUT_GAIN = 6.0;
+    /**
+     * Max software mic boost (~+24 dB), matching Simple Voice Chat's microphone gain range.
+     * linear = 10^(dB/20); 24 dB ≈ 15.85×.
+     */
+    static MAX_INPUT_GAIN = 16.0;
+    /** Minimum linear gain (0 dB = unity). */
+    static MIN_INPUT_GAIN = 1.0;
     /** Throttle energy UI updates (~5/s assuming ~375 mic messages/sec). */
     static ENERGY_UPDATE_EVERY = 75;
 
@@ -145,7 +150,10 @@ export class SvgAudio {
 
     setInputGain(gain) {
         if (!Number.isFinite(gain)) return;
-        this.inputGain = Math.max(0.1, Math.min(SvgAudio.MAX_INPUT_GAIN, gain));
+        this.inputGain = Math.max(
+            SvgAudio.MIN_INPUT_GAIN,
+            Math.min(SvgAudio.MAX_INPUT_GAIN, gain)
+        );
         if (this.micGainNode && this.audioContext) {
             // AudioParam is the reliable loudness path (does not depend on worklet messages).
             this.micGainNode.gain.setTargetAtTime(
@@ -155,6 +163,16 @@ export class SvgAudio {
             );
         }
         this.#pushMicSettings();
+    }
+
+    /**
+     * Apply microphone gain from decibels (SVC-style UI).
+     * @param {number} db 0…24
+     */
+    setInputGainDb(db) {
+        if (!Number.isFinite(db)) return;
+        const clamped = Math.max(0, Math.min(24, db));
+        this.setInputGain(Math.pow(10, clamped / 20));
     }
 
     setEnergyCallback(fn) {

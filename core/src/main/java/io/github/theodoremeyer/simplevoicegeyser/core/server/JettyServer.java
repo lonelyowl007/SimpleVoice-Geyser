@@ -2,6 +2,7 @@ package io.github.theodoremeyer.simplevoicegeyser.core.server;
 
 import io.github.theodoremeyer.simplevoicegeyser.core.SvgCore;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.servlets.JettyWebSocket;
+import io.github.theodoremeyer.simplevoicegeyser.core.server.servlets.ContributorsServlet;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.servlets.ResourceServlet;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.servlets.WebConfigServlet;
 import org.eclipse.jetty.server.Server;
@@ -68,6 +69,7 @@ public final class JettyServer {
 
         // Public web branding / default language (must be before catch-all /*)
         context.addServlet(new ServletHolder(new WebConfigServlet()), "/svg-web-config.json");
+        context.addServlet(new ServletHolder(new ContributorsServlet()), "/svg-contributors.json");
 
         // Serve all static resources from /web
         context.addServlet(new ServletHolder(new ResourceServlet()), "/*");

@@ -42,6 +42,21 @@ public final class WebConfigServlet extends HttpServlet {
         json.put("serverName", serverName.trim());
         json.put("tagline", tagline.trim());
         json.put("joinTimeoutSeconds", joinTimeoutSeconds);
+        json.put(
+                "showContributors",
+                Boolean.TRUE.equals(SvgCore.getConfig().WEB_SHOW_CONTRIBUTORS.get())
+        );
+
+        String defaultTheme = SvgCore.getConfig().WEB_DEFAULT_THEME.get();
+        if (defaultTheme == null || defaultTheme.isBlank()) {
+            defaultTheme = "dark";
+        } else {
+            defaultTheme = defaultTheme.trim().toLowerCase();
+            if (!"light".equals(defaultTheme) && !"dark".equals(defaultTheme)) {
+                defaultTheme = "dark";
+            }
+        }
+        json.put("defaultTheme", defaultTheme);
 
         byte[] body = json.toString().getBytes(StandardCharsets.UTF_8);
         resp.setStatus(HttpServletResponse.SC_OK);

@@ -152,7 +152,7 @@ export class AdjustVolumesUI {
         slider.type = "range";
         slider.className = "volumeSlider svcMcSlider";
         slider.min = "0";
-        slider.max = "200";
+        slider.max = "400";
         slider.value = String(percent);
         slider.setAttribute(
             "aria-label",

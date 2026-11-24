@@ -17,6 +17,7 @@ import io.github.theodoremeyer.simplevoicegeyser.core.server.JettyServer;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.ConnectionManager;
 import io.github.theodoremeyer.simplevoicegeyser.core.server.connection.auth.PendingJoinWaiter;
 import io.github.theodoremeyer.simplevoicegeyser.core.svc.VoiceChatBridge;
+import io.github.theodoremeyer.simplevoicegeyser.core.update.ContributorsCache;
 import io.github.theodoremeyer.simplevoicegeyser.core.update.UpdateChecker;
 
 /**
@@ -121,6 +122,7 @@ public final class SvgCore {
             this.jettyServer = new JettyServer(host, port);
             this.jettyServer.start();
             getLogger().info("Jetty server started on port: " + port);
+            ContributorsCache.warmAsync();
 
             this.vcBridge = platform.registerVcBridge();
             if (this.vcBridge == null) {

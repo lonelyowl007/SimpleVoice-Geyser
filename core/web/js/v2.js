@@ -1,3 +1,6 @@
+import { initContributorsShowcase } from "./contributors.js";
+import { initPlayerIdentity, hidePlayerIdentity } from "./player-identity.js";
+import { initTheme } from "./theme.js";
 import { SvgBuilder } from "./utils/builder.js";
 import { SvgLang } from "./utils/lang.js";
 import { SvgWebSocket } from "./websocket.js";
@@ -17,6 +20,9 @@ try {
 await SvgLang.loadWebConfig();
 SvgLang.detectLanguage();
 SvgLang.applyBranding();
+initTheme(SvgLang.webBranding);
+initPlayerIdentity();
+await initContributorsShowcase(SvgLang.webBranding);
 
 const client = SvgBuilder.fromDocument().build();
 
@@ -118,6 +124,7 @@ client.webSocketController.addEventListener("statusChange", (status) => {
     }
 
     document.body.classList.remove("connected");
+    hidePlayerIdentity();
     stopPendingJoinCountdown();
     const username = document.getElementById("username");
     const password = document.getElementById("password");

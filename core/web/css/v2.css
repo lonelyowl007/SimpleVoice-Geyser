@@ -5,6 +5,47 @@
 
 * {
     font-family: Minecraftia;
+}
+
+/*
+ * Theme tokens — default = dark (matches client.web.default-theme).
+ * Light overrides via html[data-theme="light"].
+ *
+ * --color1..6 keep Minecraft button/bevel roles.
+ * --text-on-surface / --muted-on-surface / --surface are semantic for panels.
+ */
+html {
+    --color1: #000000;
+    --color2: #141414;
+    --color3: #3a3a3a;
+    --color4: #5a5a5a;
+    --color5: #c4c4c4;
+    --color6: #ffffff;
+    --select-color1: #6464FF73;
+    --select-color2: #FFFFA0;
+    --surface: #2c2c2c;
+    --text-on-surface: #ebebeb;
+    --muted-on-surface: #b0b0b0;
+    --panel-bg: #3a3a3a;
+    --panel-hi: #5c5c5c;
+    --panel-lo: #1a1a1a;
+    --btn-face: #4a4a4a;
+    --btn-hi: #6e6e6e;
+    --btn-lo: #262626;
+    --btn-face-hover: #585858;
+    --slider-face: #5a5a5a;
+    --slider-hi: #7a7a7a;
+    --slider-lo: #2a2a2a;
+    --chrome-btn-bg: #3f3f3f;
+    --chrome-btn-hi: #6a6a6a;
+    --chrome-btn-lo: #222222;
+    --dirt-overlay: rgba(0, 0, 0, 0.72);
+    --status-connected: #55ff55;
+    --status-disconnected: #ff5555;
+    color-scheme: dark;
+}
+
+html[data-theme="light"] {
     --color1: #000000;
     --color2: #262626;
     --color3: #414141;
@@ -13,6 +54,26 @@
     --color6: #FFFFFF;
     --select-color1: #6464FF73;
     --select-color2: #FFFFA0;
+    --surface: #C4C4C4;
+    --text-on-surface: #262626;
+    --muted-on-surface: #414141;
+    --panel-bg: #c6c6c6;
+    --panel-hi: #ffffff;
+    --panel-lo: #555555;
+    --btn-face: #6b6b6b;
+    --btn-hi: #9a9a9a;
+    --btn-lo: #3a3a3a;
+    --btn-face-hover: #7a7a7a;
+    --slider-face: #8b8b8b;
+    --slider-hi: #c6c6c6;
+    --slider-lo: #373737;
+    --chrome-btn-bg: #6b6b6b;
+    --chrome-btn-hi: #9a9a9a;
+    --chrome-btn-lo: #3a3a3a;
+    --dirt-overlay: rgba(0, 0, 0, 0.6);
+    --status-connected: #2f791a;
+    --status-disconnected: #a63131;
+    color-scheme: light;
 }
 
 .dev-hidden {
@@ -46,7 +107,7 @@
 }
 
 .mcTextStyle1 {
-    color: var(--color3);
+    color: var(--muted-on-surface);
 }
 .mcTextStyle2 {
     color: var(--color6);
@@ -231,13 +292,13 @@
     /*https://codepen.io/Stampf/pen/LYKzrKm*/
     --cutout-pixel-size: 3px;
 
-    background-color: var(--color5);
-    border-inline: var(--cutout-pixel-size) solid var(--color6);
-    border: var(--cutout-pixel-size) solid var(--color6);
-    border-right-color: var(--color3);
-    border-bottom-color: var(--color3);
+    background-color: var(--surface);
+    border-inline: var(--cutout-pixel-size) solid var(--panel-hi);
+    border: var(--cutout-pixel-size) solid var(--panel-hi);
+    border-right-color: var(--panel-lo);
+    border-bottom-color: var(--panel-lo);
 
-    box-shadow: inset -2px -2px var(--color3), inset 2px 2px var(--color6);
+    box-shadow: inset -2px -2px var(--panel-lo), inset 2px 2px var(--panel-hi);
     clip-path: polygon(
             0px var(--cutout-pixel-size),
             var(--cutout-pixel-size) var(--cutout-pixel-size),
@@ -254,10 +315,226 @@
     );
 }
 .mcDirtBackground {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../images/v2/background.png') !important; /* Replace with your dirt image path */
+    background-image: linear-gradient(var(--dirt-overlay), var(--dirt-overlay)), url('../images/v2/background.png') !important;
     background-repeat: repeat !important;
     background-size: 64px 64px !important;
     image-rendering: crisp-edges !important;
+}
+
+/* Top-right theme + pop-out chrome */
+.uiChromeBar {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 40;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 6px;
+}
+.uiChromeBtn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1a1a1a;
+    background: var(--chrome-btn-bg);
+    box-shadow:
+        inset 2px 2px 0 var(--chrome-btn-hi),
+        inset -2px -2px 0 var(--chrome-btn-lo),
+        1px 1px 0 #000;
+    color: #fff;
+    image-rendering: pixelated;
+}
+.uiChromeBtn:hover {
+    background: var(--btn-face-hover);
+}
+.uiChromeBtn:active {
+    box-shadow:
+        inset -2px -2px 0 var(--chrome-btn-hi),
+        inset 2px 2px 0 var(--chrome-btn-lo),
+        1px 1px 0 #000;
+}
+.uiChromeBtn:focus-visible {
+    outline: 2px solid var(--select-color2);
+    outline-offset: 1px;
+}
+.uiChromeIcon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-color: #fff;
+}
+/* Sun (shown in dark mode → click for light) */
+.uiChromeIconSun {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='3.5' fill='%23fff'/%3E%3Crect x='11' y='1' width='2' height='4' fill='%23fff'/%3E%3Crect x='11' y='19' width='2' height='4' fill='%23fff'/%3E%3Crect x='1' y='11' width='4' height='2' fill='%23fff'/%3E%3Crect x='19' y='11' width='4' height='2' fill='%23fff'/%3E%3Crect x='3.5' y='3.5' width='2' height='4' transform='rotate(-45 4.5 5.5)' fill='%23fff'/%3E%3Crect x='18.5' y='16.5' width='2' height='4' transform='rotate(-45 19.5 18.5)' fill='%23fff'/%3E%3Crect x='16.5' y='3.5' width='4' height='2' transform='rotate(45 18.5 4.5)' fill='%23fff'/%3E%3Crect x='3.5' y='16.5' width='4' height='2' transform='rotate(45 5.5 17.5)' fill='%23fff'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='3.5' fill='%23fff'/%3E%3Crect x='11' y='1' width='2' height='4' fill='%23fff'/%3E%3Crect x='11' y='19' width='2' height='4' fill='%23fff'/%3E%3Crect x='1' y='11' width='4' height='2' fill='%23fff'/%3E%3Crect x='19' y='11' width='4' height='2' fill='%23fff'/%3E%3Crect x='3.5' y='3.5' width='2' height='4' transform='rotate(-45 4.5 5.5)' fill='%23fff'/%3E%3Crect x='18.5' y='16.5' width='2' height='4' transform='rotate(-45 19.5 18.5)' fill='%23fff'/%3E%3Crect x='16.5' y='3.5' width='4' height='2' transform='rotate(45 18.5 4.5)' fill='%23fff'/%3E%3Crect x='3.5' y='16.5' width='4' height='2' transform='rotate(45 5.5 17.5)' fill='%23fff'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* Moon (shown in light mode → click for dark) */
+.uiChromeIconMoon {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M15.5 2.5A8.5 8.5 0 1 0 21.5 14 7 7 0 0 1 15.5 2.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M15.5 2.5A8.5 8.5 0 1 0 21.5 14 7 7 0 0 1 15.5 2.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.uiChromeIconPopout {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M3 3h10v2H5v14h14v-8h2v10H3zm11 0h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M3 3h10v2H5v14h14v-8h2v10H3zm11 0h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+html[data-theme="dark"] .uiChromeIconMoon,
+html[data-theme="light"] .uiChromeIconSun {
+    display: none;
+}
+html[data-theme="dark"] .uiChromeIconSun,
+html[data-theme="light"] .uiChromeIconMoon {
+    display: block;
+}
+
+/* Compact detached pop-out window */
+html.svg-popout,
+html.svg-popout body {
+    height: 100%;
+    min-height: 100%;
+}
+html.svg-popout body {
+    margin: 0;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+html.svg-popout main {
+    width: 100%;
+    flex: 1 1 auto;
+}
+html.svg-popout .mainContainer {
+    width: 100%;
+    max-width: none;
+    min-height: 100%;
+    border-width: 0;
+    clip-path: none;
+    box-shadow: none;
+}
+html.svg-popout footer,
+html.svg-popout .contributorsShowcase,
+html.svg-popout .floatingWidgetsOverlay {
+    display: none !important;
+}
+html.svg-popout .uiChromeBar {
+    top: 6px;
+    right: 6px;
+}
+body.connected .joinContainer {
+    padding-right: 84px;
+    box-sizing: border-box;
+}
+html.svg-popout body.connected .joinContainer {
+    padding-right: 84px;
+}
+
+/* GitHub contributors credit reel (join page) */
+.contributorsShowcase {
+    width: min(920px, calc(96vw - 12px));
+    margin: 8px auto 4px;
+    padding: 10px 0 6px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.contributorsHeader {
+    margin: 0 0 10px;
+    color: var(--color5);
+    opacity: 0.92;
+    letter-spacing: 0.02em;
+}
+.contributorsTrackWrap {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    border: 2px solid rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.28);
+    padding: 10px 0;
+}
+.contributorsTrack {
+    display: flex;
+    width: max-content;
+    gap: 14px;
+    padding: 0 14px;
+    animation: contributorsMarquee var(--contributors-duration, 40s) linear infinite;
+    will-change: transform;
+}
+.contributorsTrackWrap:hover .contributorsTrack {
+    animation-play-state: paused;
+}
+@keyframes contributorsMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+.contributorCard {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 168px;
+    padding: 8px 12px 8px 8px;
+    text-decoration: none;
+    color: var(--color6);
+    background: var(--color2);
+    border: 2px solid var(--color6);
+    box-shadow: inset -2px -3px var(--color3), inset 2px 2px var(--color4);
+    image-rendering: pixelated;
+    transition: background-color 0.12s ease, transform 0.12s ease;
+}
+.contributorCard:hover {
+    background: var(--select-color1);
+    color: var(--select-color2);
+    transform: translateY(-2px);
+}
+.contributorAvatar {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #222;
+    background: #111;
+    flex-shrink: 0;
+    image-rendering: auto;
+}
+.contributorMeta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+}
+.contributorLogin {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+.contributorCommits {
+    font-family: monospace;
+    font-size: 11px;
+    opacity: 0.85;
+    white-space: nowrap;
+}
+body.connected .contributorsShowcase {
+    display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+    .contributorsTrack {
+        animation: none;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: center;
+        max-width: 100%;
+    }
+    .contributorsTrackWrap {
+        overflow: auto;
+        mask-image: none;
+        -webkit-mask-image: none;
+    }
 }
 
 footer {
@@ -279,10 +556,241 @@ main {
     height: 100%;
     flex: 1 1 auto;
 }
+.mainStage {
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    width: min(100%, calc(95vw - 8px));
+    max-width: 980px;
+    box-sizing: border-box;
+}
 .mainContainer {
-    width: min(720px, calc(95vw - 16px));
+    position: relative;
+    width: min(720px, 100%);
+    flex: 1 1 auto;
+    min-width: 0;
     box-sizing: border-box;
     overflow: visible;
+}
+
+/* —— Connected player identity (head chip + full-skin sidebar) —— */
+.statusLabel.player-identity-hidden {
+    display: none !important;
+}
+.playerIdentityChip {
+    display: inline-flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 8px;
+    max-width: min(52vw, 280px);
+    margin: 0;
+    padding: 3px 8px 3px 3px;
+    border: 2px solid #1a1a1a;
+    background: rgba(0, 0, 0, 0.28);
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.12),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.45);
+    color: var(--status-connected);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition:
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+.playerIdentityChip:hover {
+    background: rgba(0, 0, 0, 0.42);
+    transform: translateY(-1px);
+}
+.playerIdentityChip:focus-visible {
+    outline: 2px solid var(--select-color2);
+    outline-offset: 1px;
+}
+.playerIdentityChip.is-expanded {
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.16),
+        0 0 0 1px var(--status-connected);
+}
+.playerIdentityHead {
+    width: 28px;
+    height: 28px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    border: 1px solid #111;
+    background: #222;
+    box-shadow: 1px 1px 0 #000;
+}
+.playerIdentityChipText {
+    display: flex;
+    flex-flow: column;
+    min-width: 0;
+    line-height: 1.15;
+    gap: 1px;
+}
+.playerIdentityChipPrefix {
+    font-size: 0.65em;
+    opacity: 0.85;
+    color: var(--muted-on-surface);
+    text-shadow: none;
+}
+.playerIdentityChipName {
+    font-size: 0.85em;
+    color: var(--status-connected);
+    text-shadow: 1px 1px 0 #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.playerIdentityChipCaret {
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 6px solid var(--status-connected);
+    flex-shrink: 0;
+    opacity: 0.85;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.playerIdentityChip.is-expanded .playerIdentityChipCaret {
+    transform: rotate(90deg);
+}
+
+.playerSkinSidebar {
+    flex: 0 0 0;
+    width: 0;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translateX(-12px) scale(0.96);
+    transform-origin: left center;
+    transition:
+        flex-basis 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        max-width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 240ms ease,
+        transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.playerSkinSidebar.no-anim {
+    transition: none !important;
+}
+.playerSkinSidebar.is-open {
+    flex-basis: 200px;
+    width: 200px;
+    max-width: 200px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0) scale(1);
+    margin-left: 10px;
+}
+.playerSkinSidebarInner {
+    height: 100%;
+    min-height: 280px;
+    box-sizing: border-box;
+    padding: 14px 12px 16px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 3px solid #1a1a1a;
+    box-shadow:
+        inset 2px 2px 0 var(--panel-hi),
+        inset -2px -2px 0 var(--panel-lo),
+        2px 2px 0 #000;
+    position: relative;
+}
+.playerSkinSidebarClose {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 2px solid #1a1a1a;
+    background: var(--btn-face);
+    color: #fff;
+    font-size: 1.1em;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow:
+        inset 1px 1px 0 var(--btn-hi),
+        inset -1px -1px 0 var(--btn-lo);
+}
+.playerSkinSidebarClose:hover {
+    background: var(--btn-face-hover);
+}
+.playerSkinSidebarPrefix {
+    margin: 10px 0 0;
+    font-size: 0.75em;
+    color: var(--muted-on-surface);
+    text-align: center;
+}
+.playerSkinSidebarName {
+    margin: 0;
+    font-size: 1.05em;
+    text-align: center;
+    color: var(--status-connected);
+    text-shadow: 2px 2px 0 #000;
+    word-break: break-word;
+    max-width: 100%;
+    animation: playerNameIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.playerSkinSidebarFigure {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    margin-top: 4px;
+    min-height: 180px;
+}
+.playerSkinBody {
+    width: auto;
+    height: min(240px, 42vh);
+    max-width: 100%;
+    image-rendering: pixelated;
+    filter: drop-shadow(2px 3px 0 #000);
+    animation: playerSkinIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes playerNameIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes playerSkinIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.92); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.playerSkinSidebar.is-open .playerSkinSidebarName {
+    animation-name: playerNameIn;
+}
+.playerSkinSidebar.is-open .playerSkinBody {
+    animation-name: playerSkinIn;
+}
+
+@media (max-width: 720px) {
+    .mainStage.skin-sidebar-open {
+        flex-flow: column;
+        align-items: stretch;
+    }
+    .playerSkinSidebar.is-open {
+        flex-basis: auto;
+        width: 100%;
+        max-width: none;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    .playerSkinSidebarInner {
+        min-height: 0;
+    }
+    .playerSkinBody {
+        height: 160px;
+    }
 }
 
 .micActivityIndicator.active {
@@ -346,62 +854,209 @@ main {
     cursor: pointer;
 }
 
-/* Minecraft / SVC square slider (settings + shared) */
+/*
+ * Minecraft / SVC option-button sliders:
+ * tall dark bar, label drawn on top, vertical strip thumb (no round ball).
+ */
+.mcOptionSlider {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    background: #1a1a1a;
+    border: 2px solid #0a0a0a;
+    box-shadow:
+        inset 1px 1px 0 #000,
+        inset -1px -1px 0 #555,
+        1px 1px 0 #000;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+.mcOptionSliderLabel {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    pointer-events: none;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    font-size: 0.95em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+.mcOptionSliderInput {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    cursor: pointer;
+    background: transparent;
+    accent-color: unset;
+}
+.mcOptionSliderInput::-webkit-slider-runnable-track {
+    height: 100%;
+    background: transparent;
+    border: none;
+}
+.mcOptionSliderInput::-moz-range-track {
+    height: 100%;
+    background: transparent;
+    border: none;
+}
+.mcOptionSliderInput::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 8px;
+    height: 36px;
+    margin: 0;
+    border-radius: 0;
+    background: var(--slider-face, #8b8b8b);
+    border: 1px solid #000;
+    box-shadow:
+        inset 1px 1px 0 var(--slider-hi, #c6c6c6),
+        inset -1px -1px 0 var(--slider-lo, #373737),
+        1px 1px 0 #000;
+}
+.mcOptionSliderInput::-moz-range-thumb {
+    width: 8px;
+    height: 36px;
+    border-radius: 0;
+    background: var(--slider-face, #8b8b8b);
+    border: 1px solid #000;
+    box-shadow:
+        inset 1px 1px 0 var(--slider-hi, #c6c6c6),
+        inset -1px -1px 0 var(--slider-lo, #373737),
+        1px 1px 0 #000;
+}
+.mcOptionSliderInput:focus {
+    outline: none;
+}
+.mcOptionSlider:focus-within {
+    outline: 2px solid var(--select-color2);
+    outline-offset: 1px;
+}
+.mcOptionSlider.is-disabled {
+    opacity: 0.55;
+}
+.mcOptionSlider.is-disabled .mcOptionSliderInput {
+    cursor: default;
+}
+.mcOptionSlider.is-disabled .mcOptionSliderLabel {
+    color: #bbb;
+}
+
+.svcGainRow {
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+}
+.svcGainModeBtn {
+    flex: 0 0 auto;
+    min-width: 7.5em;
+    min-height: 40px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    background: var(--btn-face) !important;
+    border: 2px solid #1a1a1a !important;
+    box-shadow:
+        inset 2px 2px 0 var(--btn-hi),
+        inset -2px -2px 0 var(--btn-lo),
+        2px 2px 0 #000 !important;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.svcGainModeBtn.is-auto {
+    color: #ff5555;
+    text-shadow: 1px 1px 0 #000;
+    outline: 2px solid #ff5555;
+    outline-offset: -2px;
+}
+.svcGainModeBtn:hover {
+    background: var(--btn-face-hover) !important;
+}
+.svcGainSliderWrap {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.svcGainWarn {
+    margin: 4px 0 0;
+    color: #ff5555;
+    text-shadow: 1px 1px 0 #000;
+    font-size: 0.78em;
+    line-height: 1.3;
+}
+
+/* Legacy class kept for any remaining thin-track uses → map to option look */
 .svcMcSlider {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 16px;
-    margin: 2px 0 0;
-    background: transparent;
+    height: 40px;
+    margin: 0;
+    background: #1a1a1a;
+    border: 2px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #555;
     cursor: pointer;
     accent-color: unset;
 }
 .svcMcSlider::-webkit-slider-runnable-track {
-    height: 5px;
-    background: #000;
-    border: 1px solid #1a1a1a;
-    box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #3a3a3a;
+    height: 36px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 .svcMcSlider::-moz-range-track {
-    height: 5px;
-    background: #000;
-    border: 1px solid #1a1a1a;
-    box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #3a3a3a;
+    height: 36px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 .svcMcSlider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 10px;
-    height: 16px;
-    margin-top: -6px;
+    width: 8px;
+    height: 36px;
+    margin-top: 0;
     border-radius: 0;
-    background: #8b8b8b;
+    background: var(--slider-face);
     border: 1px solid #000;
     box-shadow:
-        inset 1px 1px 0 #c6c6c6,
-        inset -1px -1px 0 #373737,
+        inset 1px 1px 0 var(--slider-hi),
+        inset -1px -1px 0 var(--slider-lo),
         1px 1px 0 #000;
 }
 .svcMcSlider::-moz-range-thumb {
-    width: 10px;
-    height: 16px;
+    width: 8px;
+    height: 36px;
     border-radius: 0;
-    background: #8b8b8b;
+    background: var(--slider-face);
     border: 1px solid #000;
     box-shadow:
-        inset 1px 1px 0 #c6c6c6,
-        inset -1px -1px 0 #373737,
+        inset 1px 1px 0 var(--slider-hi),
+        inset -1px -1px 0 var(--slider-lo),
         1px 1px 0 #000;
 }
 .svcMcSlider:focus {
     outline: none;
 }
-.svcMcSlider:focus-visible::-webkit-slider-thumb {
-    outline: 1px solid #ffffa0;
-}
-.svcMcSlider:focus-visible::-moz-range-thumb {
-    outline: 1px solid #ffffa0;
+.svcMcSlider:focus-visible {
+    outline: 2px solid var(--select-color2);
+    outline-offset: 1px;
 }
 
 .svcScreen[data-screen="settings"] .svcSettingsPanel {
@@ -497,18 +1152,22 @@ main {
     box-sizing: border-box;
 }
 
-/* SVC: wide dark bar with name + amp text over the slider */
+/* SVC: wide dark bar with name + amp text over the slider (same family as .mcOptionSlider) */
 .volumeBar {
     position: relative;
     flex: 1 1 auto;
     min-width: 0;
     height: 40px;
-    background: #2b2b2b;
-    border: 2px solid #1a1a1a;
-    box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #555;
+    background: #1a1a1a;
+    border: 2px solid #0a0a0a;
+    box-shadow:
+        inset 1px 1px 0 #000,
+        inset -1px -1px 0 #555,
+        1px 1px 0 #000;
     display: flex;
     align-items: center;
     box-sizing: border-box;
+    overflow: hidden;
 }
 .volumeBarName {
     position: absolute;
@@ -563,23 +1222,23 @@ main {
 }
 .volumeBar .volumeSlider.svcMcSlider::-webkit-slider-thumb {
     width: 8px;
-    height: 28px;
+    height: 36px;
     margin-top: 0;
-    background: #8b8b8b;
+    background: var(--slider-face);
     border: 1px solid #000;
     box-shadow:
-        inset 1px 1px 0 #c6c6c6,
-        inset -1px -1px 0 #373737,
+        inset 1px 1px 0 var(--slider-hi),
+        inset -1px -1px 0 var(--slider-lo),
         1px 1px 0 #000;
 }
 .volumeBar .volumeSlider.svcMcSlider::-moz-range-thumb {
     width: 8px;
-    height: 28px;
-    background: #8b8b8b;
+    height: 36px;
+    background: var(--slider-face);
     border: 1px solid #000;
     box-shadow:
-        inset 1px 1px 0 #c6c6c6,
-        inset -1px -1px 0 #373737,
+        inset 1px 1px 0 var(--slider-hi),
+        inset -1px -1px 0 var(--slider-lo),
         1px 1px 0 #000;
 }
 .textAlignLeft {
@@ -591,10 +1250,10 @@ main {
 }
 
 .statusLabel.disconnected {
-    color: #a63131;
+    color: var(--status-disconnected);
 }
 .statusLabel.connected {
-    color: #2f791a;
+    color: var(--status-connected);
 }
 
 /*TODO CSS Below this point that isn't generic (e.g. .pttBindBtnContainer) are hotfixes for visual glitches; there probably is a way to not need these CSS. */
@@ -602,6 +1261,8 @@ main {
 .joinSec {
     text-align: center;
     padding: 18px 20px 14px 20px;
+    /* Reserve room for theme / pop-out chrome in the top-right */
+    padding-right: max(20px, 92px);
     width: 100%;
     box-sizing: border-box;
     overflow: visible;
@@ -618,7 +1279,7 @@ main {
     margin: 0;
     font-size: 1.35em;
     line-height: 1.3;
-    color: var(--color2);
+    color: var(--text-on-surface);
     word-break: break-word;
     max-width: 100%;
 }
@@ -626,7 +1287,7 @@ main {
     margin: 0;
     font-size: 0.85em;
     line-height: 1.35;
-    color: var(--color3);
+    color: var(--muted-on-surface);
     opacity: 0.95;
     word-break: break-word;
     max-width: 100%;
@@ -634,6 +1295,7 @@ main {
 .joinLabel {
     margin: 4px 0 0 0;
     font-size: 1em;
+    color: var(--text-on-surface);
 }
 .pendingJoinPanel {
     display: none;
@@ -649,7 +1311,7 @@ main {
 .pendingJoinTitle {
     margin: 0;
     font-size: 1.15em;
-    color: var(--color2);
+    color: var(--text-on-surface);
     line-height: 1.35;
 }
 .pendingJoinHint {
@@ -660,7 +1322,7 @@ main {
 .pendingJoinCountdown {
     margin: 8px 0 0 0;
     font-size: 1.2em;
-    color: var(--color2);
+    color: var(--text-on-surface);
 }
 .pendingJoinCountdown strong {
     color: var(--select-color2);
@@ -689,7 +1351,7 @@ body.pending-minecraft-join .statusLabel {
     display: none !important;
 }
 .joinForm {
-    color: var(--color2);
+    color: var(--text-on-surface);
 
     width: 100%;
     height: 100%;
@@ -753,11 +1415,11 @@ body.pending-minecraft-join .statusLabel {
     display: flex;
 }
 .svcPanel {
-    background: #c6c6c6;
+    background: var(--panel-bg);
     border: 3px solid #1a1a1a;
     box-shadow:
-        inset 2px 2px 0 #ffffff,
-        inset -2px -2px 0 #555555,
+        inset 2px 2px 0 var(--panel-hi),
+        inset -2px -2px 0 var(--panel-lo),
         2px 2px 0 #000000;
     padding: 12px 14px 14px;
     display: flex;
@@ -782,15 +1444,15 @@ body.pending-minecraft-join .statusLabel {
     flex: 1;
     min-height: 44px;
     box-sizing: border-box;
-    background: #6b6b6b !important;
+    background: var(--btn-face) !important;
     border-color: #1a1a1a !important;
     box-shadow:
-        inset 2px 2px 0 #9a9a9a,
-        inset -2px -2px 0 #3a3a3a,
+        inset 2px 2px 0 var(--btn-hi),
+        inset -2px -2px 0 var(--btn-lo),
         2px 2px 0 #000 !important;
 }
 .svcBigBtn:hover {
-    background: #7a7a7a !important;
+    background: var(--btn-face-hover) !important;
 }
 .svcScreen[data-screen="hub"] .svcPanel {
     gap: 10px;
@@ -811,10 +1473,10 @@ body.pending-minecraft-join .statusLabel {
     height: 40px;
     padding: 0;
     border: 2px solid #1a1a1a;
-    background: #6b6b6b;
+    background: var(--btn-face);
     box-shadow:
-        inset 2px 2px 0 #9a9a9a,
-        inset -2px -2px 0 #3a3a3a,
+        inset 2px 2px 0 var(--btn-hi),
+        inset -2px -2px 0 var(--btn-lo),
         1px 1px 0 #000;
     cursor: pointer;
     display: flex;
@@ -823,7 +1485,7 @@ body.pending-minecraft-join .statusLabel {
     image-rendering: pixelated;
 }
 .svcIconBtn:hover {
-    background: #7a7a7a;
+    background: var(--btn-face-hover);
     outline: 2px solid var(--select-color2);
 }
 .svcIconBtn .svcIconImg,
@@ -917,6 +1579,14 @@ body.pending-minecraft-join .statusLabel {
     width: 100%;
     min-height: 40px;
     box-sizing: border-box;
+    background: var(--btn-face) !important;
+    box-shadow:
+        inset 2px 2px 0 var(--btn-hi),
+        inset -2px -2px 0 var(--btn-lo),
+        2px 2px 0 #000 !important;
+}
+.svcFullBtn:hover {
+    background: var(--btn-face-hover) !important;
 }
 .svcDeviceBtnRow {
     display: flex;
@@ -1100,6 +1770,10 @@ body.pending-minecraft-join .statusLabel {
     width: 100%;
     box-sizing: border-box;
 }
+.createGroupTypeToggle {
+    text-align: center;
+    user-select: none;
+}
 .createGroupTypeHint {
     margin: 2px 0 0;
     line-height: 1.35;
@@ -1161,17 +1835,31 @@ body:not(.connected).join-device-picker .svcScreen[data-screen="speaker"].svcScr
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    background: #6b6b6b !important;
+    background: var(--btn-face) !important;
     box-shadow:
-        inset 2px 2px 0 #9a9a9a,
-        inset -2px -2px 0 #3a3a3a,
+        inset 2px 2px 0 var(--btn-hi),
+        inset -2px -2px 0 var(--btn-lo),
         2px 2px 0 #000 !important;
 }
 body.connected .joinBtnContainer {
     width: fit-content;
 }
+/*
+ * Connected header: same total height as before, but leave button sits
+ * slightly higher so it is not glued to the panel below.
+ * (was 10 top / 0 bottom → 4 top / 6 bottom)
+ */
 body.connected .joinSec {
-    padding: 10px 10px 0 10px;
+    padding: 4px max(10px, 92px) 6px 10px;
+}
+body.connected .joinContainer {
+    align-items: center;
+    min-height: 40px;
+}
+body.connected .joinBtnContainer {
+    align-self: center;
+    /* Nudge up within the header without growing the bar */
+    transform: translateY(-2px);
 }
 
 .floatingWidgetsOverlay {
@@ -1242,6 +1930,13 @@ body.connected .joinSec {
     }
     .svcDeviceBtnRow {
         flex-flow: column;
+    }
+    .svcGainRow {
+        flex-flow: column;
+    }
+    .svcGainModeBtn {
+        width: 100%;
+        min-width: 0;
     }
     .svcPanel {
         padding: 10px;

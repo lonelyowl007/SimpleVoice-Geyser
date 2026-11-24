@@ -45,10 +45,15 @@ export class SvgLang {
             "sensitivitySensitiveLabel": "Sensitive",
             "sensitivityLessLabel": "Less Sensitive",
             "micVolumeLabel": "Mic Volume",
+            "micGainLabel": "Microphone Gain",
+            "micGainManual": "Gain: Manual",
+            "micGainAuto": "Gain: Auto",
+            "micGainWarn": "Exceeding 10 dB amplification may produce audio distortion and other issues!",
             "voiceChatVolumeLabel": "Voice Chat Volume",
             "voiceChatTitle": "Voice Chat",
             "voiceChatSettingsTitle": "Voice Chat Settings",
             "showChatTimestampsLabel": "Show chat timestamps",
+            "contributorsThanks": "Made possible by these contributors",
             "settingsBtn": "Settings",
             "groupsBtn": "Groups",
             "groupsTitle": "Join or Create Group",
@@ -138,10 +143,15 @@ export class SvgLang {
             "sensitivitySensitiveLabel": "Czułe",
             "sensitivityLessLabel": "Mniej czułe",
             "micVolumeLabel": "Głośność mikrofonu",
+            "micGainLabel": "Wzmocnienie mikrofonu",
+            "micGainManual": "Gain: Ręczny",
+            "micGainAuto": "Gain: Auto",
+            "micGainWarn": "Wzmocnienie powyżej 10 dB może powodować zniekształcenia dźwięku!",
             "voiceChatVolumeLabel": "Głośność Voice Chat",
             "voiceChatTitle": "Voice Chat",
             "voiceChatSettingsTitle": "Ustawienia Voice Chat",
             "showChatTimestampsLabel": "Pokazuj znaczniki czasu czatu",
+            "contributorsThanks": "Dzięki tym współtwórcom",
             "settingsBtn": "Ustawienia",
             "groupsBtn": "Grupy",
             "groupsTitle": "Dołącz lub utwórz grupę",
@@ -231,10 +241,15 @@ export class SvgLang {
             "sensitivitySensitiveLabel": "Sensibile",
             "sensitivityLessLabel": "Meno sensibile",
             "micVolumeLabel": "Volume microfono",
+            "micGainLabel": "Guadagno microfono",
+            "micGainManual": "Gain: Manuale",
+            "micGainAuto": "Gain: Auto",
+            "micGainWarn": "Un guadagno oltre 10 dB può causare distorsione audio!",
             "voiceChatVolumeLabel": "Volume Voice Chat",
             "voiceChatTitle": "Voice Chat",
             "voiceChatSettingsTitle": "Impostazioni Voice Chat",
             "showChatTimestampsLabel": "Mostra orari chat",
+            "contributorsThanks": "Reso possibile da questi contributor",
             "settingsBtn": "Impostazioni",
             "groupsBtn": "Gruppi",
             "groupsTitle": "Entra o crea gruppo",
@@ -324,10 +339,15 @@ export class SvgLang {
             "sensitivitySensitiveLabel": "Sensible",
             "sensitivityLessLabel": "Menos sensible",
             "micVolumeLabel": "Volumen del micrófono",
+            "micGainLabel": "Ganancia del micrófono",
+            "micGainManual": "Gain: Manual",
+            "micGainAuto": "Gain: Auto",
+            "micGainWarn": "Una ganancia superior a 10 dB puede producir distorsión de audio!",
             "voiceChatVolumeLabel": "Volumen de Voice Chat",
             "voiceChatTitle": "Voice Chat",
             "voiceChatSettingsTitle": "Ajustes de Voice Chat",
             "showChatTimestampsLabel": "Mostrar marcas de tiempo del chat",
+            "contributorsThanks": "Hecho posible por estos colaboradores",
             "settingsBtn": "Ajustes",
             "groupsBtn": "Grupos",
             "groupsTitle": "Unirse o crear grupo",
@@ -417,10 +437,15 @@ export class SvgLang {
             "sensitivitySensitiveLabel": "Gevoelig",
             "sensitivityLessLabel": "Minder gevoelig",
             "micVolumeLabel": "Microfoonvolume",
+            "micGainLabel": "Microfoonversterking",
+            "micGainManual": "Gain: Handmatig",
+            "micGainAuto": "Gain: Auto",
+            "micGainWarn": "Meer dan 10 dB versterking kan audiovervorming veroorzaken!",
             "voiceChatVolumeLabel": "Voice Chat-volume",
             "voiceChatTitle": "Voice Chat",
             "voiceChatSettingsTitle": "Voice Chat-instellingen",
             "showChatTimestampsLabel": "Chat-tijdstempels tonen",
+            "contributorsThanks": "Mogelijk gemaakt door deze contributors",
             "settingsBtn": "Instellingen",
             "groupsBtn": "Groepen",
             "groupsTitle": "Groep joinen of maken",
@@ -499,6 +524,7 @@ export class SvgLang {
             "joinBtnUnconnectedLabel": "Join",
             "joinBtnConnectedLabel": "Leave",
             "statusConnectedAsPrefix": "Connected as",
+            "playerIdentityToggleTitle": "Toggle full skin view",
             "statusDisconnectedLabel": "Disconnected",
             "muteBtnUnmuteLabel": "Unmute",
             "muteBtnMuteLabel": "Mute",
@@ -528,6 +554,7 @@ export class SvgLang {
             "joinBtnUnconnectedLabel": "Deelnemen",
             "joinBtnConnectedLabel": "Verlaten",
             "statusConnectedAsPrefix": "Verbonden als",
+            "playerIdentityToggleTitle": "Volledige skin tonen/verbergen",
             "statusDisconnectedLabel": "Verbroken",
             "muteBtnUnmuteLabel": "Dempen opheffen",
             "muteBtnMuteLabel": "Dempen",
@@ -557,6 +584,7 @@ export class SvgLang {
             "joinBtnUnconnectedLabel": "Dołącz",
             "joinBtnConnectedLabel": "Opuść",
             "statusConnectedAsPrefix": "Połączono jako",
+            "playerIdentityToggleTitle": "Przełącz widok skina",
             "statusDisconnectedLabel": "Rozłączono",
             "muteBtnUnmuteLabel": "Włącz mikrofon",
             "muteBtnMuteLabel": "Wycisz",
@@ -586,6 +614,7 @@ export class SvgLang {
             "joinBtnUnconnectedLabel": "Connettiti",
             "joinBtnConnectedLabel": "Esci",
             "statusConnectedAsPrefix": "Connesso come",
+            "playerIdentityToggleTitle": "Attiva/disattiva skin completa",
             "statusDisconnectedLabel": "Disconnesso",
             "muteBtnUnmuteLabel": "Riattiva",
             "muteBtnMuteLabel": "Silenzia",
@@ -615,6 +644,7 @@ export class SvgLang {
             "joinBtnUnconnectedLabel": "Unirse",
             "joinBtnConnectedLabel": "Abandonar",
             "statusConnectedAsPrefix": "Conectado como",
+            "playerIdentityToggleTitle": "Alternar vista de skin completa",
             "statusDisconnectedLabel": "Desconectado",
             "muteBtnUnmuteLabel": "Hablar",
             "muteBtnMuteLabel": "Silenciar",
@@ -646,7 +676,9 @@ export class SvgLang {
     static webBranding = {
         serverName: "Simple Voice Chat",
         tagline: "",
-        joinTimeoutSeconds: 60
+        joinTimeoutSeconds: 60,
+        showContributors: true,
+        defaultTheme: "dark"
     };
 
     static #jsElementMap = new Map();
@@ -676,6 +708,12 @@ export class SvgLang {
                     1,
                     Math.floor(Number(data.joinTimeoutSeconds))
                 );
+            }
+            SvgLang.webBranding.showContributors = data.showContributors === true;
+            if (typeof data.defaultTheme === "string") {
+                const theme = data.defaultTheme.trim().toLowerCase();
+                SvgLang.webBranding.defaultTheme =
+                    theme === "light" || theme === "dark" ? theme : "dark";
             }
         } catch (error) {
             Logger.debug("Web config fetch failed; using defaults.");

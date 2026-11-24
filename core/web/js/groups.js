@@ -1,4 +1,5 @@
 import {SvgLang} from "./utils/lang.js";
+import {setPlayerIdentityUuid} from "./player-identity.js";
 
 const DEFAULT_AVATAR = "images/v2/mic.png";
 
@@ -17,7 +18,7 @@ export class GroupsUI {
      *   menuMembersEl?: HTMLElement,
      *   createNameInput?: HTMLInputElement,
      *   createPasswordInput?: HTMLInputElement,
-     *   createTypeSelect?: HTMLSelectElement,
+     *   createTypeSelect?: HTMLButtonElement|HTMLSelectElement,
      *   createTypeHintEl?: HTMLElement,
      *   createSubmitBtn?: HTMLButtonElement,
      *   joinGroup: (name: string, password: string) => void,
@@ -80,7 +81,11 @@ export class GroupsUI {
                 this.#submitPasswordJoin();
             }
         });
-        this.createTypeSelect?.addEventListener("change", () => this.#updateCreateTypeHint());
+        // Minecraft-style cycle button: each click advances Isolated → Normal → Open.
+        this.createTypeSelect?.addEventListener("click", () => {
+            this.#cycleCreateType();
+        });
+        this.createTypeSelect?.addEventListener("change", () => this.#syncCreateTypeUi());
         this.createSubmitBtn?.addEventListener("click", () => {
             const name = String(this.createNameInput?.value || "").trim();
             if (!name) {
@@ -88,7 +93,7 @@ export class GroupsUI {
                 return;
             }
             const password = String(this.createPasswordInput?.value || "");
-            const type = String(this.createTypeSelect?.value || "isolated").trim().toLowerCase() || "isolated";
+            const type = this.#getCreateType();
             this._pendingOpen = name;
             this.createGroup(name, password, type);
             if (this.createNameInput) {
@@ -97,20 +102,69 @@ export class GroupsUI {
             if (this.createPasswordInput) {
                 this.createPasswordInput.value = "";
             }
-            if (this.createTypeSelect) {
-                this.createTypeSelect.value = "isolated";
-            }
-            this.#updateCreateTypeHint();
+            this.#setCreateType("isolated");
         });
-        this.#updateCreateTypeHint();
+        this.#syncCreateTypeUi();
         this.render();
     }
 
-    #updateCreateTypeHint() {
+    /** @returns {"isolated"|"normal"|"open"} */
+    #getCreateType() {
+        const el = this.createTypeSelect;
+        if (!el) {
+            return "isolated";
+        }
+        const raw = (el.dataset?.value || el.value || "isolated").trim().toLowerCase();
+        if (raw === "open" || raw === "normal" || raw === "isolated") {
+            return raw;
+        }
+        return "isolated";
+    }
+
+    /** @param {"isolated"|"normal"|"open"} type */
+    #setCreateType(type) {
+        const el = this.createTypeSelect;
+        if (!el) {
+            return;
+        }
+        const next = type === "open" || type === "normal" ? type : "isolated";
+        if (el.dataset) {
+            el.dataset.value = next;
+        }
+        if ("value" in el) {
+            el.value = next;
+        }
+        this.#syncCreateTypeUi();
+    }
+
+    #cycleCreateType() {
+        const order = ["isolated", "normal", "open"];
+        const current = this.#getCreateType();
+        const next = order[(order.indexOf(current) + 1) % order.length];
+        this.#setCreateType(/** @type {"isolated"|"normal"|"open"} */ (next));
+    }
+
+    #syncCreateTypeUi() {
+        const type = this.#getCreateType();
+        if (this.createTypeSelect && this.createTypeSelect.tagName === "BUTTON") {
+            SvgLang.setElement(
+                this.createTypeSelect,
+                () => {
+                    const t = this.#getCreateType();
+                    const label =
+                        t === "open"
+                            ? (SvgLang.string("groupTypeOpen") || "Open")
+                            : t === "normal"
+                                ? (SvgLang.string("groupTypeNormal") || "Normal")
+                                : (SvgLang.string("groupTypeIsolated") || "Isolated");
+                    const prefix = SvgLang.string("createGroupTypeLabel") || "Group Type";
+                    return `${prefix}: ${label}`;
+                }
+            );
+        }
         if (!this.createTypeHintEl) {
             return;
         }
-        const type = String(this.createTypeSelect?.value || "isolated").trim().toLowerCase();
         const key =
             type === "open"
                 ? "createGroupTypeHintOpen"
@@ -124,7 +178,7 @@ export class GroupsUI {
                     ? "Outsiders cannot hear you. You can still hear nearby players outside the group."
                     : "Only group members hear each other. Nearby outsiders cannot hear you, and you cannot hear them.";
         this.createTypeHintEl.setAttribute("svg-lang", key);
-        this.createTypeHintEl.textContent = SvgLang.string(key) || fallback;
+        SvgLang.setElement(this.createTypeHintEl, () => SvgLang.string(key) || fallback);
     }
 
     /**
@@ -182,10 +236,7 @@ export class GroupsUI {
         if (this.createPasswordInput) {
             this.createPasswordInput.value = "";
         }
-        if (this.createTypeSelect) {
-            this.createTypeSelect.value = "isolated";
-        }
-        this.#updateCreateTypeHint();
+        this.#setCreateType("isolated");
         this.render();
     }
 
@@ -343,6 +394,10 @@ export class GroupsUI {
             row.className = "svcListRow svcListRowStatic svcMemberRow";
             if (member.self) {
                 row.classList.add("svcMemberSelf");
+                if (member.uuid) {
+                    // Prefer UUID for skin lookups (Bedrock / Floodgate names).
+                    setPlayerIdentityUuid(member.uuid);
+                }
             }
 
             const avatar = document.createElement("img");

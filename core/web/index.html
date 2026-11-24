@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <link rel="icon" href="images/svg-temp.png" type="image/x-icon">
     <meta name="build-id" content="@@GIT_COMMIT@@">
     <title>Simple Voice Chat Web</title>
-
+    <script>
+        /* Apply saved theme before CSS paint to avoid a light/dark flash */
+        (function () {
+            try {
+                var t = localStorage.getItem("svg.ui.theme");
+                if (t !== "light" && t !== "dark") t = "dark";
+                document.documentElement.setAttribute("data-theme", t);
+                if (/\bpopout=1\b/.test(location.search) || window.name === "svg-voice-popout") {
+                    document.documentElement.classList.add("svg-popout");
+                }
+            } catch (e) {
+                document.documentElement.setAttribute("data-theme", "dark");
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="css/v2.css">
 </head>
 <body class="mcDirtBackground flexContainer">
@@ -26,8 +40,18 @@
         </div>
     </div>
     <main class="flexContainer">
+        <div class="mainStage" id="mainStage">
 <!--        Main UI-->
         <div class="mainContainer mcContainerStyle">
+            <div class="uiChromeBar" role="toolbar" aria-label="Display options">
+                <button type="button" class="uiChromeBtn" id="themeToggleBtn" aria-pressed="true" aria-label="Switch to light mode" title="Light mode" data-theme="dark">
+                    <span class="uiChromeIcon uiChromeIconSun" aria-hidden="true"></span>
+                    <span class="uiChromeIcon uiChromeIconMoon" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="uiChromeBtn" id="popoutBtn" aria-label="Open in pop-out window" title="Pop-out window">
+                    <span class="uiChromeIcon uiChromeIconPopout" aria-hidden="true"></span>
+                </button>
+            </div>
 <!--            Join Section-->
             <section class="joinSec flexContainer">
                 <div class="joinHero hiddenWhenConnected">
@@ -79,6 +103,14 @@
                         </div>
                         <div class="flexSpacer"></div>
                         <div class="statusLabel" data-svg="form.status" svg-lang="joinWait">Waiting to join...</div>
+                        <button type="button" class="playerIdentityChip" id="playerIdentityChip" hidden aria-expanded="false" aria-controls="playerSkinSidebar" title="Toggle full skin">
+                            <img class="playerIdentityHead" id="playerIdentityHead" alt="" width="28" height="28" decoding="async">
+                            <span class="playerIdentityChipText">
+                                <span class="playerIdentityChipPrefix" id="playerIdentityChipPrefix">Connected as</span>
+                                <span class="playerIdentityChipName" id="playerIdentityChipName"></span>
+                            </span>
+                            <span class="playerIdentityChipCaret" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </section>
@@ -140,22 +172,32 @@
                             <h2 class="svcPanelTitle" svg-lang="voiceChatSettingsTitle">Voice Chat Settings</h2>
                             <div class="svcSettingsStack fullWidth" data-svg="audio.mic-settings">
                                 <div class="micSettingBlock fullWidth">
-                                    <span class="mcTextStyle2 textAlignLeft fullWidth svcSliderCaption" data-svg="audio.master-value" svg-lang="voiceChatVolumeLabel">Voice Chat Volume: 100%</span>
-                                    <input type="range" class="micRangeSlider svcSlider svcMcSlider" min="0" max="200" value="100" data-svg="audio.master-slider" aria-label="Voice chat volume">
+                                    <div class="mcOptionSlider fullWidth">
+                                        <span class="mcOptionSliderLabel" data-svg="audio.master-value" svg-lang="voiceChatVolumeLabel">Voice Chat Volume: 100%</span>
+                                        <input type="range" class="mcOptionSliderInput" min="0" max="400" value="100" data-svg="audio.master-slider" aria-label="Voice chat volume">
+                                    </div>
                                 </div>
                                 <div class="micSettingBlock fullWidth">
-                                    <span class="mcTextStyle2 textAlignLeft fullWidth svcSliderCaption" data-svg="audio.gain-value">Mic Volume: 100%</span>
-                                    <input type="range" class="micRangeSlider svcSlider svcMcSlider" min="50" max="600" value="100" data-svg="audio.gain-slider" aria-label="Microphone volume">
+                                    <div class="svcGainRow fullWidth">
+                                        <button type="button" class="svcGainModeBtn mcButtonStyleInner mcTextStyle2" data-svg="audio.gain-mode" aria-pressed="false">Gain: Manual</button>
+                                        <div class="mcOptionSlider svcGainSliderWrap">
+                                            <span class="mcOptionSliderLabel" data-svg="audio.gain-value">Microphone Gain: 0 dB</span>
+                                            <input type="range" class="mcOptionSliderInput" min="0" max="24" step="1" value="0" data-svg="audio.gain-slider" aria-label="Microphone gain">
+                                        </div>
+                                    </div>
+                                    <p class="svcGainWarn mcTextStyle1 dev-hidden" data-svg="audio.gain-warn" svg-lang="micGainWarn" role="status">Exceeding 10 dB amplification may produce audio distortion and other issues!</p>
                                 </div>
                                 <div class="micSettingBlock fullWidth">
-                                    <span class="mcTextStyle2 textAlignLeft fullWidth" svg-lang="inputSensitivityLabel">Input Sensitivity</span>
                                     <div class="vad-meter-wrap" data-svg="audio.vad-meter">
                                         <div class="vad-bar-bg">
                                             <div class="vad-bar-energy" data-svg="audio.vad-energy"></div>
                                             <div class="vad-threshold-marker" data-svg="audio.vad-marker"></div>
                                         </div>
                                     </div>
-                                    <input type="range" class="micRangeSlider svcMcSlider" min="1" max="100" value="50" data-svg="audio.vad-slider" aria-label="Input sensitivity">
+                                    <div class="mcOptionSlider fullWidth">
+                                        <span class="mcOptionSliderLabel" svg-lang="inputSensitivityLabel">Input Sensitivity</span>
+                                        <input type="range" class="mcOptionSliderInput" min="1" max="100" value="50" data-svg="audio.vad-slider" aria-label="Input sensitivity">
+                                    </div>
                                     <div class="vad-labels mcTextStyle1">
                                         <span svg-lang="sensitivitySensitiveLabel">Sensitive</span>
                                         <span svg-lang="sensitivityLessLabel">Less Sensitive</span>
@@ -260,11 +302,7 @@
                             </div>
                             <div class="svcFieldBlock fullWidth">
                                 <label class="mcTextStyle1 textAlignLeft fullWidth" for="createGroupType" svg-lang="createGroupTypeLabel">Group Type</label>
-                                <select class="mcButtonStyleInner mcTextStyle2 fullWidth" id="createGroupType" data-svg="ui.create-group-type" aria-label="Group type">
-                                    <option value="isolated" selected svg-lang="groupTypeIsolated">Isolated</option>
-                                    <option value="normal" svg-lang="groupTypeNormal">Normal</option>
-                                    <option value="open" svg-lang="groupTypeOpen">Open</option>
-                                </select>
+                                <button type="button" class="svcFullBtn mcButtonStyleInner mcTextStyle2 fullWidth createGroupTypeToggle" id="createGroupType" data-svg="ui.create-group-type" data-value="isolated" aria-label="Group type">Group Type: Isolated</button>
                                 <p class="mcTextStyle1 textAlignLeft fullWidth createGroupTypeHint" data-svg="ui.create-group-type-hint" svg-lang="createGroupTypeHintIsolated">Only group members hear each other. Nearby outsiders cannot hear you, and you cannot hear them.</p>
                             </div>
                             <div class="flexDivider"></div>
@@ -320,7 +358,27 @@
                 </div>
             </section>
         </div>
+        <aside class="playerSkinSidebar" id="playerSkinSidebar" aria-hidden="true">
+            <div class="playerSkinSidebarInner">
+                <button type="button" class="playerSkinSidebarClose" id="playerSkinSidebarClose" aria-label="Collapse skin panel" title="Collapse">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <p class="playerSkinSidebarPrefix" id="playerSkinSidebarPrefix">Connected as:</p>
+                <p class="playerSkinSidebarName mcTextStyle2" id="playerSkinSidebarName"></p>
+                <div class="playerSkinSidebarFigure">
+                    <img class="playerSkinBody" id="playerSkinBody" alt="" decoding="async">
+                </div>
+            </div>
+        </aside>
+        </div>
     </main>
+<!-- Optional GitHub contributors credit reel (config: client.web.show-contributors) -->
+    <aside id="contributorsShowcase" class="contributorsShowcase hiddenWhenConnected dev-hidden" aria-hidden="true">
+        <p class="contributorsHeader mcTextStyle1" svg-lang="contributorsThanks">Made possible by these contributors</p>
+        <div class="contributorsTrackWrap">
+            <div class="contributorsTrack" id="contributorsTrack"></div>
+        </div>
+    </aside>
 <!--Footer Links-->
     <footer class="flexRowContainer">
 <!--        GitHub-->

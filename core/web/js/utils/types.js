@@ -29,6 +29,8 @@
  * @property {HTMLInputElement} vadSlider
  * @property {HTMLInputElement} gainSlider
  * @property {HTMLElement} gainValueLabel
+ * @property {HTMLButtonElement} [gainModeBtn]
+ * @property {HTMLElement} [gainWarnEl]
  * @property {HTMLInputElement} masterSlider
  * @property {HTMLElement} masterValueLabel
  * @property {HTMLElement} volumesRoot
@@ -58,7 +60,7 @@
  * @property {HTMLElement} groupMenuMembers
  * @property {HTMLInputElement} createGroupName
  * @property {HTMLInputElement} createGroupPassword
- * @property {HTMLSelectElement} createGroupType
+ * @property {HTMLButtonElement|HTMLSelectElement} createGroupType
  * @property {HTMLElement} createGroupTypeHint
  * @property {HTMLButtonElement} createGroupSubmit
  */

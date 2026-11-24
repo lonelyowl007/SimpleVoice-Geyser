@@ -6,6 +6,7 @@ import {AdjustVolumesUI} from "./volumes.js";
 import {GroupsUI} from "./groups.js";
 import {ScreenRouter} from "./screens.js";
 import {getPrefs, setMaster, isDeafened, toggleDeafen} from "./audio/receive-volumes.js";
+import {hidePlayerIdentity, showPlayerIdentity} from "./player-identity.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
@@ -13,9 +14,33 @@ import {getPrefs, setMaster, isDeafened, toggleDeafen} from "./audio/receive-vol
  */
 
 const VAD_SLIDER_KEY = "svgVadSensitivity";
-const GAIN_SLIDER_KEY = "svgMicGainPercent";
+/** New SVC-style mic gain in dB (0…24). */
+const GAIN_DB_KEY = "svgMicGainDb";
+/** Legacy percent key — migrated once into {@link GAIN_DB_KEY}. */
+const GAIN_SLIDER_KEY_LEGACY = "svgMicGainPercent";
+const GAIN_AUTO_KEY = "svgMicGainAuto";
+/** Soft clip warning threshold shown under the gain slider (matches SVC). */
+const GAIN_WARN_DB = 10;
+const GAIN_MAX_DB = 24;
 /** Energy display reference (RMS²-ish scale via sqrt). */
 const ENERGY_DISPLAY_REF = 0.0005;
+
+/**
+ * @returns {number} saved mic gain in dB (0…24)
+ */
+function loadSavedGainDb() {
+    const rawDb = Number(localStorage.getItem(GAIN_DB_KEY));
+    if (Number.isFinite(rawDb)) {
+        return Math.max(0, Math.min(GAIN_MAX_DB, Math.round(rawDb)));
+    }
+    // Migrate old 50–600% slider → approximate dB
+    const legacyPct = Number(localStorage.getItem(GAIN_SLIDER_KEY_LEGACY));
+    if (Number.isFinite(legacyPct) && legacyPct > 0) {
+        const db = Math.round(20 * Math.log10(Math.max(0.01, legacyPct / 100)));
+        return Math.max(0, Math.min(GAIN_MAX_DB, db));
+    }
+    return 0;
+}
 
 export class SvgUI {
 
@@ -278,6 +303,7 @@ export class SvgUI {
         this.screenRouter?.reset();
         this.groupsUI?.reset();
         document.body.classList.remove("pending-minecraft-join");
+        hidePlayerIdentity();
         SvgLang.setElement(this.form.joinButton, "joinBtnUnconnectedLabel");
     }
 
@@ -302,6 +328,8 @@ export class SvgUI {
             vadSlider,
             gainSlider,
             gainValueLabel,
+            gainModeBtn,
+            gainWarnEl,
             volumesRoot,
             volumesSearch,
             volumesList
@@ -344,6 +372,8 @@ export class SvgUI {
             vadSlider,
             gainSlider,
             gainValueLabel,
+            gainModeBtn,
+            gainWarnEl,
             masterSlider: this.audio.masterSlider,
             masterValueLabel: this.audio.masterValueLabel
         });
@@ -484,11 +514,9 @@ export class SvgUI {
                             document.body.classList.remove("pending-minecraft-join");
                             this.screenRouter?.reset();
 
-                            SvgLang.setElement(statusEl,
-                                () => `${SvgLang.string("statusConnectedAsPrefix")} ${status.username}`
-                            );
                             statusEl.classList.remove("disconnected");
                             statusEl.classList.add("connected");
+                            showPlayerIdentity(status.username || usernameInput.value || "");
                             SvgLang.setElement(joinButton, "joinBtnConnectedLabel");
                             const runtime = this.audioController.getAudioRuntime();
 
@@ -512,6 +540,7 @@ export class SvgUI {
                         } else {
                             document.body.classList.remove("pending-minecraft-join");
                             this.screenRouter?.reset();
+                            hidePlayerIdentity();
                             SvgLang.setElement(statusEl, "statusDisconnectedLabel");
                             statusEl.classList.remove("connected");
                             statusEl.classList.add("disconnected");
@@ -613,13 +642,15 @@ export class SvgUI {
     }
 
     /**
-     * Wire sensitivity / mic-volume / master receive sliders, energy meter, and localStorage.
+     * Wire sensitivity / mic-gain (dB) / master receive sliders, energy meter, and localStorage.
      * @param {{
      *   vadEnergyBar: HTMLElement,
      *   vadMarker: HTMLElement,
      *   vadSlider: HTMLInputElement,
      *   gainSlider: HTMLInputElement,
      *   gainValueLabel: HTMLElement,
+     *   gainModeBtn?: HTMLButtonElement|null,
+     *   gainWarnEl?: HTMLElement|null,
      *   masterSlider?: HTMLInputElement,
      *   masterValueLabel?: HTMLElement
      * }} els
@@ -631,6 +662,8 @@ export class SvgUI {
             vadSlider,
             gainSlider,
             gainValueLabel,
+            gainModeBtn,
+            gainWarnEl,
             masterSlider,
             masterValueLabel
         } = els;
@@ -642,12 +675,12 @@ export class SvgUI {
                 : 50
         );
 
-        const savedGainPercent = Number(localStorage.getItem(GAIN_SLIDER_KEY));
-        gainSlider.value = String(
-            Number.isFinite(savedGainPercent)
-                ? Math.max(50, Math.min(600, savedGainPercent))
-                : 100
-        );
+        let gainAuto = localStorage.getItem(GAIN_AUTO_KEY) === "1";
+        let savedGainDb = loadSavedGainDb();
+        gainSlider.min = "0";
+        gainSlider.max = String(GAIN_MAX_DB);
+        gainSlider.step = "1";
+        gainSlider.value = String(savedGainDb);
 
         const applySensitivity = () => {
             const { start, stop } = SvgUI.sensitivityToThresholds(Number(vadSlider.value));
@@ -657,13 +690,32 @@ export class SvgUI {
             this.#updateVadMarker(vadMarker, start);
         };
 
-        const applyGain = () => {
-            const percent = Number(gainSlider.value) || 100;
-            const rounded = Math.round(percent);
-            const prefix = SvgLang.string("micVolumeLabel") || "Mic Volume";
-            gainValueLabel.textContent = `${prefix}: ${rounded}%`;
-            this.audioController.setInputGain(percent / 100);
-            localStorage.setItem(GAIN_SLIDER_KEY, String(rounded));
+        const syncGainUi = () => {
+            const db = gainAuto ? 0 : Math.max(0, Math.min(GAIN_MAX_DB, Math.round(Number(gainSlider.value) || 0)));
+            if (!gainAuto) {
+                savedGainDb = db;
+                gainSlider.value = String(db);
+            }
+            const prefix = SvgLang.string("micGainLabel") || "Microphone Gain";
+            gainValueLabel.textContent = `${prefix}: ${db} dB`;
+            gainSlider.disabled = gainAuto;
+            gainSlider.setAttribute("aria-disabled", gainAuto ? "true" : "false");
+            gainSlider.closest(".mcOptionSlider")?.classList.toggle("is-disabled", gainAuto);
+            if (gainModeBtn) {
+                const modeLabel = gainAuto
+                    ? (SvgLang.string("micGainAuto") || "Gain: Auto")
+                    : (SvgLang.string("micGainManual") || "Gain: Manual");
+                gainModeBtn.textContent = modeLabel;
+                gainModeBtn.setAttribute("aria-pressed", gainAuto ? "true" : "false");
+                gainModeBtn.classList.toggle("is-auto", gainAuto);
+            }
+            if (gainWarnEl) {
+                const showWarn = !gainAuto && db > GAIN_WARN_DB;
+                gainWarnEl.classList.toggle("dev-hidden", !showWarn);
+            }
+            this.audioController.setInputGainDb(db);
+            localStorage.setItem(GAIN_DB_KEY, String(savedGainDb));
+            localStorage.setItem(GAIN_AUTO_KEY, gainAuto ? "1" : "0");
         };
 
         const applyMaster = () => {
@@ -671,23 +723,36 @@ export class SvgUI {
                 return;
             }
             const percent = Number(masterSlider.value) || 100;
-            const rounded = Math.max(0, Math.min(200, Math.round(percent)));
+            const rounded = Math.max(0, Math.min(400, Math.round(percent)));
             const prefix = SvgLang.string("voiceChatVolumeLabel") || "Voice Chat Volume";
             masterValueLabel.textContent = `${prefix}: ${rounded}%`;
             setMaster(rounded, { notify: false });
         };
 
         if (masterSlider) {
+            masterSlider.max = "400";
             masterSlider.value = String(getPrefs().master ?? 100);
             masterSlider.addEventListener("input", applyMaster);
             applyMaster();
         }
 
         vadSlider.addEventListener("input", applySensitivity);
-        gainSlider.addEventListener("input", applyGain);
+        gainSlider.addEventListener("input", () => {
+            if (gainAuto) {
+                return;
+            }
+            syncGainUi();
+        });
+        gainModeBtn?.addEventListener("click", () => {
+            gainAuto = !gainAuto;
+            if (!gainAuto) {
+                gainSlider.value = String(savedGainDb);
+            }
+            syncGainUi();
+        });
 
         applySensitivity();
-        applyGain();
+        syncGainUi();
 
         this.audioController.setEnergyCallback((energy) => {
             this.#updateVadEnergyBar(vadEnergyBar, energy);

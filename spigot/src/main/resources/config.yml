@@ -36,6 +36,21 @@ client:
     # Optional short subtitle under the server name.
     tagline: ""
 
+    # default: true
+    # Show an animated GitHub contributors credit reel under the join form.
+    # Uses cached GitHub API data (about once per day). Bots / AI accounts are hidden.
+    # Set false for a cleaner join page without project credits.
+    show-contributors: true
+
+    # default: TheodoreMeyer/SimpleVoice-Geyser
+    # GitHub owner/repo for the contributors list (upstream project credits).
+    contributors-repo: "TheodoreMeyer/SimpleVoice-Geyser"
+
+    # default: dark
+    # Default UI theme when the visitor has no saved preference (dark or light).
+    # Players can toggle in the top-right; their choice is remembered in the browser.
+    default-theme: dark
+
   # default: true
   # Allows players using web-chat to chat in-game
   web-chat-enabled: true

@@ -50,6 +50,8 @@ const ELEMENTS = {
             vadSlider: "audio.vad-slider",
             gainSlider: "audio.gain-slider",
             gainValueLabel: "audio.gain-value",
+            gainModeBtn: { optional: "audio.gain-mode" },
+            gainWarnEl: { optional: "audio.gain-warn" },
             masterSlider: "audio.master-slider",
             masterValueLabel: "audio.master-value",
             volumesRoot: "audio.volumes",
