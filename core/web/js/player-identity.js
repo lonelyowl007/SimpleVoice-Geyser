@@ -154,6 +154,7 @@ export function showPlayerIdentity(username, uuid) {
     if (chip) {
         chip.hidden = false;
         chip.classList.remove("dev-hidden");
+        chip.setAttribute("aria-hidden", "false");
     }
     applyView(readStoredView(), { animate: false });
 }
@@ -164,6 +165,8 @@ export function hidePlayerIdentity() {
     const { chip, statusLabel, sidebar, stage } = els();
     if (chip) {
         chip.hidden = true;
+        chip.classList.add("dev-hidden");
+        chip.setAttribute("aria-hidden", "true");
     }
     statusLabel?.classList.remove("player-identity-hidden");
     document.body.classList.remove("skin-sidebar-open");

@@ -601,6 +601,10 @@ main {
         box-shadow 180ms ease,
         transform 180ms ease;
 }
+/* Author display: must not override the HTML hidden attribute on the join screen. */
+.playerIdentityChip[hidden] {
+    display: none !important;
+}
 .playerIdentityChip:hover {
     background: rgba(0, 0, 0, 0.42);
     transform: translateY(-1px);
