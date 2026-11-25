@@ -225,8 +225,12 @@ html[data-theme="light"] {
 .mcTextviewStyle {
     cursor: text;
     user-select: text;
-    height: 150px;
-    width: calc(100% - 20px);
+    /* Grow with the hub; fixed 150px left a dead band under the compose bar. */
+    height: auto;
+    min-height: 220px;
+    flex: 1 1 auto;
+    width: 100%;
+    box-sizing: border-box;
 
     color: var(--color5);
     background: var(--color2);
@@ -234,11 +238,18 @@ html[data-theme="light"] {
     padding: 6px 10px 10px 10px;
     box-shadow: inset -2px -4px var(--color3), inset 2px 2px var(--color4);
 
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: auto;
     white-space: normal;
     font-family: monospace;
     line-height: 1.35;
+}
+.chatCompose {
+    flex: 0 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+    gap: 8px;
 }
 .mcTextviewStyle .chatLine {
     display: block;
@@ -416,7 +427,17 @@ html.svg-popout .mainStage {
     max-width: none;
     flex: 1 1 auto;
     min-height: 0;
-    align-items: stretch;
+    align-items: flex-start;
+}
+html.svg-popout body.connected .mainContainer {
+    min-height: 0;
+    height: 100%;
+    flex: 1 1 auto;
+}
+html.svg-popout .connectedSec {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 html.svg-popout .mainContainer {
     width: 100%;
@@ -438,6 +459,10 @@ html.svg-popout .joinSec {
     justify-content: flex-start;
     padding: 10px 12px;
     overflow: auto;
+}
+html.svg-popout body.connected .joinSec {
+    flex: 0 0 auto;
+    overflow: hidden;
 }
 html.svg-popout .joinHero {
     gap: 2px;
@@ -461,11 +486,6 @@ html.svg-popout .joinSec .flexContainer {
 }
 html.svg-popout .joinContainer {
     margin-top: 4px;
-}
-html.svg-popout .connectedSec {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
 }
 html.svg-popout footer,
 html.svg-popout .contributorsShowcase,
@@ -611,7 +631,8 @@ main {
 .mainStage {
     display: flex;
     flex-flow: row;
-    align-items: stretch;
+    /* Tops aligned; sidebar must not stretch/shrink the main panel height. */
+    align-items: flex-start;
     justify-content: center;
     gap: 0;
     width: min(100%, calc(95vw - 8px));
@@ -624,7 +645,15 @@ main {
     flex: 1 1 auto;
     min-width: 0;
     box-sizing: border-box;
-    overflow: visible;
+    /* Clip chat/shadow bleed at the cutout panel edge. */
+    overflow: hidden;
+    display: flex;
+    flex-flow: column;
+    min-height: 0;
+}
+body.connected .mainContainer {
+    /* Keep a stable connected height so opening the skin sidebar only adds width. */
+    min-height: min(720px, calc(100vh - 48px));
 }
 
 /* —— Connected player identity (head chip + full-skin sidebar) —— */
@@ -720,11 +749,12 @@ main {
     flex: 0 0 0;
     width: 0;
     max-width: 0;
+    align-self: flex-start;
     opacity: 0;
     overflow: hidden;
     pointer-events: none;
     transform: translateX(-12px) scale(0.96);
-    transform-origin: left center;
+    transform-origin: left top;
     transition:
         flex-basis 320ms cubic-bezier(0.22, 1, 0.36, 1),
         width 320ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -745,8 +775,9 @@ main {
     margin-left: 10px;
 }
 .playerSkinSidebarInner {
-    height: 100%;
-    min-height: 280px;
+    /* Intrinsic height — do not stretch the main panel via align-items. */
+    height: auto;
+    min-height: 0;
     box-sizing: border-box;
     padding: 14px 12px 16px;
     display: flex;
@@ -834,6 +865,9 @@ main {
         flex-flow: column;
         align-items: stretch;
     }
+    body.connected .mainContainer {
+        min-height: 0;
+    }
     .playerSkinSidebar.is-open {
         flex-basis: auto;
         width: 100%;
@@ -846,6 +880,9 @@ main {
     }
     .playerSkinBody {
         height: 160px;
+    }
+    .mcTextviewStyle {
+        min-height: 160px;
     }
 }
 
@@ -1319,7 +1356,11 @@ main {
     padding: 18px 20px 14px 20px;
     width: 100%;
     box-sizing: border-box;
-    overflow: visible;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    flex: 0 0 auto;
+    background: var(--surface);
 }
 .joinHero {
     display: flex;
@@ -1451,6 +1492,31 @@ body.pending-minecraft-join .statusLabel {
 
 .connectedSec {
     padding: 0 10px 10px 10px;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow: hidden;
+}
+.connectedSec > .svcScreens {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+}
+.svcScreen[data-screen="hub"].svcScreenActive {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    justify-content: flex-start;
+}
+.svcScreen[data-screen="hub"] .svcPanel {
+    flex: 0 0 auto;
+    gap: 10px;
+}
+.svcScreen[data-screen="hub"] .flexDivider {
+    flex: 0 0 auto;
 }
 .pttBindBtnContainer {
     width: calc(100% - 4px);
@@ -1510,9 +1576,6 @@ body.pending-minecraft-join .statusLabel {
 }
 .svcBigBtn:hover {
     background: var(--btn-face-hover) !important;
-}
-.svcScreen[data-screen="hub"] .svcPanel {
-    gap: 10px;
 }
 .svcIconRow {
     display: flex;
@@ -1908,6 +1971,9 @@ body.connected .joinBtnContainer {
  */
 body.connected .joinSec {
     padding: 4px 10px 6px 10px;
+    /* Solid bar so chat pixels cannot bleed under / into the top chrome. */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 body.connected .joinHero {
     padding-right: 0;
@@ -1920,6 +1986,12 @@ body.connected .joinBtnContainer {
     align-self: center;
     /* Nudge up within the header without growing the bar */
     transform: translateY(-2px);
+}
+body.connected .joinForm {
+    margin: 0;
+    gap: 0;
+    height: auto;
+    flex: 0 0 auto;
 }
 
 .floatingWidgetsOverlay {
