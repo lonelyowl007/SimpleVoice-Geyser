@@ -7,8 +7,9 @@ import {
     setOther,
     setPlayer
 } from "./audio/receive-volumes.js";
+import {mcHeadsUrl, SKIN_FALLBACK} from "./skin-url.js";
 
-const DEFAULT_AVATAR = "images/v2/mic.png";
+const DEFAULT_AVATAR = SKIN_FALLBACK;
 const AVATAR_SIZE = 48;
 
 /**
@@ -110,7 +111,7 @@ export class AdjustVolumesUI {
         avatar.width = AVATAR_SIZE;
         avatar.height = AVATAR_SIZE;
         if (row.kind === "player" && row.uuid) {
-            avatar.src = `https://mc-heads.net/avatar/${row.uuid}/${AVATAR_SIZE}`;
+            avatar.src = mcHeadsUrl(row.uuid, "avatar", AVATAR_SIZE);
             avatar.onerror = () => {
                 avatar.onerror = null;
                 avatar.src = DEFAULT_AVATAR;

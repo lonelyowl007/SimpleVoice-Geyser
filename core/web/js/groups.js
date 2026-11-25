@@ -1,7 +1,8 @@
 import {SvgLang} from "./utils/lang.js";
 import {setPlayerIdentityUuid} from "./player-identity.js";
+import {mcHeadsUrl, SKIN_FALLBACK} from "./skin-url.js";
 
-const DEFAULT_AVATAR = "images/v2/mic.png";
+const DEFAULT_AVATAR = SKIN_FALLBACK;
 
 /**
  * SVC-style Groups list + in-group menu for the web client.
@@ -406,7 +407,7 @@ export class GroupsUI {
             avatar.width = 32;
             avatar.height = 32;
             avatar.src = member.uuid
-                ? `https://mc-heads.net/avatar/${member.uuid}/32`
+                ? mcHeadsUrl(member.uuid, "avatar", 32)
                 : DEFAULT_AVATAR;
             avatar.onerror = () => {
                 avatar.onerror = null;

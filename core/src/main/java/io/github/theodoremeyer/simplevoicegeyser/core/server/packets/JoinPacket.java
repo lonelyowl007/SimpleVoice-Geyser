@@ -252,11 +252,18 @@ public final class JoinPacket implements Packet {
 
         player.sendMessage(SvgCore.getPrefix() + "Connected!");
 
-        connection.sendMessage(
-                ConnectionStates.MessageType.STATUS,
-                "Connected as " + connection.getPlayer().getName() + ".",
-                false
+        // Include uuid/username so the web UI can resolve Bedrock/Floodgate skins
+        // without a Mojang name lookup (dotted Floodgate names → Steve on mc-heads).
+        JSONObject connectedStatus = new JSONObject();
+        connectedStatus.put("type", ConnectionStates.MessageType.STATUS.getJsonString());
+        connectedStatus.put(
+                "message",
+                "Connected as " + connection.getPlayer().getName() + "."
         );
+        connectedStatus.put("fatal", false);
+        connectedStatus.put("uuid", connection.getUuid().toString());
+        connectedStatus.put("username", connection.getPlayer().getName());
+        connection.sendJson(connectedStatus);
 
         VoicePlayersBroadcaster.broadcast();
         GroupsBroadcaster.sendTo(connection);

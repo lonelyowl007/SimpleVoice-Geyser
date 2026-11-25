@@ -179,7 +179,8 @@ export class SvgWebSocket {
                         await this.#sendCapabilitiesOnce();
                         this.#runEventListeners("statusChange", {
                             connected: true,
-                            username: this.lastCredentials?.username
+                            username: data.username || this.lastCredentials?.username,
+                            uuid: data.uuid || null
                         });
                     }
 

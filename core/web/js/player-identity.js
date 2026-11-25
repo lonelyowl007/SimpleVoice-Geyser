@@ -4,9 +4,9 @@
  */
 
 import { SvgLang } from "./utils/lang.js";
+import { mcHeadsUrl, resolveSkinIdentifier, SKIN_FALLBACK } from "./skin-url.js";
 
 const VIEW_KEY = "svg.ui.skinView";
-const FALLBACK_HEAD = "images/v2/mic.png";
 
 /** @type {string} */
 let currentName = "";
@@ -14,6 +14,8 @@ let currentName = "";
 let currentUuid = null;
 /** @type {"head"|"full"} */
 let viewMode = "head";
+/** @type {number} */
+let skinRequestId = 0;
 
 /**
  * @returns {"head"|"full"}
@@ -39,24 +41,6 @@ function persistView(mode) {
 }
 
 /**
- * @param {string} name
- * @param {string|null|undefined} uuid
- * @param {"avatar"|"body"} kind
- * @param {number} size
- */
-function skinUrl(name, uuid, kind, size) {
-    const key = (uuid && String(uuid).trim()) || String(name || "").trim();
-    if (!key) {
-        return FALLBACK_HEAD;
-    }
-    const enc = encodeURIComponent(key);
-    if (kind === "body") {
-        return `https://mc-heads.net/body/${enc}/${size}`;
-    }
-    return `https://mc-heads.net/avatar/${enc}/${size}`;
-}
-
-/**
  * @param {HTMLImageElement|null} img
  * @param {string} url
  */
@@ -66,7 +50,7 @@ function setSkinImage(img, url) {
     }
     img.onerror = () => {
         img.onerror = null;
-        img.src = FALLBACK_HEAD;
+        img.src = SKIN_FALLBACK;
     };
     img.src = url;
 }
@@ -109,8 +93,16 @@ function refreshLabels() {
 
 function refreshSkins() {
     const { head, bodyImg } = els();
-    setSkinImage(head, skinUrl(currentName, currentUuid, "avatar", 48));
-    setSkinImage(bodyImg, skinUrl(currentName, currentUuid, "body", 220));
+    const req = ++skinRequestId;
+    const name = currentName;
+    const uuid = currentUuid;
+    void resolveSkinIdentifier(name, uuid).then((key) => {
+        if (req !== skinRequestId) {
+            return;
+        }
+        setSkinImage(head, mcHeadsUrl(key, "avatar", 48));
+        setSkinImage(bodyImg, mcHeadsUrl(key, "body", 220));
+    });
 }
 
 /**
@@ -162,6 +154,7 @@ export function showPlayerIdentity(username, uuid) {
 export function hidePlayerIdentity() {
     currentName = "";
     currentUuid = null;
+    skinRequestId++;
     const { chip, statusLabel, sidebar, stage } = els();
     if (chip) {
         chip.hidden = true;

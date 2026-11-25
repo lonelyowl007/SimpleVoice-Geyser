@@ -10,6 +10,17 @@ const POPOUT_NAME = "svg-voice-popout";
 /** @type {"dark"|"light"} */
 let currentTheme = "dark";
 
+/** @type {(() => string|null)|null} */
+let popoutHandoffProvider = null;
+
+/**
+ * Provide a short-lived handoff id (see session-handoff.js) when opening a pop-out.
+ * @param {(() => string|null)|null} provider
+ */
+export function setPopoutHandoffProvider(provider) {
+    popoutHandoffProvider = typeof provider === "function" ? provider : null;
+}
+
 /**
  * @param {unknown} value
  * @returns {"dark"|"light"|null}
@@ -76,14 +87,18 @@ function syncThemeToggleButton() {
 
 /**
  * Open (or focus) a compact detached window sized for the voice UI.
+ * @param {{ handoffId?: string|null }} [options]
  */
-export function openPopoutWindow() {
+export function openPopoutWindow(options = {}) {
     try {
         if (window.name === POPOUT_NAME || document.documentElement.classList.contains("svg-popout")) {
             return;
         }
         const url = new URL(window.location.href);
         url.searchParams.set("popout", "1");
+        const handoffId = String(options?.handoffId || "").trim();
+        // Fragment only — never sent to the server; credentials stay out of the URL.
+        url.hash = handoffId ? `handoff=${encodeURIComponent(handoffId)}` : "";
         // Compact panel beside Discord / game — fit the join form, not a tall empty strip.
         const width = Math.min(440, Math.max(360, Math.floor((window.screen.availWidth || 440) * 0.28)));
         const height = Math.min(580, Math.max(500, Math.floor((window.screen.availHeight || 720) * 0.62)));
@@ -159,7 +174,10 @@ export function initTheme(branding) {
             popoutBtn.classList.add("dev-hidden");
             popoutBtn.setAttribute("aria-hidden", "true");
         } else {
-            popoutBtn.addEventListener("click", () => openPopoutWindow());
+            popoutBtn.addEventListener("click", () => {
+                const handoffId = popoutHandoffProvider?.() || null;
+                openPopoutWindow({ handoffId });
+            });
         }
     }
 

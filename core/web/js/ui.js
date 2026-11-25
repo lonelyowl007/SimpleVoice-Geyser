@@ -7,6 +7,8 @@ import {GroupsUI} from "./groups.js";
 import {ScreenRouter} from "./screens.js";
 import {getPrefs, setMaster, isDeafened, toggleDeafen} from "./audio/receive-volumes.js";
 import {hidePlayerIdentity, showPlayerIdentity} from "./player-identity.js";
+import {setPopoutHandoffProvider} from "./theme.js";
+import {createHandoffPayload, takeHandoffCredentials} from "./session-handoff.js";
 
 /**
  * @import {SvgUIOptions} from "./utils/internal-types.js"
@@ -516,7 +518,10 @@ export class SvgUI {
 
                             statusEl.classList.remove("disconnected");
                             statusEl.classList.add("connected");
-                            showPlayerIdentity(status.username || usernameInput.value || "");
+                            showPlayerIdentity(
+                                status.username || usernameInput.value || "",
+                                status.uuid
+                            );
                             SvgLang.setElement(joinButton, "joinBtnConnectedLabel");
                             const runtime = this.audioController.getAudioRuntime();
 
@@ -638,6 +643,22 @@ export class SvgUI {
             Logger.log(
                 `[Audio] ${runtime.degradedReason}`
             );
+        }
+
+        // Pop-out: hand off the live session (no password in the URL).
+        setPopoutHandoffProvider(() => {
+            const creds = this.webSocketController?.lastCredentials;
+            if (!creds?.username) {
+                return null;
+            }
+            return createHandoffPayload(creds);
+        });
+
+        const handoff = await takeHandoffCredentials();
+        if (handoff?.username && !this.webSocketController.isConnected()) {
+            usernameInput.value = handoff.username;
+            passwordInput.value = handoff.password || "";
+            formEl.requestSubmit();
         }
     }
 
