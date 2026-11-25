@@ -632,12 +632,12 @@ main {
 .mainStage {
     display: flex;
     flex-flow: row;
-    /* Tops aligned; sidebar must not stretch/shrink the main panel height. */
+    /* Tops aligned; sidebar must not stretch/shrink the main panel. */
     align-items: flex-start;
     justify-content: center;
     gap: 0;
-    width: min(100%, calc(95vw - 8px));
-    max-width: 980px;
+    width: fit-content;
+    max-width: min(100%, calc(95vw - 8px));
     box-sizing: border-box;
 }
 .mainContainer {
@@ -653,8 +653,30 @@ main {
     min-height: 0;
 }
 body.connected .mainContainer {
-    /* Keep a stable connected height so opening the skin sidebar only adds width. */
-    min-height: min(720px, calc(100vh - 48px));
+    /*
+     * One standard footprint for hub / settings / groups.
+     * flex-basis locks width so the skin sidebar only adds beside — it must
+     * not steal width from Groups/Settings the way flex:1 + min-width:0 did.
+     */
+    --svg-main-w: 720px;
+    --svg-main-h: min(720px, calc(100vh - 48px));
+    flex: 0 0 var(--svg-main-w);
+    width: var(--svg-main-w);
+    max-width: 100%;
+    min-width: 0;
+    height: var(--svg-main-h);
+    min-height: var(--svg-main-h);
+    max-height: var(--svg-main-h);
+}
+@media (max-width: 960px) {
+    /* Below ~720+sidebar, allow the main column to share space instead of overflowing. */
+    body.connected .mainContainer {
+        flex: 1 1 auto;
+        width: min(720px, 100%);
+        height: auto;
+        min-height: min(720px, calc(100vh - 48px));
+        max-height: none;
+    }
 }
 
 /* —— Connected player identity (head chip + full-skin sidebar) —— */
@@ -767,24 +789,27 @@ body.connected .mainContainer {
     transition: none !important;
 }
 .playerSkinSidebar.is-open {
-    flex-basis: 200px;
-    width: 200px;
-    max-width: 200px;
+    flex: 0 0 auto;
+    flex-basis: auto;
+    width: 168px;
+    max-width: 168px;
+    height: auto;
     opacity: 1;
     pointer-events: auto;
     transform: translateX(0) scale(1);
     margin-left: 10px;
 }
 .playerSkinSidebarInner {
-    /* Intrinsic height — do not stretch the main panel via align-items. */
+    /* Content-sized card — no flex-grow empty band under the figure. */
     height: auto;
     min-height: 0;
+    max-height: none;
     box-sizing: border-box;
-    padding: 14px 12px 16px;
+    padding: 10px 10px 12px;
     display: flex;
     flex-flow: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     background: var(--surface);
     border: 3px solid #1a1a1a;
     box-shadow:
@@ -814,33 +839,33 @@ body.connected .mainContainer {
     background: var(--btn-face-hover);
 }
 .playerSkinSidebarPrefix {
-    margin: 10px 0 0;
-    font-size: 0.75em;
+    margin: 8px 28px 0;
+    font-size: 0.72em;
     color: var(--muted-on-surface);
     text-align: center;
 }
 .playerSkinSidebarName {
-    margin: 0;
-    font-size: 1.05em;
+    margin: 0 28px;
+    font-size: 0.95em;
     text-align: center;
     color: var(--status-connected);
     text-shadow: 2px 2px 0 #000;
     word-break: break-word;
-    max-width: 100%;
+    max-width: calc(100% - 56px);
     animation: playerNameIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .playerSkinSidebarFigure {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     width: 100%;
-    margin-top: 4px;
-    min-height: 180px;
+    margin-top: 2px;
+    min-height: 0;
 }
 .playerSkinBody {
     width: auto;
-    height: min(240px, 42vh);
+    height: 168px;
     max-width: 100%;
     image-rendering: pixelated;
     filter: drop-shadow(2px 3px 0 #000);
@@ -880,7 +905,7 @@ body.connected .mainContainer {
         min-height: 0;
     }
     .playerSkinBody {
-        height: 160px;
+        height: 140px;
     }
     .mcTextviewStyle {
         min-height: 160px;
@@ -1506,12 +1531,19 @@ body.pending-minecraft-join .statusLabel {
     flex: 1 1 auto;
     min-height: 0;
     height: 100%;
+    width: 100%;
 }
-.svcScreen[data-screen="hub"].svcScreenActive {
+/* Every connected screen uses the same footprint as the hub. */
+.svcScreen.svcScreenActive {
     flex: 1 1 auto;
     min-height: 0;
     height: 100%;
+    width: 100%;
+    box-sizing: border-box;
     justify-content: flex-start;
+    align-items: stretch;
+}
+.svcScreen[data-screen="hub"].svcScreenActive {
     gap: 6px;
     padding-bottom: 0;
 }
@@ -1521,6 +1553,26 @@ body.pending-minecraft-join .statusLabel {
 }
 .svcScreen[data-screen="hub"] .flexDivider {
     flex: 0 0 auto;
+}
+.svcScreen[data-screen="settings"].svcScreenActive,
+.svcScreen[data-screen="groups"].svcScreenActive,
+.svcScreen[data-screen="group-menu"].svcScreenActive,
+.svcScreen[data-screen="group-password"].svcScreenActive,
+.svcScreen[data-screen="create-group"].svcScreenActive,
+.svcScreen[data-screen="volumes"].svcScreenActive,
+.svcScreen[data-screen="mic"].svcScreenActive,
+.svcScreen[data-screen="speaker"].svcScreenActive {
+    gap: 8px;
+}
+.svcScreen[data-screen="settings"].svcScreenActive > .svcPanel,
+.svcScreen[data-screen="groups"].svcScreenActive > .svcPanel,
+.svcScreen[data-screen="group-menu"].svcScreenActive > .svcPanel,
+.svcScreen[data-screen="group-password"].svcScreenActive > .svcPanel,
+.svcScreen[data-screen="create-group"].svcScreenActive > .svcPanel,
+.svcScreen[data-screen="volumes"].svcScreenActive > .svcPanel {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
 }
 .pttBindBtnContainer {
     width: calc(100% - 4px);
